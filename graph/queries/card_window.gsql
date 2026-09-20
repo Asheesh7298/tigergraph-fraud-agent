@@ -1,0 +1,27 @@
+// Ordered transactions on one card inside a time window, with the device
+// profile each came from.
+//
+// The window is resolved from the flagged transaction's own ts, never from
+// the case's opened_at -- HHG-006 opens six hours after the activity it is
+// about, and windowing off opened_at misses the entire episode.
+
+CREATE QUERY card_window(VERTEX<Card> p_card, DATETIME p_from, DATETIME p_to,
+                         INT p_limit = 500)
+FOR GRAPH FraudGraph SYNTAX v2 {
+  MapAccum<STRING, STRING> @@device_of;
+
+  Seed = {p_card};
+
+  Txns = SELECT t
+         FROM Seed:c -(MADE>)- Transaction:t
+         WHERE t.ts >= p_from AND t.ts <= p_to
+         ORDER BY t.ts ASC
+         LIMIT p_limit;
+
+  Dev = SELECT d
+        FROM Txns:t -(FROM_DEVICE>)- DeviceProfile:d
+        ACCUM @@device_of += (t.txn_id -> d.profile_key);
+
+  PRINT Txns;
+  PRINT @@device_of AS device_of;
+}

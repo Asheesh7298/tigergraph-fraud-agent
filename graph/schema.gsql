@@ -1,0 +1,133 @@
+﻿// FraudGraph schema.
+//
+// Follows the README's suggested model, with three deliberate departures:
+//
+//  1. Reverse edges on FROM_DEVICE, BILLED_IN, MADE and ON_CARD. Ring
+//     detection is a traversal *out of* a device profile back into the
+//     transactions on it, which is impossible without the reverse direction.
+//
+//  2. An AgentCase vertex distinct from ClosedCase. ClosedCase is the bank's
+//     history (read-only, July-October). AgentCase is what this agent writes
+//     as it investigates, linked back to history by SIMILAR_TO. Keeping them
+//     apart means the agent can never mistake its own conclusion for a
+//     confirmed historical outcome. (`Case` alone is a reserved GSQL keyword.)
+//
+//  3. C1-C14 and D1-D15 are not loaded. They are unnamed engineered features;
+//     the README asks us to be honest about what a column is, and an
+//     attribute we would never cite as evidence does not belong in the graph
+//     that serves evidence. They remain in data/txn_narrow.csv. M1-M9 are
+//     kept because they are documented as match flags and account takeover
+//     turns on them.
+
+CREATE VERTEX Customer (
+  PRIMARY_ID customer_id STRING,
+  n_cards INT DEFAULT 0
+) WITH PRIMARY_ID_AS_ATTRIBUTE="true"
+
+CREATE VERTEX Card (
+  PRIMARY_ID card_id STRING,
+  customer_id STRING,
+  issuer STRING,          // card1
+  network STRING,         // card4: visa / mastercard / amex / discover
+  card_type STRING        // card6: credit / debit
+) WITH PRIMARY_ID_AS_ATTRIBUTE="true"
+
+CREATE VERTEX Transaction (
+  PRIMARY_ID txn_id STRING,
+  ts DATETIME,
+  amount DOUBLE,
+  product_cd STRING,
+  channel STRING,         // in_person | online
+  risk_score DOUBLE,
+  addr1 STRING,
+  addr2 STRING,
+  dist1 STRING,
+  dist2 STRING,
+  p_email STRING,
+  r_email STRING,
+  card_id STRING,
+  customer_id STRING,
+  M1 STRING, M2 STRING, M3 STRING, M4 STRING, M5 STRING,
+  M6 STRING, M7 STRING, M8 STRING, M9 STRING
+) WITH PRIMARY_ID_AS_ATTRIBUTE="true"
+
+CREATE VERTEX DeviceProfile (
+  PRIMARY_ID profile_key STRING,
+  device_info STRING,
+  os STRING,
+  browser STRING,
+  screen STRING,
+  dominant_proxy STRING,  // id_23: transparent / anonymous / hidden
+  n_records INT DEFAULT 0
+) WITH PRIMARY_ID_AS_ATTRIBUTE="true"
+
+CREATE VERTEX EmailDomain (
+  PRIMARY_ID domain STRING
+) WITH PRIMARY_ID_AS_ATTRIBUTE="true"
+
+CREATE VERTEX BillingRegion (
+  PRIMARY_ID region STRING
+) WITH PRIMARY_ID_AS_ATTRIBUTE="true"
+
+CREATE VERTEX ClosedCase (
+  PRIMARY_ID case_id STRING,
+  customer_id STRING,
+  card_id STRING,
+  opened_at DATETIME,
+  closed_at DATETIME,
+  outcome STRING,         // confirmed_fraud | cleared
+  pattern STRING,
+  first_fraud_txn_id STRING,
+  n_txns INT,
+  exposure_usd DOUBLE,
+  actions_taken STRING,
+  report_filed BOOL,
+  analyst_notes STRING
+) WITH PRIMARY_ID_AS_ATTRIBUTE="true"
+
+// Written by the agent. Never confused with the bank's own history above.
+// Named AgentCase because `Case` is a reserved GSQL keyword.
+CREATE VERTEX AgentCase (
+  PRIMARY_ID case_id STRING,
+  hhg_case_id STRING,
+  status STRING,
+  verdict STRING,
+  pattern STRING,
+  pattern_description STRING,
+  fraud_probability DOUBLE,
+  exposure_usd DOUBLE,
+  first_suspicious_txn_id STRING,
+  summary STRING,
+  stop_reason STRING,
+  sar_filed BOOL,
+  initial_actions STRING,
+  final_actions STRING,
+  opened_at DATETIME,
+  written_at DATETIME
+) WITH PRIMARY_ID_AS_ATTRIBUTE="true"
+
+// -- edges -----------------------------------------------------------------
+
+CREATE DIRECTED EDGE OWNS (FROM Customer, TO Card) WITH REVERSE_EDGE="OWNED_BY"
+CREATE DIRECTED EDGE MADE (FROM Card, TO Transaction) WITH REVERSE_EDGE="MADE_ON"
+CREATE DIRECTED EDGE FROM_DEVICE (FROM Transaction, TO DeviceProfile) WITH REVERSE_EDGE="DEVICE_SAW"
+CREATE DIRECTED EDGE PURCHASER_EMAIL (FROM Transaction, TO EmailDomain) WITH REVERSE_EDGE="EMAIL_USED_BY"
+CREATE DIRECTED EDGE BILLED_IN (FROM Transaction, TO BillingRegion) WITH REVERSE_EDGE="REGION_SAW"
+
+// Ordered chain within a card, by ts. Walking it backwards is how the agent
+// finds where an episode actually started.
+CREATE DIRECTED EDGE NEXT (FROM Transaction, TO Transaction) WITH REVERSE_EDGE="PREV"
+
+CREATE DIRECTED EDGE INVOLVES (FROM ClosedCase, TO Transaction) WITH REVERSE_EDGE="INVOLVED_IN"
+CREATE DIRECTED EDGE ON_CARD (FROM ClosedCase, TO Card) WITH REVERSE_EDGE="CARD_HISTORY"
+CREATE DIRECTED EDGE CONNECTED_TO (FROM ClosedCase, TO Card) WITH REVERSE_EDGE="CONNECTED_FROM"
+
+CREATE DIRECTED EDGE CASE_INVOLVES (FROM AgentCase, TO Transaction) WITH REVERSE_EDGE="IN_AGENT_CASE"
+CREATE DIRECTED EDGE CASE_ON_CARD (FROM AgentCase, TO Card) WITH REVERSE_EDGE="CARD_AGENT_CASES"
+CREATE DIRECTED EDGE CASE_DEVICE (FROM AgentCase, TO DeviceProfile) WITH REVERSE_EDGE="DEVICE_AGENT_CASES"
+
+// Case memory: what the agent retrieved and actually used.
+CREATE DIRECTED EDGE SIMILAR_TO (FROM AgentCase, TO ClosedCase) WITH REVERSE_EDGE="CITED_BY"
+
+CREATE GRAPH FraudGraph(*)
+

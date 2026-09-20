@@ -1,0 +1,18 @@
+# Dataset and everything derived from it. The raw CSVs are 708MB and belong
+# to TigerGraph; the narrowed files, card map, id registry, embeddings cache
+# and ring index are all regenerable from them. cases/ is NOT under data/ and
+# is committed — those are the deliverable.
+data/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+
+# Runtime
+.checkpoints/
+*.log
+.streamlit/secrets.toml
+run_all.log

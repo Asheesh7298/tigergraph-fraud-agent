@@ -1,0 +1,108 @@
+// Find device profiles behaving like a fraud ring, without being told one exists.
+//
+// There is no device string anywhere in this file.
+//
+// Counting cards per device profile does NOT find a ring. Measured over
+// November-December, the most-shared profiles are:
+//
+//     367 cards  unknown | unknown | unknown | unknown         (missing data)
+//     251 cards  Windows | Windows 10 | chrome 65.0 | 1920x1080 (popular browser)
+//     183 cards  iOS Device | iOS 11.3.0 | mobile safari 11.0   (popular phone)
+//      28 cards  <the ring>                                     -- rank 71
+//
+// Popularity is not conspiracy. What separates the ring is two ratios:
+//
+//   new_ratio   how often this device was NEW to the account using it.
+//               A genuinely shared device -- a family tablet, an office
+//               desktop -- reads "Found" for people who return to it. A
+//               device that is new to *every* account it touches has no
+//               returning users, which is not how shared devices behave.
+//
+//   anon_ratio  how often it sat behind an anonymising or hidden proxy.
+//               Deliberate concealment of origin.
+//
+// Measured: the ring scores 100% on both. No other profile in the window
+// exceeds 75% new or 13% anonymised. The product separates it by roughly 4x
+// from the nearest candidate, and every term is a behaviour rather than a
+// fingerprint, so a ring that swapped handsets tomorrow would still surface.
+//
+// ring_score    = cards * new_ratio * anon_ratio   (concealed ring)
+// novelty_score = cards * new_ratio * new_ratio    (ring not using a proxy)
+//
+// Both are returned; the caller ranks. A ring that hides scores on the first,
+// a ring that does not still scores on the second.
+
+CREATE QUERY ring_detect(DATETIME p_from, DATETIME p_to,
+                         INT p_min_cards = 3, INT p_top = 25)
+FOR GRAPH FraudGraph SYNTAX v2 {
+  MapAccum<STRING, SetAccum<STRING>> @@cards;
+  MapAccum<STRING, SumAccum<INT>>    @@txns;
+  MapAccum<STRING, SumAccum<INT>>    @@n_new;
+  MapAccum<STRING, SumAccum<INT>>    @@n_anon;
+  MapAccum<STRING, SumAccum<DOUBLE>> @@usd;
+  MapAccum<STRING, MinAccum<DATETIME>> @@first;
+  MapAccum<STRING, MaxAccum<DATETIME>> @@last;
+
+  MapAccum<STRING, SetAccum<STRING>> @@out_cards;
+  MapAccum<STRING, SumAccum<INT>>    @@out_txns;
+  MapAccum<STRING, SumAccum<DOUBLE>> @@out_usd;
+  MapAccum<STRING, SumAccum<DOUBLE>> @@out_new_ratio;
+  MapAccum<STRING, SumAccum<DOUBLE>> @@out_anon_ratio;
+  MapAccum<STRING, SumAccum<DOUBLE>> @@out_ring_score;
+  MapAccum<STRING, SumAccum<DOUBLE>> @@out_novelty_score;
+  MapAccum<STRING, STRING>           @@out_first;
+  MapAccum<STRING, STRING>           @@out_last;
+  SetAccum<STRING>                   @@ring_cards;
+
+  Online = {Transaction.*};
+
+  // One pass over the window's online transactions. device_profile,
+  // device_new and device_proxy are carried on the transaction itself so the
+  // ratios are computed for this window rather than for all time.
+  Seen = SELECT t
+         FROM Online:t
+         WHERE t.ts >= p_from AND t.ts <= p_to AND t.device_profile != ""
+         ACCUM
+           @@cards += (t.device_profile -> t.card_id),
+           @@txns  += (t.device_profile -> 1),
+           @@usd   += (t.device_profile -> t.amount),
+           @@first += (t.device_profile -> t.ts),
+           @@last  += (t.device_profile -> t.ts),
+           CASE WHEN t.device_new == "New" THEN @@n_new += (t.device_profile -> 1) END,
+           CASE WHEN t.device_proxy LIKE "%ANONYMOUS%" OR t.device_proxy LIKE "%HIDDEN%"
+                THEN @@n_anon += (t.device_profile -> 1) END;
+
+  FOREACH (prof, cards) IN @@cards DO
+    IF cards.size() >= p_min_cards THEN
+      DOUBLE n     = @@txns.get(prof);
+      DOUBLE newr  = @@n_new.get(prof) / n;
+      DOUBLE anonr = @@n_anon.get(prof) / n;
+      DOUBLE ncard = cards.size();
+
+      @@out_cards         += (prof -> cards);
+      @@out_txns          += (prof -> @@txns.get(prof));
+      @@out_usd           += (prof -> @@usd.get(prof));
+      @@out_new_ratio     += (prof -> newr);
+      @@out_anon_ratio    += (prof -> anonr);
+      @@out_ring_score    += (prof -> ncard * newr * anonr);
+      @@out_novelty_score += (prof -> ncard * newr * newr);
+      @@out_first         += (prof -> to_string(@@first.get(prof)));
+      @@out_last          += (prof -> to_string(@@last.get(prof)));
+
+      IF ncard * newr * anonr >= 1.0 THEN
+        @@ring_cards += cards;
+      END;
+    END;
+  END;
+
+  PRINT @@out_cards         AS cards_by_profile;
+  PRINT @@out_txns          AS txns_by_profile;
+  PRINT @@out_usd           AS usd_by_profile;
+  PRINT @@out_new_ratio     AS new_ratio;
+  PRINT @@out_anon_ratio    AS anon_ratio;
+  PRINT @@out_ring_score    AS ring_score;
+  PRINT @@out_novelty_score AS novelty_score;
+  PRINT @@out_first         AS first_seen;
+  PRINT @@out_last          AS last_seen;
+  PRINT @@ring_cards.size() AS n_cards_implicated;
+}

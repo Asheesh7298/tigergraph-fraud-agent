@@ -1,0 +1,66 @@
+// How this cardholder normally behaves, before a given moment.
+//
+// The accuracy driver: nearly every verdict turns on "is this consistent with
+// how this card is used". Returns the raw amount list so percentiles are
+// computed by the caller rather than approximated in GSQL.
+//
+// p_amount / p_product drive the R7 recurrence test. A customer disputing a
+// charge they make constantly is the case R7 exists for, and the closed
+// history contains no example of it -- every one of the 900 cleared cases is
+// a model false alarm, not a dispute. So the count has to come from the
+// graph, not from precedent.
+
+CREATE QUERY customer_baseline(VERTEX<Card> p_card, DATETIME p_before,
+                               DOUBLE p_amount = -1.0, STRING p_product = "",
+                               DOUBLE p_tolerance = 2.0)
+FOR GRAPH FraudGraph SYNTAX v2 {
+  SumAccum<INT>    @@n_txns;
+  ListAccum<DOUBLE> @@amounts;
+  MapAccum<STRING, SumAccum<INT>> @@by_product;
+  MapAccum<STRING, SumAccum<INT>> @@by_channel;
+  MapAccum<STRING, SumAccum<INT>> @@by_region;
+  MapAccum<STRING, SumAccum<INT>> @@by_device;
+  SumAccum<INT>    @@recurring_matches;
+  ListAccum<STRING> @@recurring_txn_ids;
+  MinAccum<DATETIME> @@first_seen;
+  MaxAccum<DATETIME> @@last_seen;
+  SumAccum<INT>    @@n_online;
+
+  Seed = {p_card};
+
+  Txns = SELECT t
+         FROM Seed:c -(MADE>)- Transaction:t
+         WHERE t.ts < p_before
+         ACCUM
+           @@n_txns += 1,
+           @@amounts += t.amount,
+           @@by_product += (t.product_cd -> 1),
+           @@by_channel += (t.channel -> 1),
+           @@by_region  += (t.addr1 -> 1),
+           @@first_seen += t.ts,
+           @@last_seen  += t.ts,
+           CASE WHEN t.channel == "online" THEN @@n_online += 1 END,
+           CASE WHEN p_amount > 0
+                     AND t.product_cd == p_product
+                     AND t.amount >= p_amount - p_tolerance
+                     AND t.amount <= p_amount + p_tolerance
+                THEN @@recurring_matches += 1,
+                     @@recurring_txn_ids += t.txn_id
+           END;
+
+  Dev = SELECT d
+        FROM Txns:t -(FROM_DEVICE>)- DeviceProfile:d
+        ACCUM @@by_device += (d.profile_key -> 1);
+
+  PRINT @@n_txns   AS n_txns;
+  PRINT @@n_online AS n_online;
+  PRINT @@amounts  AS amounts;
+  PRINT @@by_product AS products;
+  PRINT @@by_channel AS channels;
+  PRINT @@by_region  AS regions;
+  PRINT @@by_device  AS devices;
+  PRINT @@recurring_matches AS recurring_matches;
+  PRINT @@recurring_txn_ids AS recurring_txn_ids;
+  PRINT @@first_seen AS first_seen;
+  PRINT @@last_seen  AS last_seen;
+}

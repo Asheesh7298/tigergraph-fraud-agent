@@ -1,0 +1,61 @@
+// Every card and customer seen on one device profile inside a window.
+//
+// This is the query that answers HHG-014's analyst request ("several cards
+// this month show purchases from the same unusual device profile"). It
+// traverses out of the DeviceProfile back into transactions, which is why the
+// schema carries a reverse edge on FROM_DEVICE.
+
+// The profile key is taken as a STRING, not VERTEX<DeviceProfile>. Profile
+// keys contain spaces and pipes ("SM-XXXX Build/YYY | Android 7.0 | ...") and
+// TigerGraph rejects them as a vertex-id parameter with "Failed to convert
+// user vertex id". Matching on the attribute costs a scan of 9,706 profiles
+// and always works.
+
+CREATE QUERY device_neighbors(STRING p_profile,
+                              DATETIME p_from, DATETIME p_to)
+FOR GRAPH FraudGraph SYNTAX v2 {
+  SetAccum<STRING>  @@cards;
+  SetAccum<STRING>  @@customers;
+  ListAccum<STRING> @@txn_ids;
+  SumAccum<DOUBLE>  @@total_usd;
+  SumAccum<INT>     @@n_txns;
+  SumAccum<INT>     @@n_new;
+  SumAccum<INT>     @@n_anon;
+  MinAccum<DATETIME> @@first_seen;
+  MaxAccum<DATETIME> @@last_seen;
+  MinAccum<DOUBLE>  @@min_amount;
+  MaxAccum<DOUBLE>  @@max_amount;
+
+  All = {DeviceProfile.*};
+  Seed = SELECT d FROM All:d WHERE d.profile_key == p_profile;
+
+  Txns = SELECT t
+         FROM Seed:d -(DEVICE_SAW>)- Transaction:t
+         WHERE t.ts >= p_from AND t.ts <= p_to
+         ACCUM
+           CASE WHEN t.device_new == "New" THEN @@n_new += 1 END,
+           CASE WHEN t.device_proxy LIKE "%ANONYMOUS%" OR t.device_proxy LIKE "%HIDDEN%"
+                THEN @@n_anon += 1 END,
+           @@cards      += t.card_id,
+           @@customers  += t.customer_id,
+           @@txn_ids    += t.txn_id,
+           @@total_usd  += t.amount,
+           @@n_txns     += 1,
+           @@first_seen += t.ts,
+           @@last_seen  += t.ts,
+           @@min_amount += t.amount,
+           @@max_amount += t.amount;
+
+  PRINT @@cards      AS cards;
+  PRINT @@customers  AS customers;
+  PRINT @@txn_ids    AS txn_ids;
+  PRINT @@n_txns     AS n_txns;
+  PRINT @@total_usd  AS total_usd;
+  PRINT @@first_seen AS first_seen;
+  PRINT @@last_seen  AS last_seen;
+  PRINT @@min_amount AS min_amount;
+  PRINT @@max_amount AS max_amount;
+  PRINT @@n_new AS n_new_to_account;
+  PRINT @@n_anon AS n_anonymised;
+  PRINT Seed;
+}

@@ -1,0 +1,55 @@
+// Has this card ever been billed in this region before?
+//
+// Out-of-region use is one of the five documented patterns, but it is also
+// the single most common reason a closed case was CLEARED: 716 of the 900
+// cleared investigations are a cardholder who travelled. So a new region on
+// its own is weak evidence, and this query exists to establish which of the
+// two it is -- including whether normal home activity continued in parallel,
+// which is what separates a cloned card from a trip.
+
+CREATE QUERY region_history(VERTEX<Card> p_card, STRING p_region,
+                            DATETIME p_before, INT p_parallel_days = 3)
+FOR GRAPH FraudGraph SYNTAX v2 {
+  SumAccum<INT> @@n_total;
+  SumAccum<INT> @@n_in_region;
+  MinAccum<DATETIME> @@first_in_region;
+  MaxAccum<DATETIME> @@last_in_region;
+  MapAccum<STRING, SumAccum<INT>> @@all_regions;
+
+  // Activity elsewhere in the days around p_before: if the cardholder was
+  // still transacting at home while this region was being used, it is not a
+  // trip.
+  SumAccum<INT> @@parallel_elsewhere;
+  ListAccum<STRING> @@parallel_txn_ids;
+
+  Seed = {p_card};
+
+  Hist = SELECT t
+         FROM Seed:c -(MADE>)- Transaction:t
+         WHERE t.ts < p_before
+         ACCUM
+           @@n_total += 1,
+           @@all_regions += (t.addr1 -> 1),
+           CASE WHEN t.addr1 == p_region
+                THEN @@n_in_region += 1,
+                     @@first_in_region += t.ts,
+                     @@last_in_region += t.ts
+           END;
+
+  Around = SELECT t
+           FROM Seed:c -(MADE>)- Transaction:t
+           WHERE t.ts >= datetime_add(p_before, INTERVAL -p_parallel_days DAY)
+                 AND t.ts <= datetime_add(p_before, INTERVAL p_parallel_days DAY)
+                 AND t.addr1 != p_region
+                 AND t.addr1 != ""
+           ACCUM @@parallel_elsewhere += 1,
+                 @@parallel_txn_ids += t.txn_id;
+
+  PRINT @@n_in_region AS n_in_region;
+  PRINT @@n_total AS n_total;
+  PRINT @@first_in_region AS first_in_region;
+  PRINT @@last_in_region AS last_in_region;
+  PRINT @@all_regions AS all_regions;
+  PRINT @@parallel_elsewhere AS parallel_elsewhere;
+  PRINT @@parallel_txn_ids AS parallel_txn_ids;
+}

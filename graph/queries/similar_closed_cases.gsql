@@ -1,0 +1,69 @@
+// Retrieve prior investigations that bear on the one in hand.
+//
+// This is the graph half of GraphRAG. Rather than similarity by text alone,
+// it finds the closed cases connected to the same entities the current
+// investigation touches -- the same card, the same device profile, the same
+// billing region -- and only then falls back to cases of the same pattern
+// and comparable exposure. A case reached through a shared device is
+// evidence; a case reached through a matching adjective is a coincidence.
+//
+// Outcome and pattern come back with each hit so the caller can weight
+// confirmed fraud differently from a cleared false alarm. That matters: all
+// 900 cleared cases are model false alarms, so a cleared neighbour is a
+// reason for caution, not a reason to dismiss.
+
+CREATE QUERY similar_closed_cases(VERTEX<Card> p_card, STRING p_pattern = "",
+                                  DOUBLE p_exposure = -1.0, INT p_limit = 12)
+FOR GRAPH FraudGraph SYNTAX v2 {
+  SetAccum<STRING> @@device_keys;
+  SetAccum<STRING> @@regions;
+  MapAccum<STRING, STRING> @@how;      // case_id -> why it was retrieved
+  SetAccum<STRING> @@hits;
+
+  Seed = {p_card};
+
+  // What does this card touch?
+  MyTxns = SELECT t FROM Seed:c -(MADE>)- Transaction:t
+           ACCUM @@regions += t.addr1;
+
+  MyDev = SELECT d FROM MyTxns:t -(FROM_DEVICE>)- DeviceProfile:d
+          ACCUM @@device_keys += d.profile_key;
+
+  // 1. Cases on this very card, or naming it as a connected card.
+  OnCard = SELECT cc FROM Seed:c -(CARD_HISTORY>)- ClosedCase:cc
+           ACCUM @@hits += cc.case_id,
+                 @@how += (cc.case_id -> "same card");
+
+  Linked = SELECT cc FROM Seed:c -(CONNECTED_FROM>)- ClosedCase:cc
+           ACCUM @@hits += cc.case_id,
+                 @@how += (cc.case_id -> "named as a connected card");
+
+  // 2. Cases whose transactions came from a device profile this card used.
+  //    This is what links HHG-014 back to the August-October ring cases.
+  DevCases = SELECT cc
+             FROM DeviceProfile:d -(DEVICE_SAW>)- Transaction:t -(INVOLVED_IN>)- ClosedCase:cc
+             WHERE @@device_keys.contains(d.profile_key)
+             ACCUM @@hits += cc.case_id,
+                   @@how += (cc.case_id -> "shared device profile");
+
+  // 3. Same pattern and comparable exposure, as a fallback.
+  ByPattern = SELECT cc
+              FROM ClosedCase:cc
+              WHERE p_pattern != "" AND cc.pattern == p_pattern
+                    AND (p_exposure < 0
+                         OR (cc.exposure_usd >= p_exposure * 0.4
+                             AND cc.exposure_usd <= p_exposure * 2.5))
+              ACCUM @@hits += cc.case_id,
+                    @@how += (cc.case_id -> "same pattern, comparable exposure")
+              LIMIT p_limit;
+
+  Result = SELECT cc
+           FROM ClosedCase:cc
+           WHERE @@hits.contains(cc.case_id)
+           ORDER BY cc.opened_at DESC
+           LIMIT p_limit;
+
+  PRINT Result;
+  PRINT @@how AS retrieved_because;
+  PRINT @@device_keys AS device_profiles_used;
+}

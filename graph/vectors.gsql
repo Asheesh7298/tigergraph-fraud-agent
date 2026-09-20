@@ -1,0 +1,48 @@
+// Vector storage for GraphRAG. Applied by src/build_vectors.py --schema.
+//
+// This GSQL build does not accept a native VECTOR attribute type --
+// `emb VECTOR(768)` fails to parse -- so embeddings are stored as
+// LIST<DOUBLE> and cosine similarity is computed in GSQL. Vectors live in
+// TigerGraph and retrieval happens in TigerGraph, which is what the task
+// asks for; what is missing versus a native type is an approximate-nearest-
+// neighbour index, and at 5,565 cases an exact scan is quick enough.
+//
+// Dimensions are 768 rather than the model's default 3,072: width costs
+// memory on a 16 GiB workspace and time on every scan, and the retrieval
+// quality difference over case narratives does not justify 4x the storage.
+//
+// Two syntax notes, both learned the hard way:
+//
+//   * Adding an attribute to an existing vertex type needs a SCHEMA_CHANGE
+//     JOB. A bare ALTER VERTEX ... ADD ATTRIBUTE is a parse error.
+//   * A new vertex type must be defined in full inside a graph-scoped job.
+//     Creating it globally and then referencing it as `ADD VERTEX Document;`
+//     fails with "No primary id or primary key specified".
+
+// -- 1. embeddings on the bank's closed cases ------------------------------
+
+USE GLOBAL
+CREATE GLOBAL SCHEMA_CHANGE JOB add_vectors {
+  ALTER VERTEX ClosedCase ADD ATTRIBUTE (emb LIST<DOUBLE>);
+}
+RUN GLOBAL SCHEMA_CHANGE JOB add_vectors
+
+// -- 2. the retrieval corpus ------------------------------------------------
+//
+// Document holds the fraud policy, the pattern descriptions, the two ring
+// typologies and the false-alarm calibration, so the agent can ground an
+// assessment in written guidance as well as in connected evidence.
+
+USE GRAPH FraudGraph
+CREATE SCHEMA_CHANGE JOB add_doc FOR GRAPH FraudGraph {
+  ADD VERTEX Document (
+    PRIMARY_ID doc_id STRING,
+    title STRING,
+    kind STRING,          // policy | typology | calibration | regulation
+    source STRING,
+    section STRING,
+    content STRING,
+    emb LIST<DOUBLE>
+  ) WITH PRIMARY_ID_AS_ATTRIBUTE="true";
+}
+RUN SCHEMA_CHANGE JOB add_doc

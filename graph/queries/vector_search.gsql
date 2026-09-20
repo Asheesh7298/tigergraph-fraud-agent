@@ -1,0 +1,100 @@
+// Cosine similarity over the embeddings stored in TigerGraph.
+//
+// Two entry points, because GraphRAG needs both halves:
+//
+//   search_documents    retrieves written guidance -- the policy rule that
+//                       governs a situation, the typology that describes it,
+//                       the calibration note that argues against acting.
+//
+//   search_closed_cases retrieves prior investigations by narrative
+//                       similarity, complementing similar_closed_cases,
+//                       which retrieves them by connected entity. A case
+//                       reached through a shared device is evidence; a case
+//                       reached through similar wording is a precedent. They
+//                       answer different questions and both are wanted.
+//
+// Note on result size: HeapAccum.top() takes no argument in this build, so
+// the heap is sized to p_k at declaration and printed whole. It keeps only
+// the p_k highest-scoring hits as it goes, which is cheaper than sorting
+// 5,565 candidates afterwards anyway.
+//
+// Note on the query vector: a LIST parameter cannot be subscripted --
+// `p_query.get(i)` is rejected with "of type list parameter is invalid to
+// call any function". It has to be copied into a MapAccum first, which is
+// what the preamble in each query does.
+
+CREATE QUERY search_documents(LIST<DOUBLE> p_query, INT p_k = 5, STRING p_kind = "")
+FOR GRAPH FraudGraph SYNTAX v2 {
+  TYPEDEF TUPLE<DOUBLE score, STRING doc_id, STRING title, STRING kind,
+                STRING section, STRING content> Hit;
+  HeapAccum<Hit>(p_k, score DESC) @@hits;
+  MapAccum<INT, DOUBLE> @@q;
+  SumAccum<INT> @@qi;
+  SumAccum<DOUBLE> @@qnorm;
+
+  FOREACH v IN p_query DO
+    @@q += (@@qi -> v);
+    @@qi += 1;
+    @@qnorm += v * v;
+  END;
+
+  Docs = {Document.*};
+
+  Scored = SELECT d FROM Docs:d
+           WHERE d.emb.size() > 0 AND (p_kind == "" OR d.kind == p_kind)
+           ACCUM
+             DOUBLE dot = 0.0,
+             DOUBLE na = 0.0,
+             FOREACH i IN RANGE[0, d.emb.size() - 1] DO
+               dot = dot + d.emb.get(i) * @@q.get(i),
+               na = na + d.emb.get(i) * d.emb.get(i)
+             END,
+             CASE WHEN na > 0 AND @@qnorm > 0 THEN
+               @@hits += Hit(dot / (sqrt(na) * sqrt(@@qnorm)),
+                             d.doc_id, d.title, d.kind, d.section, d.content)
+             END;
+
+  PRINT @@hits AS hits;
+}
+
+
+CREATE QUERY search_closed_cases(LIST<DOUBLE> p_query, DATETIME p_before,
+                                 INT p_k = 8, STRING p_outcome = "")
+FOR GRAPH FraudGraph SYNTAX v2 {
+  TYPEDEF TUPLE<DOUBLE score, STRING case_id, STRING outcome, STRING pattern,
+                DOUBLE exposure_usd, STRING card_id, BOOL report_filed,
+                STRING notes> Hit;
+  HeapAccum<Hit>(p_k, score DESC) @@hits;
+  MapAccum<INT, DOUBLE> @@q;
+  SumAccum<INT> @@qi;
+  SumAccum<DOUBLE> @@qnorm;
+
+  FOREACH v IN p_query DO
+    @@q += (@@qi -> v);
+    @@qi += 1;
+    @@qnorm += v * v;
+  END;
+
+  Cases = {ClosedCase.*};
+
+  // p_before keeps the agent honest when replaying history: a case closed
+  // after the alert under investigation could not have informed it.
+  Scored = SELECT c FROM Cases:c
+           WHERE c.emb.size() > 0
+                 AND c.closed_at < p_before
+                 AND (p_outcome == "" OR c.outcome == p_outcome)
+           ACCUM
+             DOUBLE dot = 0.0,
+             DOUBLE na = 0.0,
+             FOREACH i IN RANGE[0, c.emb.size() - 1] DO
+               dot = dot + c.emb.get(i) * @@q.get(i),
+               na = na + c.emb.get(i) * c.emb.get(i)
+             END,
+             CASE WHEN na > 0 AND @@qnorm > 0 THEN
+               @@hits += Hit(dot / (sqrt(na) * sqrt(@@qnorm)),
+                             c.case_id, c.outcome, c.pattern, c.exposure_usd,
+                             c.card_id, c.report_filed, c.analyst_notes)
+             END;
+
+  PRINT @@hits AS hits;
+}
