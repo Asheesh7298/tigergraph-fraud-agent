@@ -49,6 +49,35 @@ GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta"
 DEFAULT_MODEL = "gemini-3.5-flash"
 DEFAULT_EMBED = "gemini-embedding-001"
 
+#: Completion providers. Embeddings ALWAYS stay on Gemini regardless of this
+#: choice, because the TigerGraph vector store was built with Gemini 768-dim
+#: vectors and a query must be embedded by the same model to compare.
+#:
+#: gemini uses its own REST shape; the rest are OpenAI-compatible (/chat/
+#: completions), so Groq, OpenAI and a local Ollama/LM Studio server all share
+#: one code path. Select with LLM_PROVIDER in .env.
+PROVIDERS = {
+    "gemini": {"openai_compatible": False},
+    "groq": {
+        "openai_compatible": True,
+        "base_url": "https://api.groq.com/openai/v1",
+        "key_env": "GROQ_API_KEY",
+        "model": "llama-3.3-70b-versatile",
+    },
+    "openai": {
+        "openai_compatible": True,
+        "base_url": "https://api.openai.com/v1",
+        "key_env": "OPENAI_API_KEY",
+        "model": "gpt-4o-mini",
+    },
+    "local": {
+        "openai_compatible": True,
+        "base_url": os.environ.get("LOCAL_LLM_BASE", "http://localhost:11434/v1"),
+        "key_env": "LOCAL_LLM_KEY",
+        "model": os.environ.get("LOCAL_LLM_MODEL", "qwen2.5:7b"),
+    },
+}
+
 #: The model returns 3,072 dimensions by default. 768 is requested instead:
 #: the vectors are stored in TigerGraph as LIST<DOUBLE> and compared in GSQL,
 #: so width costs memory on a 16 GiB workspace and time in every similarity
@@ -58,6 +87,29 @@ EMBED_DIM = 768
 
 class LLMError(RuntimeError):
     pass
+
+
+def _parse_json_loose(text: str) -> Any:
+    """Parse JSON that an open model may have wrapped in prose or code fences.
+
+    Groq/local models are less disciplined than Gemini/OpenAI about returning
+    a bare object. Strip a ```json fence if present, else fall back to the
+    outermost {...} span. A genuine failure still raises, and the caller
+    (the agent) degrades to a rule-based assessment.
+    """
+    t = text.strip()
+    if t.startswith("```"):
+        t = t.split("```", 2)[1] if t.count("```") >= 2 else t.lstrip("`")
+        if t.lower().startswith("json"):
+            t = t[4:]
+        t = t.strip()
+    try:
+        return json.loads(t)
+    except json.JSONDecodeError:
+        start, end = t.find("{"), t.rfind("}")
+        if 0 <= start < end:
+            return json.loads(t[start:end + 1])
+        raise LLMError(f"response was not valid JSON: {text[:300]}")
 
 
 @dataclass
@@ -102,12 +154,38 @@ class Gemini:
     _last_embed: float = 0.0
     _last_complete: float = 0.0
 
+    #: Which backend answers complete(). Embeddings ignore this and use Gemini.
+    provider: str = ""
+    comp_model: str = ""
+    comp_base: str = ""
+    comp_key: str = ""
+
     def __post_init__(self) -> None:
+        env = load_env()
         if not self.api_key:
-            env = load_env()
+            # Gemini key is required for embeddings no matter the provider.
             self.api_key = env.get("GEMINI_API_KEY") or os.environ.get("GEMINI_API_KEY", "")
-        if not self.api_key:
-            raise LLMError("GEMINI_API_KEY is not set; fill in .env")
+
+        self.provider = (self.provider or env.get("LLM_PROVIDER") or "gemini").lower()
+        if self.provider not in PROVIDERS:
+            raise LLMError(f"unknown LLM_PROVIDER {self.provider!r}; "
+                           f"choose from {', '.join(PROVIDERS)}")
+        spec = PROVIDERS[self.provider]
+
+        if spec["openai_compatible"]:
+            self.comp_base = self.comp_base or spec["base_url"]
+            self.comp_model = self.comp_model or env.get("LLM_MODEL") or spec["model"]
+            self.comp_key = self.comp_key or env.get(spec["key_env"]) or ""
+            if not self.comp_key and self.provider != "local":
+                raise LLMError(f"{spec['key_env']} is not set; fill in .env "
+                               f"(needed for LLM_PROVIDER={self.provider})")
+            if not self.api_key:
+                raise LLMError("GEMINI_API_KEY is still required for embeddings "
+                               "(the vector store is Gemini-embedded); fill in .env")
+        else:
+            self.comp_model = self.model
+            if not self.api_key:
+                raise LLMError("GEMINI_API_KEY is not set; fill in .env")
         self._session = requests.Session()
         CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -192,7 +270,13 @@ class Gemini:
         max_tokens: int = 8000,
         model: str | None = None,
     ) -> Any:
-        """Return parsed JSON when `schema` is given, otherwise text."""
+        """Return parsed JSON when `schema` is given, otherwise text.
+
+        Dispatches to the configured completion provider. Gemini uses its own
+        REST shape; Groq/OpenAI/local share the OpenAI /chat/completions path.
+        """
+        if PROVIDERS[self.provider]["openai_compatible"]:
+            return self._complete_openai(prompt, schema, system, temperature, max_tokens)
         model = model or self.model
         payload: dict[str, Any] = {
             "contents": [{"parts": [{"text": prompt}]}],
@@ -254,6 +338,109 @@ class Gemini:
             path.write_text(
                 json.dumps({"value": value, "usage": meta}), encoding="utf-8"
             )
+        return value
+
+    def _complete_openai(
+        self, prompt: str, schema: dict | None, system: str | None,
+        temperature: float, max_tokens: int,
+    ) -> Any:
+        """Completion via an OpenAI-compatible /chat/completions endpoint.
+
+        Covers Groq, OpenAI, and a local Ollama/LM Studio server. Structured
+        output is requested with response_format json_object plus the schema
+        pasted into the prompt: json_schema strict mode is not uniformly
+        supported across open models on Groq, whereas json_object is, and the
+        agent already falls back to a rule-based assessment if the JSON is
+        malformed -- so the robust-and-portable choice wins over the strict-
+        but-narrow one.
+        """
+        messages = []
+        if system:
+            messages.append({"role": "system", "content": system})
+        user = prompt
+        if schema:
+            user += (
+                "\n\nReturn ONLY a JSON object, no prose or code fences, matching "
+                "this schema exactly (every required key, enums exactly as listed):\n"
+                + json.dumps(schema)
+            )
+        messages.append({"role": "user", "content": user})
+
+        payload: dict[str, Any] = {
+            "model": self.comp_model,
+            "messages": messages,
+            "temperature": temperature,
+            "max_tokens": max_tokens,
+        }
+        if schema:
+            payload["response_format"] = {"type": "json_object"}
+
+        key = json.dumps({"prov": self.provider, "p": payload}, sort_keys=True)
+        path = CACHE_DIR / f"{hashlib.sha256(key.encode()).hexdigest()[:40]}.json"
+        if self.cache and path.exists():
+            cached = json.loads(path.read_text(encoding="utf-8"))
+            self.usage.add(cached.get("usage", {}), from_cache=True)
+            return cached["value"]
+
+        self._throttle_complete()
+        last = ""
+        for attempt in range(self.max_retries):
+            headers = {"Content-Type": "application/json"}
+            if self.comp_key:
+                headers["Authorization"] = f"Bearer {self.comp_key}"
+            try:
+                r = self._session.post(f"{self.comp_base}/chat/completions",
+                                       headers=headers, json=payload, timeout=180)
+            except (requests.Timeout, requests.ConnectionError) as exc:
+                last = f"{type(exc).__name__}: {str(exc)[:150]}"
+                if attempt == self.max_retries - 1:
+                    break
+                time.sleep(min(90, 5 * (2 ** attempt)))
+                continue
+            if r.status_code == 200:
+                break
+            last = f"[{r.status_code}] {r.text[:250]}"
+            if r.status_code in (429, 500, 502, 503, 504):
+                wait = min(120, 5 * (2 ** attempt))
+                try:
+                    ra = r.headers.get("retry-after")
+                    if ra:
+                        wait = max(wait, float(ra) + 1)
+                except Exception:  # noqa: BLE001
+                    pass
+                print(f"    llm[{self.provider}]: {r.status_code}, waiting {wait:.0f}s "
+                      f"(attempt {attempt + 1}/{self.max_retries})", flush=True)
+                time.sleep(wait)
+                continue
+            raise LLMError(f"{self.provider} request failed: {last}")
+        else:
+            raise LLMError(f"{self.provider} request failed: {last}")
+
+        data = r.json()
+        choice = (data.get("choices") or [{}])[0]
+        text = (choice.get("message") or {}).get("content", "").strip()
+        finish = choice.get("finish_reason", "")
+        u = data.get("usage") or {}
+        meta = {
+            "promptTokenCount": u.get("prompt_tokens", 0),
+            "candidatesTokenCount": u.get("completion_tokens", 0),
+            "totalTokenCount": u.get("total_tokens", 0),
+        }
+
+        if finish == "length" and max_tokens < 32_000:
+            self.usage.add(meta)
+            return self._complete_openai(prompt, schema, system, temperature,
+                                         min(32_000, max_tokens * 3))
+        if not text:
+            raise LLMError(f"{self.provider}: empty response (finish={finish or '?'})")
+
+        value: Any = text
+        if schema:
+            value = _parse_json_loose(text)
+
+        self.usage.add(meta)
+        if self.cache and finish in ("stop", "", "end_turn"):
+            path.write_text(json.dumps({"value": value, "usage": meta}), encoding="utf-8")
         return value
 
     # -- embeddings ------------------------------------------------------
