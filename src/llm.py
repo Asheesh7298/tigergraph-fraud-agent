@@ -87,6 +87,11 @@ PROVIDERS = {
 #: scan. 5,565 closed cases at 3,072 dims is 17M doubles; at 768 it is 4.3M.
 EMBED_DIM = 768
 
+#: A retry-after longer than this signals a daily/hard quota, not a transient
+#: rate limit. Beyond it, fail fast rather than sleep for the full reset window
+#: -- honouring a 900s+ retry-after per case turned a 30-case run into 2 hours.
+RATE_LIMIT_HARD_S = 150
+
 
 class LLMError(RuntimeError):
     pass
@@ -409,13 +414,23 @@ class Gemini:
                 break
             last = f"[{r.status_code}] {r.text[:250]}"
             if r.status_code in (429, 500, 502, 503, 504):
-                wait = min(120, 5 * (2 ** attempt))
+                ra = 0.0
                 try:
-                    ra = r.headers.get("retry-after")
-                    if ra:
-                        wait = max(wait, float(ra) + 1)
+                    ra = float(r.headers.get("retry-after") or 0)
                 except Exception:  # noqa: BLE001
-                    pass
+                    ra = 0.0
+                # A retry-after beyond a couple of minutes is a *daily* quota,
+                # not a transient blip -- honouring it would sleep the whole
+                # run for 15-40 minutes per case (this is exactly what turned a
+                # 30-case run into a 2-hour crawl). Fail fast with a clear,
+                # actionable message instead.
+                if ra > RATE_LIMIT_HARD_S:
+                    raise LLMError(
+                        f"{self.provider} daily rate limit hit (retry-after {ra:.0f}s). "
+                        f"Switch LLM_MODEL (e.g. openai/gpt-oss-20b) or LLM_PROVIDER, "
+                        f"or wait for the quota reset."
+                    )
+                wait = min(90, max(5 * (2 ** attempt), ra + 1 if ra else 0))
                 print(f"    llm[{self.provider}]: {r.status_code}, waiting {wait:.0f}s "
                       f"(attempt {attempt + 1}/{self.max_retries})", flush=True)
                 time.sleep(wait)
