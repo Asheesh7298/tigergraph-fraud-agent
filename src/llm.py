@@ -62,7 +62,10 @@ PROVIDERS = {
         "openai_compatible": True,
         "base_url": "https://api.groq.com/openai/v1",
         "key_env": "GROQ_API_KEY",
-        "model": "llama-3.3-70b-versatile",
+        # gpt-oss-120b is the strongest chat model on Groq's current free
+        # catalogue (llama-3.3-70b-versatile was retired); OpenAI-trained, so
+        # its JSON is reliable. Override with LLM_MODEL in .env if desired.
+        "model": "openai/gpt-oss-120b",
     },
     "openai": {
         "openai_compatible": True,
@@ -171,6 +174,11 @@ class Gemini:
             raise LLMError(f"unknown LLM_PROVIDER {self.provider!r}; "
                            f"choose from {', '.join(PROVIDERS)}")
         spec = PROVIDERS[self.provider]
+
+        # Gemini free tier rate-limits hard per minute (6s spacing needed);
+        # Groq/OpenAI/local are far more generous, so pace lightly there.
+        if self.provider != "gemini":
+            self.complete_min_interval = 2.5
 
         if spec["openai_compatible"]:
             self.comp_base = self.comp_base or spec["base_url"]

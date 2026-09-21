@@ -123,20 +123,45 @@ class TigerGraph:
             self._token = self._mint_token()
         return self._token
 
-    def _mint_token(self) -> str:
+    def _mint_token(self, retries: int = 5) -> str:
+        """Mint a JWT, retrying while the workspace wakes.
+
+        A suspended Savanna workspace answers the token endpoint with 502/503
+        (and a connection reset) for tens of seconds as it comes back. The
+        query path already retries these; the token path did not, so a run
+        whose workspace suspended mid-way lost every remaining case on
+        "token request failed [502]". Retry here too.
+        """
         if not self.secret:
             return ""
-        r = self._session.post(
-            f"{self.host}/gsql/v1/tokens",
-            json={"secret": self.secret, "lifetime": TOKEN_LIFETIME},
-            timeout=30,
-        )
-        if r.status_code != 200:
-            raise RuntimeError(f"token request failed [{r.status_code}]: {r.text[:200]}")
-        payload = r.json()
-        if payload.get("error"):
-            raise RuntimeError(f"token request refused: {payload.get('message')}")
-        return payload["token"]
+        last = ""
+        for attempt in range(retries):
+            try:
+                r = self._session.post(
+                    f"{self.host}/gsql/v1/tokens",
+                    json={"secret": self.secret, "lifetime": TOKEN_LIFETIME},
+                    timeout=30,
+                )
+            except (requests.ConnectionError, requests.Timeout) as exc:
+                last = f"{type(exc).__name__}"
+                if attempt == retries - 1:
+                    break
+                time.sleep(15 * (attempt + 1))
+                continue
+            if r.status_code == 200:
+                payload = r.json()
+                if payload.get("error"):
+                    raise RuntimeError(f"token request refused: {payload.get('message')}")
+                return payload["token"]
+            last = f"[{r.status_code}] {r.text[:120]}"
+            if r.status_code in (502, 503, 504) and attempt < retries - 1:
+                wait = 15 * (attempt + 1)
+                print(f"    graph: token {r.status_code}, workspace waking; "
+                      f"retry in {wait}s", flush=True)
+                time.sleep(wait)
+                continue
+            break
+        raise RuntimeError(f"token request failed {last}")
 
     def _auth(self) -> dict[str, Any]:
         if self.secret:
