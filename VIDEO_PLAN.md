@@ -1,12 +1,16 @@
-# Full demo video plan (~4:00)
+# Demo video plan (~4:00)
 
-**Principle:** the deck (`ui/demo.html`) carries the narrative — approach and
-architecture are the differentiators, so they lead. The live app and terminal
-appear as *proof* that the deck's claims are real. Target 3:45–4:00 (brief is
-3–5 min).
+**Audience: the hackathon creator.** He knows the task, the dataset, and that
+there's no fraud label — so the video does **not** explain the problem or tour
+features. It explains **how it's built and how it works**: the architecture,
+the data flow, the engineering decisions. The deck (`ui/demo.html`) carries
+that; the terminal appears only as live proof the internals are real.
 
-Deck has 7 scenes, advanced manually (→ / Space): 1 Title · 2 Constraint ·
-3 Architecture · 4 Approach · 5 Ring reveal (2-step) · 6 Results · 7 Close.
+Deck has 7 scenes, advanced manually (→ / Space): 1 Title · 2 Pipeline ·
+3 Architecture flowchart · 4 Approach · 5 Ring algorithm (2-step) · 6 Stack ·
+7 Close.
+
+Split: ~2:45 deck (how it's built), ~1:00 live proof. Concept-heavy by design.
 
 ---
 
@@ -14,45 +18,37 @@ Deck has 7 scenes, advanced manually (→ / Space): 1 Title · 2 Constraint ·
 
 | Time | Screen | Voiceover beat | Notes |
 |---|---|---|---|
-| 0:00–0:16 | **Deck 1–2** (title → constraint) | "Fraud teams lack time, not data. This dataset has no fraud label — 20 cases to decide from evidence alone." | Open cold on the title |
-| 0:16–0:42 | **Deck 3** (architecture) | "The graph investigates; code decides the rules — routes, exposure, the report decision. The model only reasons and writes the prose." | Let the pipeline + split build in |
-| 0:42–1:18 | **Deck 4** (approach — the 4 cards) | "What makes it an agent: it rebuilds the whole episode, verifies before it blocks, remembers cases across the run, and grounds every call in the policy via GraphRAG." | This is *our approach* — give it room; one sentence per card |
-| 1:18–1:48 | **Deck 5** (ring reveal, 2-step) | "The finding — a ring the risk model can't see. By shared cards it's rank 71. Rank by behaviour — new to every account, behind a proxy — and it's #1." | Time your → press to the re-rank |
-| 1:48–2:05 | **LIVE terminal** `tools.py --smoke` | "Not a slide — live: 28 cards, ring-score 28 vs 7.5, and no device string in the query." | First real footage; proves the deck |
-| 2:05–2:45 | **LIVE website** — HHG-014 | "A case end to end: the episode, the 28 connected cards, the report filed, and the recommendation before and after asking the customer." | The website payoff. Scroll evidence → initial/final → SAR |
-| 2:45–3:05 | **LIVE website** — HHG-018 | "And restraint: a $39 charge the customer's made 170 times — it recognises their own pattern and does not block." | Second case shows range (drop if tight) |
-| 3:05–3:20 | **LIVE terminal** `mcp_server.py --selftest` | "The whole graph surface is served over MCP — the eight tools the agent uses." | Quick, let the OK lines land |
-| 3:20–3:42 | **Deck 6** (results) | "Seven fraud, twelve legitimate, one uncertain. Both rings. Three reports, including one exactly on the $1,000 line. Zero schema errors." | Counters animate |
-| 3:42–4:00 | **Deck 7** (close) | "From an uncertain signal to a defensible action — and when unsure, it asks instead of blocking someone who did nothing wrong." | End on the repo URL |
-
-**Split:** ~2:20 deck (approach/architecture/ring/results), ~1:20 live proof.
-The concept leads; the product proves it.
+| 0:00–0:12 | **Deck 1** title | "How we built an agentic fraud investigator on TigerGraph." | Short — no problem setup, he knows it |
+| 0:12–0:45 | **Deck 2** pipeline | "One investigation runs nine explicit stages — gather, retrieve, assess, request evidence, re-assess, decide, explain, persist. A plain Python state machine, no framework." | Walk the stages |
+| 0:45–1:25 | **Deck 3** architecture flowchart | "Data flows down the stack: narrowed CSVs into TigerGraph — graph plus a vector store — reached through GSQL and GraphRAG, exposed over MCP, driven by the agent with the LLM alongside, out to the answer files and the dashboard." | **The centerpiece he asked for.** Trace each layer as it builds |
+| 1:25–1:55 | **Deck 4** approach | "Four things make it an agent, not a classifier: episode reconstruction, verify-before-block, cross-case graph memory, and GraphRAG policy grounding." | One line per card |
+| 1:55–2:30 | **Deck 5** ring algorithm (2-step) | "Ring detection is the interesting one. By shared cards the ring is rank 71. Rank by behaviour — new to every account × behind a proxy — and it's #1. No device string in the query." | Time the → press to the re-rank |
+| 2:30–2:50 | **LIVE terminal** `tools.py --smoke` | "That runs for real against the live graph — 28 cards, ring-score 28 vs 7.5." | First live cut — proves the algorithm |
+| 2:50–3:10 | **LIVE terminal** `mcp_server.py --selftest` | "And the whole graph surface is served over MCP — the eight tools list and call, here." | Let the OK lines land |
+| 3:10–3:25 | **LIVE** (optional) GraphStudio or React UI, ~12s | "Loaded and queryable in TigerGraph; the cases render in the dashboard." | Brief proof it's a running system, not a mock — skip if tight |
+| 3:25–3:45 | **Deck 6** stack + split | "The stack: TigerGraph for graph and vectors, a Python state machine with Groq and Gemini, React and 73 tests. And the split that keeps it honest — the model reasons and writes; code owns exposure, routes, the report, the rules." | |
+| 3:45–4:00 | **Deck 7** close | "It shows its work, cites the query behind every claim, and asks when it's unsure instead of blocking someone who did nothing wrong." | End on the result line + repo |
 
 ---
 
 ## Record in blocks, assemble after
 
-1. **Deck** — `ui/demo.html`, F11 fullscreen, one clean silent pass. Pause on
-   each scene longer than needed; trim in DaVinci. Advance with →; on the ring
-   scene press → once for the re-rank before moving on.
-2. **Website** — `cd web && npm run dev`, fullscreen the browser. Open HHG-014,
-   scroll slowly through evidence / initial-vs-final / SAR. Then HHG-018. Move
-   the cursor deliberately — fast cursor motion reads as nervous on video.
-3. **Terminal** — big font (18pt+). Run `python src/tools.py --smoke` and
-   `python src/mcp_server.py --selftest`. Let the OK/28-card lines sit on screen.
-   Make the Savanna workspace awake first (open it once) so nothing stalls.
+1. **Deck** — `ui/demo.html`, F11 fullscreen, one clean silent pass. Linger on
+   scenes 3 (architecture) and 5 (ring); trim in DaVinci. On the ring scene press
+   → once for the re-rank before moving on.
+2. **Terminal** — big font (18pt+), Savanna workspace awake first. Run
+   `python src/tools.py --smoke` and `python src/mcp_server.py --selftest`; let the
+   28-card and 8-tool lines sit.
+3. **Optional live** — 10–12s of GraphStudio (the loaded graph) or `cd web &&
+   npm run dev` (the dashboard). Just enough to show it's a running system.
 4. **Voiceover** — record last against the beats above, then cut visuals to it.
 
 ## DaVinci assembly
-- Audio track: voiceover.
-- Video track 1: deck segments + live footage in the timeline order above.
-- Optional lower-thirds: `card_window`, `ring_detect`, `search_documents` as
-  captions when the matching tool is on screen.
-- Keep transitions simple (cut or a 6-frame dissolve). Export 1080p, H.264.
+- Audio: voiceover. Video: deck segments + the short live clips in timeline order.
+- Optional lower-thirds naming the tool on screen (`ring_detect`, MCP selftest).
+- Simple cuts or a 6-frame dissolve. Export 1080p H.264.
 
-## Two open decisions
-1. **Website placement** — plan puts it at 2:05 (payoff after the concept).
-   Alternative: show it at 0:20 as "here's the product," then explain. Payoff
-   placement recommended.
-2. **Two cases or one** — HHG-014 + HHG-018 shows range in ~60s; HHG-014 alone
-   carries it if you're tight.
+## Open decision
+Include the ~12s live GraphStudio/UI glance (3:10) or not? It reinforces "real
+running system," but the terminal proof may be enough for a creator audience.
+Keep it if the video is under 4:00 without it.
