@@ -16,3 +16,7 @@ venv/
 *.log
 .streamlit/secrets.toml
 run_all.log
+
+# React frontend
+web/node_modules/
+web/dist/

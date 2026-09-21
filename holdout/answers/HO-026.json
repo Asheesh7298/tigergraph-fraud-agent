@@ -1,0 +1,114 @@
+{
+  "case_id": "HO-026",
+  "case": {
+    "status": "open",
+    "verdict": "uncertain",
+    "fraud_probability": 0.62,
+    "pattern": "card_not_present_new_device",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3351929"
+    ],
+    "first_suspicious_txn_id": "3351929",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 49.92,
+    "evidence": [
+      {
+        "claim": "Risk score of 0.82 assigned by real\u2011time model",
+        "source": "graph",
+        "ref": "query:customer_baseline(card_id=C03213-K1)",
+        "entity_ids": [
+          "3351929"
+        ]
+      },
+      {
+        "claim": "Transaction originated from a device not previously seen on this account",
+        "source": "graph",
+        "ref": "query:customer_baseline(card_id=C03213-K1)",
+        "entity_ids": [
+          "3351929"
+        ]
+      },
+      {
+        "claim": "Device is linked to multiple prior confirmed fraud cases (CC\u20115529, CC\u20115528, CC\u20115518, etc.)",
+        "source": "graph",
+        "ref": "query:customer_baseline(card_id=C03213-K1)",
+        "entity_ids": [
+          "3351929"
+        ]
+      },
+      {
+        "claim": "Cardholder confirmed the transaction was authorized",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      },
+      {
+        "claim": "Transaction amount $49.92 is well below the card's median $150 baseline",
+        "source": "graph",
+        "ref": "query:customer_baseline(card_id=C03213-K1)",
+        "entity_ids": [
+          "3351929"
+        ]
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-5529",
+      "CC-5528",
+      "CC-5525",
+      "CC-5518",
+      "CC-5517",
+      "CC-5512"
+    ],
+    "summary": "The alert shows a high model score and a new device, but the device is part of a known fraud ring, while the cardholder has confirmed the purchase. These mixed indicators place the fraud probability in the moderate range, leading to an uncertain verdict. Monitoring and case creation are recommended per shared\u2011origin policy.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-2016-026"
+  },
+  "evidence_requests": [
+    {
+      "type": "step_up_auth",
+      "asked_after_step": 4,
+      "assumed_response": "Step-up authentication was requested and completed successfully by the cardholder, indicating the genuine account holder authorised the activity."
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "R1: probability 0.45 on a single signal is not decisive; confirm with the cardholder before any block"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability 0.45 warrants a case record"
+      }
+    ],
+    "final": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R3/3a: record the confirmation against the investigation"
+      },
+      {
+        "action": "CLOSE_NO_FRAUD",
+        "route": "auto",
+        "reason": "R3: cardholder confirms they made the transaction"
+      }
+    ],
+    "what_changed": "The cardholder confirmed the activity when asked, moving fraud probability from 0.45 to 0.62; the recommendation firms up accordingly."
+  },
+  "sar": {
+    "file": false,
+    "reason": "R2/3a: fraud is neither confirmed nor strongly suspected (verdict uncertain, probability 0.62); no report required",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0.0,
+    "activity_dates": []
+  },
+  "stop_reason": "The cardholder's response (confirmed) settles the question; further steps would not change the recommended actions.",
+  "tool_calls": 7,
+  "tokens": 6684,
+  "latency_s": 49.9
+}

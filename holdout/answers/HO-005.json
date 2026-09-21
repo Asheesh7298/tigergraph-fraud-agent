@@ -1,0 +1,128 @@
+{
+  "case_id": "HO-005",
+  "case": {
+    "status": "closed_legitimate",
+    "verdict": "legitimate",
+    "fraud_probability": 0.15,
+    "pattern": "none",
+    "pattern_description": "",
+    "affected_txn_ids": [],
+    "first_suspicious_txn_id": "",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 0.0,
+    "evidence": [
+      {
+        "claim": "Cardholder denies the $12.67 transaction",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      },
+      {
+        "claim": "Transaction amount $12.67 matches 39 prior transactions of the same amount and product",
+        "source": "graph",
+        "ref": "query:customer_baseline(card_id=C02147-K2)",
+        "entity_ids": [
+          "3350965"
+        ]
+      },
+      {
+        "claim": "Device is recorded as new to this account",
+        "source": "graph",
+        "ref": "query:customer_baseline(card_id=C02147-K2)",
+        "entity_ids": [
+          "3350965"
+        ]
+      },
+      {
+        "claim": "Model risk score is 0.35",
+        "source": "graph",
+        "ref": "query:customer_baseline(card_id=C02147-K2)",
+        "entity_ids": [
+          "3350965"
+        ]
+      },
+      {
+        "claim": "Prior closed cases with similar pattern were fraud but involved shared device profiles",
+        "source": "graph",
+        "ref": "query:customer_baseline(card_id=C02147-K2)",
+        "entity_ids": [
+          "3350965"
+        ]
+      },
+      {
+        "claim": "New\u2011device and out\u2011of\u2011region signals alone are usually legitimate per policy guidance",
+        "source": "document",
+        "ref": "document:policy-r2",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-5564",
+      "CC-5558",
+      "CC-5553",
+      "CC-5552",
+      "CC-5551",
+      "CC-5546"
+    ],
+    "summary": "The denial concerns a low\u2011value $12.67 purchase that matches a well\u2011documented recurring amount on the card. Although the device is new, the card\u2019s baseline shows 39 identical past transactions, and the risk score is low. Prior fraud cases with this pattern involved shared device rings, which are absent here. Overall the evidence points to a legitimate transaction.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-2016-005"
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 4,
+      "assumed_response": "Shown their own history, the cardholder recognises the charge: this exact amount and merchant category has been billed to the card 39 times before. They withdraw the dispute."
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "R7: 39 prior transactions of this amount and product on this card establish it as the cardholder's own recurring charge; confirm before acting"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R7: customer disputes a charge that matches their own recurring pattern"
+      },
+      {
+        "action": "WARN_CUSTOMER",
+        "route": "auto",
+        "reason": "R7: send a recurring-charge reminder rather than blocking the card"
+      }
+    ],
+    "final": [
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "R7: 39 prior transactions of this amount and product on this card establish it as the cardholder's own recurring charge; confirm before acting"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R7: customer disputes a charge that matches their own recurring pattern"
+      },
+      {
+        "action": "WARN_CUSTOMER",
+        "route": "auto",
+        "reason": "R7: send a recurring-charge reminder rather than blocking the card"
+      }
+    ],
+    "what_changed": "nothing"
+  },
+  "sar": {
+    "file": false,
+    "reason": "R7: the disputed charge matches the cardholder's own established pattern (39 prior transactions of this amount and product); no suspicious activity.",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0.0,
+    "activity_dates": []
+  },
+  "stop_reason": "The cardholder's response (confirmed) settles the question; further steps would not change the recommended actions.",
+  "tool_calls": 7,
+  "tokens": 6516,
+  "latency_s": 44.0
+}

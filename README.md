@@ -132,10 +132,18 @@ python src/create_queries.py  # install the GSQL queries
 python src/build_vectors.py --docs   # embed the policy + typology corpus
 
 python src/run_cases.py --all # investigate all 20, write cases/
-streamlit run ui/app.py       # browse the results
-
 python -m pytest tests/       # 73 tests
 ```
+
+Browse the results in the analyst dashboard:
+
+```bash
+cd web && npm install && npm run dev   # React frontend (Vite) at localhost:5173
+```
+
+There is also a lightweight Streamlit viewer (`streamlit run ui/app.py`) over
+the same `cases/*.json`. The React app bundles the case data, so it needs no
+backend to run.
 
 Holdout scoring, when tuning:
 

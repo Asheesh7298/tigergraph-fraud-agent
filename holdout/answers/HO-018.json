@@ -1,0 +1,123 @@
+{
+  "case_id": "HO-018",
+  "case": {
+    "status": "closed_legitimate",
+    "verdict": "legitimate",
+    "fraud_probability": 0.3,
+    "pattern": "none",
+    "pattern_description": "",
+    "affected_txn_ids": [],
+    "first_suspicious_txn_id": "",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 0.0,
+    "evidence": [
+      {
+        "claim": "Transaction amount $633.94 exceeds historical max $445.01",
+        "source": "graph",
+        "ref": "query:customer_baseline(card_id=C04393-K1)",
+        "entity_ids": [
+          "3317008"
+        ]
+      },
+      {
+        "claim": "Risk score of 0.94 was assigned",
+        "source": "graph",
+        "ref": "query:customer_baseline(card_id=C04393-K1)",
+        "entity_ids": [
+          "3317008"
+        ]
+      },
+      {
+        "claim": "Cardholder confirmed the transaction",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      },
+      {
+        "claim": "Transaction was in\u2011person in a common billing region (251.0)",
+        "source": "graph",
+        "ref": "query:customer_baseline(card_id=C04393-K1)",
+        "entity_ids": [
+          "3317008"
+        ]
+      },
+      {
+        "claim": "No prior transactions of the same amount",
+        "source": "graph",
+        "ref": "query:customer_baseline(card_id=C04393-K1)",
+        "entity_ids": [
+          "3317008"
+        ]
+      },
+      {
+        "claim": "No device information or shared\u2011device link detected",
+        "source": "graph",
+        "ref": "query:customer_baseline(card_id=C04393-K1)",
+        "entity_ids": [
+          "3317008"
+        ]
+      },
+      {
+        "claim": "Prior fraud cases involve shared\u2011device online purchases, not applicable here",
+        "source": "graph",
+        "ref": "query:customer_baseline(card_id=C04393-K1)",
+        "entity_ids": [
+          "3317008"
+        ]
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-5408",
+      "CC-5337",
+      "CC-4206",
+      "CC-3907",
+      "CC-3791",
+      "CC-2800"
+    ],
+    "summary": "The cardholder confirmed the $633.94 in\u2011person purchase, satisfying policy R3 to close the case. Although the amount is unusually high and the model gave a 0.94 risk score, risk scores alone are not decisive and the card\u2019s baseline behavior shows no similar activity. No shared\u2011device or online fraud patterns are present, and prior fraud cases differ in nature. Consequently, the transaction is deemed legitimate with a low fraud probability.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-2016-018"
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 5,
+      "assumed_response": "The cardholder confirms they made the transaction."
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability 0.30 warrants a case record"
+      }
+    ],
+    "final": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R3/3a: record the confirmation against the investigation"
+      },
+      {
+        "action": "CLOSE_NO_FRAUD",
+        "route": "auto",
+        "reason": "R3: cardholder confirms they made the transaction"
+      }
+    ],
+    "what_changed": "The cardholder confirmed the activity when asked, moving fraud probability from 0.30 to 0.30 and settling the case as legitimate."
+  },
+  "sar": {
+    "file": false,
+    "reason": "R2/3a: fraud is neither confirmed nor strongly suspected (verdict legitimate, probability 0.30); no report required",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0.0,
+    "activity_dates": []
+  },
+  "stop_reason": "The cardholder's response (confirmed) settles the question; further steps would not change the recommended actions.",
+  "tool_calls": 8,
+  "tokens": 5679,
+  "latency_s": 37.6
+}

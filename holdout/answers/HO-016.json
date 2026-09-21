@@ -1,0 +1,110 @@
+{
+  "case_id": "HO-016",
+  "case": {
+    "status": "closed_legitimate",
+    "verdict": "legitimate",
+    "fraud_probability": 0.3,
+    "pattern": "none",
+    "pattern_description": "",
+    "affected_txn_ids": [],
+    "first_suspicious_txn_id": "",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 0.0,
+    "evidence": [
+      {
+        "claim": "Cardholder confirmed the transaction",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      },
+      {
+        "claim": "Amount $445.01 and product have 4 prior identical transactions",
+        "source": "graph",
+        "ref": "query:customer_baseline(card_id=C03786-K1)",
+        "entity_ids": [
+          "3363303"
+        ]
+      },
+      {
+        "claim": "Model risk score is low (0.06)",
+        "source": "document",
+        "ref": "document:policy-r3",
+        "entity_ids": []
+      },
+      {
+        "claim": "Billing region 181.0 not previously seen but out\u2011of\u2011region alone is usually legitimate",
+        "source": "graph",
+        "ref": "query:customer_baseline(card_id=C03786-K1)",
+        "entity_ids": [
+          "3363303"
+        ]
+      },
+      {
+        "claim": "Prior closed cases on same card were fraud but involved different amounts and out\u2011of\u2011region/device anomalies",
+        "source": "graph",
+        "ref": "query:customer_baseline(card_id=C03786-K1)",
+        "entity_ids": [
+          "3363303"
+        ]
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-5383",
+      "CC-5149",
+      "CC-4827",
+      "CC-4512",
+      "CC-4171",
+      "CC-3907"
+    ],
+    "summary": "The holder confirmed the $445.01 in\u2011person purchase, which matches a recurring $445 amount seen four times before. The low risk score and consistency with baseline behavior support legitimacy, and out\u2011of\u2011region alone is not a strong fraud indicator. Prior fraud cases on this card involved different patterns, so this alert should be closed as no fraud.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-2016-016"
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 5,
+      "assumed_response": "The cardholder confirms they made the transaction."
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "ALLOW_TRANSACTION",
+        "route": "auto",
+        "reason": "R3: no basis to decline"
+      },
+      {
+        "action": "CLOSE_NO_FRAUD",
+        "route": "auto",
+        "reason": "R3: activity is consistent with the cardholder's history"
+      }
+    ],
+    "final": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R3/3a: record the confirmation against the investigation"
+      },
+      {
+        "action": "CLOSE_NO_FRAUD",
+        "route": "auto",
+        "reason": "R3: cardholder confirms they made the transaction"
+      }
+    ],
+    "what_changed": "The cardholder confirmed the activity when asked, moving fraud probability from 0.15 to 0.30 and settling the case as legitimate."
+  },
+  "sar": {
+    "file": false,
+    "reason": "R2/3a: fraud is neither confirmed nor strongly suspected (verdict legitimate, probability 0.30); no report required",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0.0,
+    "activity_dates": []
+  },
+  "stop_reason": "The cardholder's response (confirmed) settles the question; further steps would not change the recommended actions.",
+  "tool_calls": 8,
+  "tokens": 5455,
+  "latency_s": 41.0
+}

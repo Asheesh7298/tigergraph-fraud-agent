@@ -1,0 +1,95 @@
+{
+  "case_id": "HO-004",
+  "case": {
+    "status": "closed_legitimate",
+    "verdict": "legitimate",
+    "fraud_probability": 0.75,
+    "pattern": "none",
+    "pattern_description": "",
+    "affected_txn_ids": [],
+    "first_suspicious_txn_id": "",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 0.0,
+    "evidence": [
+      {
+        "claim": "Cardholder denied the $171.04 transaction",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      },
+      {
+        "claim": "Two prior in\u2011person transactions of $171.04, product C",
+        "source": "graph",
+        "ref": "query:customer_baseline(card_id=C02949-K1)",
+        "entity_ids": [
+          "3336167"
+        ]
+      },
+      {
+        "claim": "Risk score for the flagged transaction is 0.51 (moderate)",
+        "source": "document",
+        "ref": "document:policy-r2",
+        "entity_ids": []
+      },
+      {
+        "claim": "No shared device profile associated with the card",
+        "source": "document",
+        "ref": "document:policy-r2",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-5529",
+      "CC-5525",
+      "CC-5517",
+      "CC-5512",
+      "CC-5480",
+      "CC-5470"
+    ],
+    "summary": "The denial is outweighed by two identical prior purchases and low risk scores, fitting the card\u2019s normal in\u2011person spending pattern. No shared\u2011device evidence links this card to known fraud rings, so the alert is assessed as legitimate.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-2016-004"
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 5,
+      "assumed_response": "The cardholder maintains they did not make the transaction and still holds the card."
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability 0.25 warrants a case record"
+      }
+    ],
+    "final": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: cardholder denies the transaction; exposure $0.00"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2: unauthorised use confirmed by the cardholder"
+      }
+    ],
+    "what_changed": "The cardholder denied the activity when asked, moving fraud probability from 0.25 to 0.75 and settling the case as legitimate."
+  },
+  "sar": {
+    "file": false,
+    "reason": "R2/3a: fraud is neither confirmed nor strongly suspected (verdict legitimate, probability 0.75); no report required",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0.0,
+    "activity_dates": []
+  },
+  "stop_reason": "The cardholder's response (denied) settles the question; further steps would not change the recommended actions.",
+  "tool_calls": 8,
+  "tokens": 6294,
+  "latency_s": 48.6
+}

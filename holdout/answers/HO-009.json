@@ -1,0 +1,118 @@
+{
+  "case_id": "HO-009",
+  "case": {
+    "status": "closed_legitimate",
+    "verdict": "legitimate",
+    "fraud_probability": 0.08,
+    "pattern": "none",
+    "pattern_description": "",
+    "affected_txn_ids": [],
+    "first_suspicious_txn_id": "",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 0.0,
+    "evidence": [
+      {
+        "claim": "Cardholder confirmed the disputed $170.96 purchase",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      },
+      {
+        "claim": "31 prior transactions of same amount and product indicate established pattern",
+        "source": "graph",
+        "ref": "query:customer_baseline(card_id=C01109-K2)",
+        "entity_ids": [
+          "3309973"
+        ]
+      },
+      {
+        "claim": "Risk scores for the three transactions are low (0.09, 0.01, 0.17)",
+        "source": "document",
+        "ref": "document:policy-r2",
+        "entity_ids": []
+      },
+      {
+        "claim": "No rule\u2011based pattern detected",
+        "source": "document",
+        "ref": "document:policy-r2",
+        "entity_ids": []
+      },
+      {
+        "claim": "Prior closed cases involve shared device profiles but not this card",
+        "source": "graph",
+        "ref": "query:customer_baseline(card_id=C01109-K2)",
+        "entity_ids": [
+          "3309973"
+        ]
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-5559",
+      "CC-5558",
+      "CC-5556",
+      "CC-5553",
+      "CC-5550",
+      "CC-5546"
+    ],
+    "summary": "The cardholder confirmed the $170.96 charge, and the card\u2019s history shows 31 identical prior transactions, indicating an established spending pattern. Low risk scores and the absence of any rule\u2011based pattern further support legitimacy. Although the device appears in other fraud cases, it does not involve this card, so the transaction is deemed legitimate.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-2016-009"
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 5,
+      "assumed_response": "Shown their own history, the cardholder recognises the charge: this exact amount and merchant category has been billed to the card 31 times before. They withdraw the dispute."
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "R7: 31 prior transactions of this amount and product on this card establish it as the cardholder's own recurring charge; confirm before acting"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R7: customer disputes a charge that matches their own recurring pattern"
+      },
+      {
+        "action": "WARN_CUSTOMER",
+        "route": "auto",
+        "reason": "R7: send a recurring-charge reminder rather than blocking the card"
+      }
+    ],
+    "final": [
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "R7: 31 prior transactions of this amount and product on this card establish it as the cardholder's own recurring charge; confirm before acting"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R7: customer disputes a charge that matches their own recurring pattern"
+      },
+      {
+        "action": "WARN_CUSTOMER",
+        "route": "auto",
+        "reason": "R7: send a recurring-charge reminder rather than blocking the card"
+      }
+    ],
+    "what_changed": "nothing"
+  },
+  "sar": {
+    "file": false,
+    "reason": "R7: the disputed charge matches the cardholder's own established pattern (31 prior transactions of this amount and product); no suspicious activity.",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0.0,
+    "activity_dates": []
+  },
+  "stop_reason": "The cardholder's response (confirmed) settles the question; further steps would not change the recommended actions.",
+  "tool_calls": 8,
+  "tokens": 5090,
+  "latency_s": 39.9
+}
