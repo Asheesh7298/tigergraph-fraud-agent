@@ -117,6 +117,14 @@
   .split-col.code { border-color: #2f3a44; }
   .split-col.code .lbl { color: #6fd0a3; }
 
+  /* ---- Scene: agentic approach (2x2 capability grid) ---- */
+  .cap-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 8px; flex: 1; align-content: center; }
+  .cap { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 22px 24px; }
+  .cap .num { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; color: var(--accent); }
+  .cap h3 { font-family: var(--disp); font-size: 24px; font-weight: 700; margin: 8px 0 8px; letter-spacing: -.01em; }
+  .cap p { color: var(--muted); font-size: 15px; line-height: 1.5; }
+  .cap p b { color: var(--text); font-weight: 600; }
+
   /* ---- Scene 4: ring reveal (centerpiece) ---- */
   .ring-wrap { display: flex; gap: 44px; margin-top: 12px; flex: 1; }
   .ring-left { flex: 1.3; display: flex; flex-direction: column; }
@@ -248,8 +256,38 @@
       </div>
     </section>
 
-    <!-- 4 · RING REVEAL (centerpiece) -->
+    <!-- 4 · AGENTIC APPROACH -->
     <section class="scene" data-scene="3">
+      <div class="head">
+        <div class="eyebrow r">The approach</div>
+        <h2 class="r d1">What makes it an agent, not a classifier.</h2>
+      </div>
+      <div class="cap-grid">
+        <div class="cap r d2">
+          <div class="num">01</div>
+          <h3>Investigate, then decide</h3>
+          <p>Rebuilds the whole fraud <b>episode</b> — walking the card's history backward and forward — and stops when the evidence settles, not at a fixed count.</p>
+        </div>
+        <div class="cap r d3">
+          <div class="num">02</div>
+          <h3>Verify before blocking</h3>
+          <p>A weak single signal gets a <b>verification, not a block</b>. The recommendation is recorded before and after evidence, and changes when the answer does.</p>
+        </div>
+        <div class="cap r d4">
+          <div class="num">03</div>
+          <h3>Memory across cases</h3>
+          <p>Each closed case is written back into the graph and <b>cited by later ones</b> — the ring case becomes evidence for the sixteen investigations after it.</p>
+        </div>
+        <div class="cap r d5">
+          <div class="num">04</div>
+          <h3>Grounded in policy</h3>
+          <p>GraphRAG retrieves the <b>exact governing rule</b> from the policy vector store — the disputed-charge rule surfaces first — instead of dumping raw text at the model.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 · RING REVEAL (centerpiece) -->
+    <section class="scene" data-scene="4">
       <div class="head">
         <div class="eyebrow r">The finding</div>
         <h2 class="r d1">Finding a ring the risk model can't see.</h2>
@@ -273,8 +311,8 @@
       </div>
     </section>
 
-    <!-- 5 · RESULTS -->
-    <section class="scene" data-scene="4">
+    <!-- 6 · RESULTS -->
+    <section class="scene" data-scene="5">
       <div class="head">
         <div class="eyebrow r">The twenty cases</div>
         <h2 class="r d1">From an uncertain signal to a defensible call.</h2>
@@ -291,8 +329,8 @@
       </div>
     </section>
 
-    <!-- 6 · CLOSE -->
-    <section class="scene s-close" data-scene="5">
+    <!-- 7 · CLOSE -->
+    <section class="scene s-close" data-scene="6">
       <div class="eyebrow r">The point</div>
       <h1 class="r d1">It shows its work — and asks when it's unsure.</h1>
       <p class="tagline r d2">Every claim cites the graph query behind it. When the signal is weak, it verifies instead of blocking a customer who did nothing wrong.</p>
@@ -374,7 +412,7 @@
   // advance the ring scene's internal states before leaving it
   function ringAdvance() {
     // returns true if it consumed the advance (stayed on scene)
-    if (i !== 3) return false;
+    if (i !== 4) return false;
     if (ringStep === 0) { ringStep = 1; paintRing("score"); setFill("newFill","newPct",100); setFill("anonFill","anonPct",100); return true; }
     return false;
   }
@@ -396,8 +434,8 @@
   function activate(n) {
     scenes.forEach((s, k) => s.classList.toggle("active", k === n));
     dots.forEach((d, k) => d.classList.toggle("on", k === n));
-    if (n === 3) ringScene(true);
-    if (n === 4) setTimeout(() => countUp(scenes[4]), 350);
+    if (n === 4) ringScene(true);
+    if (n === 5) setTimeout(() => countUp(scenes[5]), 350);
   }
   function go(n) { i = Math.max(0, Math.min(scenes.length - 1, n)); activate(i); }
   function next() { if (ringAdvance()) return; go(i + 1); }
