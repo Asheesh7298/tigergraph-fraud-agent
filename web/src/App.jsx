@@ -63,8 +63,11 @@ export default function App() {
     <div className="app">
       <aside className="sidebar">
         <div className="brand">
-          <div className="brand-title">Fraud Investigation</div>
-          <div className="brand-sub">TigerGraph · agentic case review</div>
+          <span className="glyph" aria-hidden="true" />
+          <div>
+            <div className="brand-title">Fraud Investigation</div>
+            <div className="brand-sub">TigerGraph · case review</div>
+          </div>
         </div>
         <div className="portfolio">
           <div className="pstat"><b style={{ color: VERDICT.fraud }}>{stats.fraud}</b><span>fraud</span></div>
