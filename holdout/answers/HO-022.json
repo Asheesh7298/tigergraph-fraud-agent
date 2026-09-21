@@ -1,5 +1,5 @@
 {
-  "case_id": "HO-024",
+  "case_id": "HO-022",
   "case": {
     "status": "closed_legitimate",
     "verdict": "legitimate",
@@ -13,55 +13,59 @@
     "exposure_usd": 0.0,
     "evidence": [
       {
-        "claim": "Risk score 0.85 for the flagged transaction",
+        "claim": "Transaction occurred online on a new Windows device",
         "source": "graph",
-        "ref": "query:customer_baseline(card_id=C02695-K1)",
+        "ref": "query:card_window(card_id=C03019-K2, hours=72)",
         "entity_ids": [
-          "3315932"
+          "3370364"
         ]
       },
       {
-        "claim": "Cardholder confirmed the transaction is legitimate",
+        "claim": "Cardholder confirmed the transaction",
         "source": "customer",
         "ref": "evidence_request:1",
         "entity_ids": []
       },
       {
-        "claim": "Two prior transactions of the same amount and product exist",
+        "claim": "Model risk score is 0.26 (low)",
+        "source": "document",
+        "ref": "document:ring-a-shared-device#2",
+        "entity_ids": []
+      },
+      {
+        "claim": "Amount $89.99 is below median $149.91 and 90th percentile $718.26; no prior same\u2011amount transactions",
         "source": "graph",
-        "ref": "query:customer_baseline(card_id=C02695-K1)",
+        "ref": "query:customer_baseline(card_id=C03019-K2)",
         "entity_ids": [
-          "3315932"
+          "3370364"
         ]
       },
       {
-        "claim": "A new device was observed for later transactions",
+        "claim": "Prior closed cases with similar pattern were fraud but involved shared device evidence",
         "source": "graph",
-        "ref": "query:card_window(card_id=C02695-K1, hours=72)",
+        "ref": "query:customer_baseline(card_id=C03019-K2)",
         "entity_ids": [
-          "3315932"
+          "3370364"
         ]
       },
       {
-        "claim": "Prior closed cases with the same pattern were confirmed fraud",
-        "source": "graph",
-        "ref": "query:customer_baseline(card_id=C02695-K1)",
-        "entity_ids": [
-          "3315932"
-        ]
+        "claim": "Policy guidance indicates R9 (undocumented pattern) applies only with shared\u2011device evidence, which is not present",
+        "source": "document",
+        "ref": "document:ring-a-shared-device#2",
+        "entity_ids": []
       }
     ],
     "similar_prior_cases": [
-      "CC-5556",
-      "CC-5541",
-      "CC-5539",
-      "CC-5481",
-      "CC-5464",
-      "CC-5459"
+      "CC-5538",
+      "CC-5529",
+      "CC-5528",
+      "CC-5527",
+      "CC-5525",
+      "CC-5518"
     ],
-    "summary": "The transaction aligns with the cardholder\u2019s recent $200 online spending and was confirmed by the customer. While a new device and a high model score raise a flag, these factors alone are insufficient given the recurring pattern and lack of shared-device evidence. The fraud probability is low, supporting a legitimate verdict.",
+    "summary": "The $89.99 online purchase was made on a newly observed device, but the cardholder confirmed it as theirs. The amount is modest relative to the card\u2019s spending baseline and the model risk score is low. No shared\u2011device or ring activity is evident. Given the confirmation and baseline consistency, the transaction is judged legitimate with a low fraud probability.",
     "written_to_graph": true,
-    "graph_case_id": "CASE-2016-024"
+    "graph_case_id": "CASE-2016-022"
   },
   "evidence_requests": [
     {
@@ -75,12 +79,12 @@
       {
         "action": "VERIFY_WITH_CUSTOMER",
         "route": "auto",
-        "reason": "R1: probability 0.55 on a single signal is not decisive; confirm with the cardholder before any block"
+        "reason": "R1: probability 0.42 on a single signal is not decisive; confirm with the cardholder before any block"
       },
       {
         "action": "CREATE_CASE",
         "route": "auto",
-        "reason": "3a: fraud probability 0.55 warrants a case record"
+        "reason": "3a: fraud probability 0.42 warrants a case record"
       }
     ],
     "final": [
@@ -95,7 +99,7 @@
         "reason": "R3: cardholder confirms they made the transaction"
       }
     ],
-    "what_changed": "The cardholder confirmed the activity when asked, moving fraud probability from 0.55 to 0.55 and settling the case as legitimate."
+    "what_changed": "The cardholder confirmed the activity when asked, moving fraud probability from 0.42 to 0.55 and settling the case as legitimate."
   },
   "sar": {
     "file": false,
@@ -108,5 +112,5 @@
   "stop_reason": "The cardholder's response (confirmed) settles the question; further steps would not change the recommended actions.",
   "tool_calls": 7,
   "tokens": 0,
-  "latency_s": 3.5
+  "latency_s": 2.1
 }

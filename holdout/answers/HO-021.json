@@ -1,5 +1,5 @@
 {
-  "case_id": "HO-024",
+  "case_id": "HO-021",
   "case": {
     "status": "closed_legitimate",
     "verdict": "legitimate",
@@ -13,55 +13,61 @@
     "exposure_usd": 0.0,
     "evidence": [
       {
-        "claim": "Risk score 0.85 for the flagged transaction",
-        "source": "graph",
-        "ref": "query:customer_baseline(card_id=C02695-K1)",
-        "entity_ids": [
-          "3315932"
-        ]
-      },
-      {
         "claim": "Cardholder confirmed the transaction is legitimate",
         "source": "customer",
         "ref": "evidence_request:1",
         "entity_ids": []
       },
       {
-        "claim": "Two prior transactions of the same amount and product exist",
+        "claim": "Transaction amount $30.74 is below the card\u2019s median $38.37 and within normal range",
         "source": "graph",
-        "ref": "query:customer_baseline(card_id=C02695-K1)",
+        "ref": "query:customer_baseline(card_id=C00885-K1)",
         "entity_ids": [
-          "3315932"
+          "3374431"
         ]
       },
       {
-        "claim": "A new device was observed for later transactions",
+        "claim": "Device used for the transaction is new to this account",
         "source": "graph",
-        "ref": "query:card_window(card_id=C02695-K1, hours=72)",
+        "ref": "query:card_window(card_id=C00885-K1, hours=72)",
         "entity_ids": [
-          "3315932"
+          "3374431"
         ]
       },
       {
-        "claim": "Prior closed cases with the same pattern were confirmed fraud",
+        "claim": "Risk score of 0.92 is a trigger but risk score alone provides low fraud probability (0.10\u20110.25)",
+        "source": "document",
+        "ref": "document:ring-a-shared-device#2",
+        "entity_ids": []
+      },
+      {
+        "claim": "One prior transaction of the same amount and product exists",
         "source": "graph",
-        "ref": "query:customer_baseline(card_id=C02695-K1)",
+        "ref": "query:customer_baseline(card_id=C00885-K1)",
         "entity_ids": [
-          "3315932"
+          "3374431"
+        ]
+      },
+      {
+        "claim": "No prior fraud cases associated with this card",
+        "source": "graph",
+        "ref": "query:customer_baseline(card_id=C00885-K1)",
+        "entity_ids": [
+          "3374431"
         ]
       }
     ],
     "similar_prior_cases": [
-      "CC-5556",
+      "CC-5558",
+      "CC-5546",
+      "CC-5542",
       "CC-5541",
       "CC-5539",
-      "CC-5481",
-      "CC-5464",
-      "CC-5459"
+      "CC-5538"
     ],
-    "summary": "The transaction aligns with the cardholder\u2019s recent $200 online spending and was confirmed by the customer. While a new device and a high model score raise a flag, these factors alone are insufficient given the recurring pattern and lack of shared-device evidence. The fraud probability is low, supporting a legitimate verdict.",
+    "summary": "The cardholder confirmed the $30.74 online purchase, which aligns with their typical spending pattern and is below the card\u2019s median amount. Although the device is new, new\u2011device events are frequently legitimate, and the high model score alone does not outweigh the confirmation and baseline consistency. Therefore, the transaction is assessed as legitimate.",
     "written_to_graph": true,
-    "graph_case_id": "CASE-2016-024"
+    "graph_case_id": "CASE-2016-021"
   },
   "evidence_requests": [
     {
@@ -108,5 +114,5 @@
   "stop_reason": "The cardholder's response (confirmed) settles the question; further steps would not change the recommended actions.",
   "tool_calls": 7,
   "tokens": 0,
-  "latency_s": 3.5
+  "latency_s": 2.1
 }

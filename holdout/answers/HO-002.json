@@ -1,0 +1,120 @@
+{
+  "case_id": "HO-002",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.8,
+    "pattern": "card_not_present_new_device",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3380616"
+    ],
+    "first_suspicious_txn_id": "3380616",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 25.07,
+    "evidence": [
+      {
+        "claim": "Risk score 0.83 exceeds typical threshold",
+        "source": "document",
+        "ref": "document:ring-a-shared-device#2",
+        "entity_ids": []
+      },
+      {
+        "claim": "Transaction originated from a new device not seen before on this account",
+        "source": "graph",
+        "ref": "query:card_window(card_id=C02263-K1, hours=72)",
+        "entity_ids": [
+          "3380616"
+        ]
+      },
+      {
+        "claim": "Amount $25.07 exceeds prior max $25.02, product S never used before",
+        "source": "graph",
+        "ref": "query:card_window(card_id=C02263-K1, hours=72)",
+        "entity_ids": [
+          "3380616"
+        ]
+      },
+      {
+        "claim": "Cardholder denied the transaction",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      },
+      {
+        "claim": "Similar prior cases with the same pattern were confirmed fraud",
+        "source": "graph",
+        "ref": "query:customer_baseline(card_id=C02263-K1)",
+        "entity_ids": [
+          "3380616"
+        ]
+      },
+      {
+        "claim": "Card's baseline shows only one prior transaction of similar amount, indicating limited history",
+        "source": "graph",
+        "ref": "query:customer_baseline(card_id=C02263-K1)",
+        "entity_ids": [
+          "3380616"
+        ]
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-5564",
+      "CC-5528",
+      "CC-5520",
+      "CC-5416",
+      "CC-5409",
+      "CC-5380"
+    ],
+    "summary": "The alert shows a high risk score, a new device, and a slight amount deviation, all flagged by the classifier. The cardholder denied the charge, which strongly raises fraud probability. Historical cases with the same pattern were all fraud. These combined factors indicate the transaction is likely fraudulent.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-2016-002"
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 4,
+      "assumed_response": "Contacted about the activity, the cardholder states they did not make these purchases and still holds the card."
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "R1: probability 0.62 on 2 signals is not decisive; confirm with the cardholder before any block"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability 0.62 warrants a case record"
+      }
+    ],
+    "final": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: cardholder denies the transaction; exposure $25.07"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2: unauthorised use confirmed by the cardholder"
+      }
+    ],
+    "what_changed": "The cardholder denied the activity when asked, moving fraud probability from 0.62 to 0.80; the recommendation firms up accordingly."
+  },
+  "sar": {
+    "file": false,
+    "reason": "3a: fraud is suspected but no reporting trigger is met -- exposure $25.07 is under $1,000, no shared origin, pattern is documented",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0.0,
+    "activity_dates": []
+  },
+  "stop_reason": "The cardholder's response (denied) settles the question; further steps would not change the recommended actions.",
+  "tool_calls": 7,
+  "tokens": 0,
+  "latency_s": 2.1
+}

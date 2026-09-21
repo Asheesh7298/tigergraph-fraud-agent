@@ -1,0 +1,125 @@
+{
+  "case_id": "HO-019",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.82,
+    "pattern": "card_not_present_new_device",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3401500",
+      "3401751",
+      "3401791",
+      "3401801",
+      "3401861"
+    ],
+    "first_suspicious_txn_id": "3401500",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 185.47,
+    "evidence": [
+      {
+        "claim": "Risk score for the transaction is 0.86, which is high",
+        "source": "document",
+        "ref": "document:ring-a-shared-device#2",
+        "entity_ids": []
+      },
+      {
+        "claim": "Cardholder denied the $24.50 transaction",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      },
+      {
+        "claim": "Device used for the transaction is recorded as new to this account",
+        "source": "graph",
+        "ref": "query:card_window(card_id=C02147-K2, hours=72)",
+        "entity_ids": [
+          "3401751",
+          "3401861"
+        ]
+      },
+      {
+        "claim": "Transaction amount $24.50 is below the card's 90th\u2011percentile $97.01",
+        "source": "graph",
+        "ref": "query:customer_baseline(card_id=C02147-K2)",
+        "entity_ids": [
+          "3401751"
+        ]
+      },
+      {
+        "claim": "Prior closed cases with the same pattern were confirmed fraud",
+        "source": "graph",
+        "ref": "query:customer_baseline(card_id=C02147-K2)",
+        "entity_ids": [
+          "3401751"
+        ]
+      },
+      {
+        "claim": "Multiple online purchases on unseen devices occurred within a short window, matching a known fraud ring behavior",
+        "source": "graph",
+        "ref": "query:customer_baseline(card_id=C02147-K2)",
+        "entity_ids": [
+          "3401751"
+        ]
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-5558",
+      "CC-5556",
+      "CC-5553",
+      "CC-5552",
+      "CC-5551",
+      "CC-5546"
+    ],
+    "summary": "The flagged $24.50 online purchase scored 0.86 and was denied by the cardholder. The device is new to the account, and the card shows a rapid series of online buys on previously unseen devices, a pattern that matches several confirmed\u2011fraud cases. Although the amount is modest, the high risk score, denial, and similarity to past fraud suggest the transaction is fraudulent.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-2016-019"
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 4,
+      "assumed_response": "Contacted about the activity, the cardholder states they did not make these purchases and still holds the card."
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "R1: probability 0.62 on 2 signals is not decisive; confirm with the cardholder before any block"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability 0.62 warrants a case record"
+      }
+    ],
+    "final": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: cardholder denies the transaction; exposure $185.47"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2: unauthorised use confirmed by the cardholder"
+      }
+    ],
+    "what_changed": "The cardholder denied the activity when asked, moving fraud probability from 0.62 to 0.82; the recommendation firms up accordingly."
+  },
+  "sar": {
+    "file": false,
+    "reason": "3a: fraud is suspected but no reporting trigger is met -- exposure $185.47 is under $1,000, no shared origin, pattern is documented",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0.0,
+    "activity_dates": []
+  },
+  "stop_reason": "The cardholder's response (denied) settles the question; further steps would not change the recommended actions.",
+  "tool_calls": 7,
+  "tokens": 7869,
+  "latency_s": 51.7
+}

@@ -1,9 +1,9 @@
 {
-  "case_id": "HO-028",
+  "case_id": "HO-011",
   "case": {
     "status": "closed_legitimate",
     "verdict": "legitimate",
-    "fraud_probability": 0.12,
+    "fraud_probability": 0.15,
     "pattern": "none",
     "pattern_description": "",
     "affected_txn_ids": [],
@@ -13,57 +13,59 @@
     "exposure_usd": 0.0,
     "evidence": [
       {
-        "claim": "Cardholder denies the $99.91 transaction",
+        "claim": "Cardholder denied the $11.23 transaction",
         "source": "customer",
         "ref": "evidence_request:1",
         "entity_ids": []
       },
       {
-        "claim": "Seven prior transactions of the same amount and product exist",
+        "claim": "Amount $11.23 matches 139 prior identical transactions on this card",
         "source": "graph",
-        "ref": "query:customer_baseline(card_id=C13440-K2)",
+        "ref": "query:customer_baseline(card_id=C11509-K2)",
         "entity_ids": [
-          "3354019"
+          "3371196"
         ]
       },
       {
-        "claim": "Multiple prior confirmed fraud cases share the same device profile",
+        "claim": "Device used for the transaction is new to this account",
         "source": "graph",
-        "ref": "query:customer_baseline(card_id=C13440-K2)",
+        "ref": "query:customer_baseline(card_id=C11509-K2)",
         "entity_ids": [
-          "3354019"
+          "3371196"
         ]
       },
       {
-        "claim": "Risk score for the transaction is 0.71",
+        "claim": "Risk score for the flagged transaction is 0.45, moderate but not decisive",
         "source": "document",
         "ref": "document:policy-r2",
         "entity_ids": []
       },
       {
-        "claim": "Classifier proposed no pattern",
-        "source": "document",
-        "ref": "document:policy-r2",
-        "entity_ids": []
+        "claim": "Card\u2019s baseline median spend $29.86 and 90th percentile $80.01, making $11.23 well within normal range",
+        "source": "graph",
+        "ref": "query:customer_baseline(card_id=C11509-K2)",
+        "entity_ids": [
+          "3371196"
+        ]
       }
     ],
     "similar_prior_cases": [
-      "CC-5529",
-      "CC-5525",
-      "CC-5517",
-      "CC-5512",
-      "CC-5505",
-      "CC-5481"
+      "CC-5558",
+      "CC-5556",
+      "CC-5553",
+      "CC-5552",
+      "CC-5551",
+      "CC-5546"
     ],
-    "summary": "The cardholder disputes the $99.91 purchase, but it matches a strong recurring pattern of identical past transactions, which policy R7 classifies as legitimate. Although the risk score is 0.71 and the device appears in prior fraud cases, the recurring behavior outweighs these concerns. The overall fraud probability is low, so the transaction should be treated as legitimate.",
+    "summary": "The cardholder\u2019s denial aligns with a recurring $11.23 purchase seen 139 times before, and the amount is well within the card\u2019s normal spending range. Although a new device was used, new devices often appear in legitimate cases. Considering the low amount, strong recurring pattern, and moderate risk score, the transaction is assessed as legitimate.",
     "written_to_graph": true,
-    "graph_case_id": "CASE-2016-028"
+    "graph_case_id": "CASE-2016-011"
   },
   "evidence_requests": [
     {
       "type": "customer_validation",
       "asked_after_step": 4,
-      "assumed_response": "Shown their own history, the cardholder recognises the charge: this exact amount and merchant category has been billed to the card 7 times before. They withdraw the dispute."
+      "assumed_response": "Shown their own history, the cardholder recognises the charge: this exact amount and merchant category has been billed to the card 139 times before. They withdraw the dispute."
     }
   ],
   "next_best_actions": {
@@ -71,7 +73,7 @@
       {
         "action": "VERIFY_WITH_CUSTOMER",
         "route": "auto",
-        "reason": "R7: 7 prior transactions of this amount and product on this card establish it as the cardholder's own recurring charge; confirm before acting"
+        "reason": "R7: 139 prior transactions of this amount and product on this card establish it as the cardholder's own recurring charge; confirm before acting"
       },
       {
         "action": "CREATE_CASE",
@@ -88,7 +90,7 @@
       {
         "action": "VERIFY_WITH_CUSTOMER",
         "route": "auto",
-        "reason": "R7: 7 prior transactions of this amount and product on this card establish it as the cardholder's own recurring charge; confirm before acting"
+        "reason": "R7: 139 prior transactions of this amount and product on this card establish it as the cardholder's own recurring charge; confirm before acting"
       },
       {
         "action": "CREATE_CASE",
@@ -105,7 +107,7 @@
   },
   "sar": {
     "file": false,
-    "reason": "R7: the disputed charge matches the cardholder's own established pattern (7 prior transactions of this amount and product); no suspicious activity.",
+    "reason": "R7: the disputed charge matches the cardholder's own established pattern (139 prior transactions of this amount and product); no suspicious activity.",
     "narrative": "",
     "subjects": [],
     "total_amount_usd": 0.0,
@@ -114,5 +116,5 @@
   "stop_reason": "The cardholder's response (confirmed) settles the question; further steps would not change the recommended actions.",
   "tool_calls": 7,
   "tokens": 0,
-  "latency_s": 2.5
+  "latency_s": 2.1
 }

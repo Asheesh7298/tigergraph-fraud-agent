@@ -1,5 +1,5 @@
 {
-  "case_id": "HO-014",
+  "case_id": "HO-003",
   "case": {
     "status": "closed_legitimate",
     "verdict": "legitimate",
@@ -13,45 +13,49 @@
     "exposure_usd": 0.0,
     "evidence": [
       {
+        "claim": "Risk score 0.85 triggered alert",
+        "source": "document",
+        "ref": "document:policy-r3",
+        "entity_ids": []
+      },
+      {
+        "claim": "Billing region 181.0 not previously used",
+        "source": "document",
+        "ref": "document:policy-r3",
+        "entity_ids": []
+      },
+      {
+        "claim": "One prior transaction of same amount and product",
+        "source": "graph",
+        "ref": "query:customer_baseline(card_id=C04556-K1)",
+        "entity_ids": [
+          "3410925"
+        ]
+      },
+      {
         "claim": "Cardholder confirmed the transaction",
         "source": "customer",
         "ref": "evidence_request:1",
         "entity_ids": []
       },
       {
-        "claim": "Two prior transactions of the same amount and product exist",
-        "source": "graph",
-        "ref": "query:customer_baseline(card_id=C01909-K2)",
-        "entity_ids": [
-          "3338587"
-        ]
-      },
-      {
-        "claim": "Billing region 420.0 is not in the card\u2019s historic region list, suggesting travel",
-        "source": "graph",
-        "ref": "query:customer_baseline(card_id=C01909-K2)",
-        "entity_ids": [
-          "3338587"
-        ]
-      },
-      {
-        "claim": "Model risk score is 0.46",
+        "claim": "No device information, no new device flag",
         "source": "document",
-        "ref": "document:false-alarm-signatures#3",
+        "ref": "document:policy-r3",
         "entity_ids": []
       }
     ],
     "similar_prior_cases": [
-      "CC-5558",
-      "CC-5546",
-      "CC-5542",
-      "CC-5541",
-      "CC-5539",
-      "CC-5535"
+      "CC-5468",
+      "CC-5462",
+      "CC-5448",
+      "CC-5376",
+      "CC-5363",
+      "CC-5344"
     ],
-    "summary": "The cardholder confirmed the $328.88 in\u2011person purchase, and the amount matches two earlier identical transactions, indicating a personal spending pattern. Although the billing region is new, travel\u2011related out\u2011of\u2011region activity is a common cleared case. The moderate risk score (0.46) does not outweigh the confirming evidence. Therefore the alert is deemed legitimate.",
+    "summary": "The cardholder confirmed the $1,264.94 in\u2011person purchase, which matches a prior transaction of the same amount and falls within the card\u2019s historical spending range. Although the billing region is new, out\u2011of\u2011region use alone is typically legitimate. Combined with the confirmation, the fraud probability is low, so the case should be closed as legitimate.",
     "written_to_graph": true,
-    "graph_case_id": "CASE-2016-014"
+    "graph_case_id": "CASE-2016-003"
   },
   "evidence_requests": [
     {
@@ -63,14 +67,9 @@
   "next_best_actions": {
     "initial": [
       {
-        "action": "ALLOW_TRANSACTION",
+        "action": "CREATE_CASE",
         "route": "auto",
-        "reason": "R3: no basis to decline"
-      },
-      {
-        "action": "CLOSE_NO_FRAUD",
-        "route": "auto",
-        "reason": "R3: activity is consistent with the cardholder's history"
+        "reason": "3a: fraud probability 0.30 warrants a case record"
       }
     ],
     "final": [
@@ -85,7 +84,7 @@
         "reason": "R3: cardholder confirms they made the transaction"
       }
     ],
-    "what_changed": "The cardholder confirmed the activity when asked, moving fraud probability from 0.22 to 0.30 and settling the case as legitimate."
+    "what_changed": "The cardholder confirmed the activity when asked, moving fraud probability from 0.30 to 0.30 and settling the case as legitimate."
   },
   "sar": {
     "file": false,
@@ -97,6 +96,6 @@
   },
   "stop_reason": "The cardholder's response (confirmed) settles the question; further steps would not change the recommended actions.",
   "tool_calls": 8,
-  "tokens": 0,
-  "latency_s": 2.7
+  "tokens": 5708,
+  "latency_s": 41.8
 }

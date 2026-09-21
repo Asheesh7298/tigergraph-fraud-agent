@@ -1,5 +1,5 @@
 {
-  "case_id": "HO-014",
+  "case_id": "HO-029",
   "case": {
     "status": "closed_legitimate",
     "verdict": "legitimate",
@@ -13,45 +13,51 @@
     "exposure_usd": 0.0,
     "evidence": [
       {
+        "claim": "Transaction amount $59 matches baseline median $57.97 and prior identical purchases",
+        "source": "graph",
+        "ref": "query:customer_baseline(card_id=C06903-K1)",
+        "entity_ids": [
+          "3405168"
+        ]
+      },
+      {
         "claim": "Cardholder confirmed the transaction",
         "source": "customer",
         "ref": "evidence_request:1",
         "entity_ids": []
       },
       {
-        "claim": "Two prior transactions of the same amount and product exist",
-        "source": "graph",
-        "ref": "query:customer_baseline(card_id=C01909-K2)",
-        "entity_ids": [
-          "3338587"
-        ]
-      },
-      {
-        "claim": "Billing region 420.0 is not in the card\u2019s historic region list, suggesting travel",
-        "source": "graph",
-        "ref": "query:customer_baseline(card_id=C01909-K2)",
-        "entity_ids": [
-          "3338587"
-        ]
-      },
-      {
-        "claim": "Model risk score is 0.46",
+        "claim": "Real\u2011time model scored transaction with risk score 0.79",
         "source": "document",
-        "ref": "document:false-alarm-signatures#3",
+        "ref": "document:policy-r2",
+        "entity_ids": []
+      },
+      {
+        "claim": "Multiple prior closed cases on this card were confirmed fraud (account takeover)",
+        "source": "graph",
+        "ref": "query:customer_baseline(card_id=C06903-K1)",
+        "entity_ids": [
+          "3405168"
+        ]
+      },
+      {
+        "claim": "Policy R3 recommends CLOSE_NO_FRAUD when customer confirms",
+        "source": "document",
+        "ref": "document:policy-r2",
         "entity_ids": []
       }
     ],
     "similar_prior_cases": [
-      "CC-5558",
-      "CC-5546",
-      "CC-5542",
-      "CC-5541",
-      "CC-5539",
-      "CC-5535"
+      "CC-5554",
+      "CC-5420",
+      "CC-5320",
+      "CC-5183",
+      "CC-4948",
+      "CC-4738"
     ],
-    "summary": "The cardholder confirmed the $328.88 in\u2011person purchase, and the amount matches two earlier identical transactions, indicating a personal spending pattern. Although the billing region is new, travel\u2011related out\u2011of\u2011region activity is a common cleared case. The moderate risk score (0.46) does not outweigh the confirming evidence. Therefore the alert is deemed legitimate.",
+    "summary": "The $59 in\u2011person purchase fits the cardholder\u2019s normal spending pattern and was confirmed by the customer. Policy guidance for confirmed transactions calls for closing the case as legitimate, despite the card\u2019s past fraud history. Therefore, the alert should be treated as a legitimate transaction.",
     "written_to_graph": true,
-    "graph_case_id": "CASE-2016-014"
+    "graph_case_id": "CASE-2016-029"
   },
   "evidence_requests": [
     {
@@ -63,14 +69,9 @@
   "next_best_actions": {
     "initial": [
       {
-        "action": "ALLOW_TRANSACTION",
+        "action": "CREATE_CASE",
         "route": "auto",
-        "reason": "R3: no basis to decline"
-      },
-      {
-        "action": "CLOSE_NO_FRAUD",
-        "route": "auto",
-        "reason": "R3: activity is consistent with the cardholder's history"
+        "reason": "3a: fraud probability 0.30 warrants a case record"
       }
     ],
     "final": [
@@ -85,7 +86,7 @@
         "reason": "R3: cardholder confirms they made the transaction"
       }
     ],
-    "what_changed": "The cardholder confirmed the activity when asked, moving fraud probability from 0.22 to 0.30 and settling the case as legitimate."
+    "what_changed": "The cardholder confirmed the activity when asked, moving fraud probability from 0.30 to 0.30 and settling the case as legitimate."
   },
   "sar": {
     "file": false,
@@ -97,6 +98,6 @@
   },
   "stop_reason": "The cardholder's response (confirmed) settles the question; further steps would not change the recommended actions.",
   "tool_calls": 8,
-  "tokens": 0,
-  "latency_s": 2.7
+  "tokens": 5485,
+  "latency_s": 43.2
 }

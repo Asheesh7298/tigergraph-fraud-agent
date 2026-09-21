@@ -1,0 +1,129 @@
+{
+  "case_id": "HO-025",
+  "case": {
+    "status": "closed_legitimate",
+    "verdict": "legitimate",
+    "fraud_probability": 0.62,
+    "pattern": "none",
+    "pattern_description": "",
+    "affected_txn_ids": [],
+    "first_suspicious_txn_id": "",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 0.0,
+    "evidence": [
+      {
+        "claim": "Risk score 0.92 triggered the alert",
+        "source": "document",
+        "ref": "document:known-patterns-profile#2",
+        "entity_ids": []
+      },
+      {
+        "claim": "Cardholder confirmed the transaction",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      },
+      {
+        "claim": "Transaction amount $117 is below the card\u2019s 90th percentile $160.94",
+        "source": "graph",
+        "ref": "query:customer_baseline(card_id=C12386-K1)",
+        "entity_ids": [
+          "3328772"
+        ]
+      },
+      {
+        "claim": "Four prior identical $117 transactions exist",
+        "source": "graph",
+        "ref": "query:customer_baseline(card_id=C12386-K1)",
+        "entity_ids": [
+          "3328772"
+        ]
+      },
+      {
+        "claim": "Billing region 181.0 has never been used before on this card",
+        "source": "graph",
+        "ref": "query:customer_baseline(card_id=C12386-K1)",
+        "entity_ids": [
+          "3328772"
+        ]
+      },
+      {
+        "claim": "Parallel home activity: three other transactions in different regions within days",
+        "source": "graph",
+        "ref": "query:card_window(card_id=C12386-K1, hours=72)",
+        "entity_ids": [
+          "3318962",
+          "3320770",
+          "3338718"
+        ]
+      },
+      {
+        "claim": "Several prior closed cases with out_of_region_use pattern were confirmed fraud",
+        "source": "graph",
+        "ref": "query:customer_baseline(card_id=C12386-K1)",
+        "entity_ids": [
+          "3328772"
+        ]
+      },
+      {
+        "claim": "Policy recommends BLOCK_CARD only when the customer denies the transaction",
+        "source": "document",
+        "ref": "document:known-patterns-profile#2",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-5565",
+      "CC-5561",
+      "CC-5555",
+      "CC-5547",
+      "CC-5543",
+      "CC-5534"
+    ],
+    "summary": "The $117 purchase falls within the cardholder\u2019s normal spending range and repeats a pattern of four identical prior transactions. Although it occurred in an unseen billing region and alongside other regional activity, the cardholder confirmed the charge, and policy only calls for blocking on a denial. Consequently, the evidence points to a legitimate transaction despite the out\u2011of\u2011region flag.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-2016-025"
+  },
+  "evidence_requests": [
+    {
+      "type": "step_up_auth",
+      "asked_after_step": 5,
+      "assumed_response": "Step-up authentication was requested and completed successfully by the cardholder, indicating the genuine account holder authorised the activity."
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability 0.55 warrants a case record"
+      }
+    ],
+    "final": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R3/3a: record the confirmation against the investigation"
+      },
+      {
+        "action": "CLOSE_NO_FRAUD",
+        "route": "auto",
+        "reason": "R3: cardholder confirms they made the transaction"
+      }
+    ],
+    "what_changed": "The cardholder confirmed the activity when asked, moving fraud probability from 0.55 to 0.62 and settling the case as legitimate."
+  },
+  "sar": {
+    "file": false,
+    "reason": "R2/3a: fraud is neither confirmed nor strongly suspected (verdict legitimate, probability 0.62); no report required",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0.0,
+    "activity_dates": []
+  },
+  "stop_reason": "The cardholder's response (confirmed) settles the question; further steps would not change the recommended actions.",
+  "tool_calls": 8,
+  "tokens": 0,
+  "latency_s": 2.4
+}

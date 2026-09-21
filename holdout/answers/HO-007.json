@@ -1,0 +1,116 @@
+{
+  "case_id": "HO-007",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.62,
+    "pattern": "card_not_present_new_device",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3388613"
+    ],
+    "first_suspicious_txn_id": "3388613",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 99.93,
+    "evidence": [
+      {
+        "claim": "Model risk score for the transaction is 0.92",
+        "source": "document",
+        "ref": "document:ring-a-shared-device#2",
+        "entity_ids": []
+      },
+      {
+        "claim": "The device used (Windows 10, Chrome 65) is recorded as new for this account",
+        "source": "graph",
+        "ref": "query:card_window(card_id=C08269-K1, hours=72)",
+        "entity_ids": [
+          "3388613"
+        ]
+      },
+      {
+        "claim": "The same device profile appears in several prior confirmed\u2011fraud cases (CC\u20115553, CC\u20115539, etc.)",
+        "source": "graph",
+        "ref": "query:customer_baseline(card_id=C08269-K1)",
+        "entity_ids": [
+          "3388613"
+        ]
+      },
+      {
+        "claim": "Cardholder confirmed the transaction as theirs",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      },
+      {
+        "claim": "Transaction amount $99.93 is within the card\u2019s typical median ($92.03) and well below the 90th percentile ($311.97)",
+        "source": "document",
+        "ref": "document:ring-a-shared-device#2",
+        "entity_ids": []
+      },
+      {
+        "claim": "Seven prior transactions of the same amount and product exist, indicating a recurring pattern",
+        "source": "document",
+        "ref": "document:ring-a-shared-device#2",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-5553",
+      "CC-5539",
+      "CC-5538",
+      "CC-5536",
+      "CC-5531",
+      "CC-5529"
+    ],
+    "summary": "The alert shows a high risk score and a new device that is linked to a known fraud ring. While the cardholder confirms the purchase, the shared\u2011device evidence and two independent anomalies raise the fraud probability to about 60%. Given the policy for shared\u2011origin rings, the case should be treated as fraud and escalated.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-2016-007"
+  },
+  "evidence_requests": [
+    {
+      "type": "step_up_auth",
+      "asked_after_step": 4,
+      "assumed_response": "Step-up authentication was requested and completed successfully by the cardholder, indicating the genuine account holder authorised the activity."
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "R1: probability 0.55 on a single signal is not decisive; confirm with the cardholder before any block"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability 0.55 warrants a case record"
+      }
+    ],
+    "final": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R3/3a: record the confirmation against the investigation"
+      },
+      {
+        "action": "CLOSE_NO_FRAUD",
+        "route": "auto",
+        "reason": "R3: cardholder confirms they made the transaction"
+      }
+    ],
+    "what_changed": "The cardholder confirmed the activity when asked, moving fraud probability from 0.55 to 0.62; the recommendation firms up accordingly."
+  },
+  "sar": {
+    "file": false,
+    "reason": "3a: fraud is suspected but no reporting trigger is met -- exposure $99.93 is under $1,000, no shared origin, pattern is documented",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0.0,
+    "activity_dates": []
+  },
+  "stop_reason": "The cardholder's response (confirmed) settles the question; further steps would not change the recommended actions.",
+  "tool_calls": 7,
+  "tokens": 0,
+  "latency_s": 2.1
+}

@@ -1,0 +1,122 @@
+{
+  "case_id": "HO-023",
+  "case": {
+    "status": "closed_legitimate",
+    "verdict": "legitimate",
+    "fraud_probability": 0.12,
+    "pattern": "none",
+    "pattern_description": "",
+    "affected_txn_ids": [],
+    "first_suspicious_txn_id": "",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 0.0,
+    "evidence": [
+      {
+        "claim": "Cardholder denied the $32.00 transaction",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      },
+      {
+        "claim": "Transaction amount and product have 114 prior identical transactions, indicating a recurring pattern",
+        "source": "graph",
+        "ref": "query:customer_baseline(card_id=C01119-K2)",
+        "entity_ids": [
+          "3406720"
+        ]
+      },
+      {
+        "claim": "All transactions in the episode are in\u2011person, matching the card\u2019s typical channel distribution",
+        "source": "graph",
+        "ref": "query:customer_baseline(card_id=C01119-K2)",
+        "entity_ids": [
+          "3406720"
+        ]
+      },
+      {
+        "claim": "Risk scores for the episode are low (0.03\u20110.23) and the model did not flag high risk",
+        "source": "graph",
+        "ref": "query:customer_baseline(card_id=C01119-K2)",
+        "entity_ids": [
+          "3406720"
+        ]
+      },
+      {
+        "claim": "Prior fraud cases involve a shared device profile, but this transaction has no device information linking it to that ring",
+        "source": "graph",
+        "ref": "query:customer_baseline(card_id=C01119-K2)",
+        "entity_ids": [
+          "3406720"
+        ]
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-5543",
+      "CC-5529",
+      "CC-5525",
+      "CC-5517",
+      "CC-5512",
+      "CC-5480"
+    ],
+    "summary": "The cardholder\u2019s denial is outweighed by a strong recurring $32.00 in\u2011person purchase pattern seen 114 times before. The episode\u2019s low risk scores and channel consistency with the card\u2019s baseline further support legitimacy. No device link to known fraud rings exists, so the transaction is deemed legitimate with a low fraud probability.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-2016-023"
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 5,
+      "assumed_response": "Shown their own history, the cardholder recognises the charge: this exact amount and merchant category has been billed to the card 114 times before. They withdraw the dispute."
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "R7: 114 prior transactions of this amount and product on this card establish it as the cardholder's own recurring charge; confirm before acting"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R7: customer disputes a charge that matches their own recurring pattern"
+      },
+      {
+        "action": "WARN_CUSTOMER",
+        "route": "auto",
+        "reason": "R7: send a recurring-charge reminder rather than blocking the card"
+      }
+    ],
+    "final": [
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "R7: 114 prior transactions of this amount and product on this card establish it as the cardholder's own recurring charge; confirm before acting"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R7: customer disputes a charge that matches their own recurring pattern"
+      },
+      {
+        "action": "WARN_CUSTOMER",
+        "route": "auto",
+        "reason": "R7: send a recurring-charge reminder rather than blocking the card"
+      }
+    ],
+    "what_changed": "nothing"
+  },
+  "sar": {
+    "file": false,
+    "reason": "R7: the disputed charge matches the cardholder's own established pattern (114 prior transactions of this amount and product); no suspicious activity.",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0.0,
+    "activity_dates": []
+  },
+  "stop_reason": "The cardholder's response (confirmed) settles the question; further steps would not change the recommended actions.",
+  "tool_calls": 8,
+  "tokens": 6849,
+  "latency_s": 59.2
+}
