@@ -1,0 +1,10 @@
+{
+  "//": "Register the TigerGraph fraud MCP server with an MCP client (Claude Desktop, the mcp inspector, etc.). Point `cwd` at the repo and ensure .env is filled.",
+  "mcpServers": {
+    "tigergraph-fraud": {
+      "command": "python",
+      "args": ["src/mcp_server.py"],
+      "cwd": "."
+    }
+  }
+}

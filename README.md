@@ -74,6 +74,23 @@ Cases the agent closes are written back as `AgentCase` vertices, and because
 the pack is processed in chronological order, later investigations retrieve
 earlier ones as memory.
 
+### TigerGraph MCP
+
+The graph surface is also served over the Model Context Protocol. `src/mcp_server.py`
+exposes the eight tools above — the six GSQL queries, transaction lookup, and
+GraphRAG document search — backed by the *same* `FraudTools` functions the
+agent uses in-process, so an MCP client sees exactly the investigation's graph
+capabilities. Vector search takes plain text and embeds it internally, so a
+client never handles raw query vectors.
+
+```bash
+python src/mcp_server.py --selftest   # list + exercise the tools
+python src/mcp_server.py               # run as a stdio MCP server
+```
+
+Register it with any MCP client (Claude Desktop, the mcp inspector) using
+`mcp_config.example.json`.
+
 ## Layout
 
 ```
