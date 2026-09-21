@@ -1,9 +1,9 @@
 {
   "case_id": "HHG-019",
   "case": {
-    "status": "open",
-    "verdict": "uncertain",
-    "fraud_probability": 0.5,
+    "status": "closed_legitimate",
+    "verdict": "legitimate",
+    "fraud_probability": 0.55,
     "pattern": "none",
     "pattern_description": "",
     "affected_txn_ids": [],
@@ -13,57 +13,103 @@
     "exposure_usd": 0.0,
     "evidence": [
       {
-        "claim": "Placeholder: the agent has not investigated this case yet. Trigger was risk_score.",
-        "source": "external",
-        "ref": "case_pack.csv",
+        "claim": "Model risk score 0.90",
+        "source": "graph",
+        "ref": "query:customer_baseline(card_id=C07987-K2)",
+        "entity_ids": [
+          "3503878"
+        ]
+      },
+      {
+        "claim": "Transaction used a new device for this account",
+        "source": "graph",
+        "ref": "query:customer_baseline(card_id=C07987-K2)",
+        "entity_ids": [
+          "3503878"
+        ]
+      },
+      {
+        "claim": "Cardholder confirmed the transaction",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      },
+      {
+        "claim": "Four prior transactions of same amount and product",
+        "source": "graph",
+        "ref": "query:customer_baseline(card_id=C07987-K2)",
+        "entity_ids": [
+          "3503878"
+        ]
+      },
+      {
+        "claim": "Median transaction amount $116.92, similar to $99.92",
+        "source": "graph",
+        "ref": "query:customer_baseline(card_id=C07987-K2)",
+        "entity_ids": [
+          "3503878"
+        ]
+      },
+      {
+        "claim": "Prior closed cases with same pattern were fraud",
+        "source": "graph",
+        "ref": "query:customer_baseline(card_id=C07987-K2)",
         "entity_ids": [
           "3503878"
         ]
       }
     ],
-    "similar_prior_cases": [],
-    "summary": "Placeholder: the agent has not investigated this case yet. Flagged transaction 3503878 on card C07987-K2.",
-    "written_to_graph": false,
-    "graph_case_id": ""
+    "similar_prior_cases": [
+      "CC-5538",
+      "CC-5529",
+      "CC-5528",
+      "CC-5527",
+      "CC-5525",
+      "CC-5518"
+    ],
+    "summary": "The alert shows a high risk score and a new device, but the cardholder confirmed the $99.92 online purchase. The card\u2019s history includes four identical prior transactions and a median spend close to the flagged amount, indicating normal behavior. Although similar past cases were fraud, the confirmation and consistent spending pattern outweigh those signals, making the transaction legitimate.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-2016-019"
   },
-  "evidence_requests": [],
+  "evidence_requests": [
+    {
+      "type": "step_up_auth",
+      "asked_after_step": 4,
+      "assumed_response": "Step-up authentication was requested and completed successfully by the cardholder, indicating the genuine account holder authorised the activity."
+    }
+  ],
   "next_best_actions": {
     "initial": [
       {
-        "action": "VERIFY_WITH_CUSTOMER",
-        "route": "auto",
-        "reason": "R1: probability 0.50 on a single signal is not decisive; confirm with the cardholder before any block"
-      },
-      {
         "action": "CREATE_CASE",
         "route": "auto",
-        "reason": "3a: fraud probability 0.50 warrants a case record"
+        "reason": "3a: fraud probability 0.42 warrants a case record"
       }
     ],
     "final": [
       {
-        "action": "VERIFY_WITH_CUSTOMER",
-        "route": "auto",
-        "reason": "R1: probability 0.50 on a single signal is not decisive; confirm with the cardholder before any block"
-      },
-      {
         "action": "CREATE_CASE",
         "route": "auto",
-        "reason": "3a: fraud probability 0.50 warrants a case record"
+        "reason": "R3/3a: record the confirmation against the investigation"
+      },
+      {
+        "action": "CLOSE_NO_FRAUD",
+        "route": "auto",
+        "reason": "R3: cardholder confirms they made the transaction"
       }
     ],
-    "what_changed": "nothing"
+    "what_changed": "The cardholder confirmed the activity when asked, moving fraud probability from 0.42 to 0.55 and settling the case as legitimate."
   },
   "sar": {
     "file": false,
-    "reason": "R2/3a: fraud is neither confirmed nor strongly suspected (verdict uncertain, probability 0.50); no report required",
+    "reason": "R2/3a: fraud is neither confirmed nor strongly suspected (verdict legitimate, probability 0.55); no report required",
     "narrative": "",
     "subjects": [],
     "total_amount_usd": 0.0,
     "activity_dates": []
   },
-  "stop_reason": "Probability 0.50 on 1 independent signal(s) is not yet decisive; more evidence is warranted.",
-  "tool_calls": 0,
-  "tokens": 0,
-  "latency_s": 0.0
+  "stop_reason": "The cardholder's response (confirmed) settles the question; further steps would not change the recommended actions.",
+  "tool_calls": 7,
+  "tokens": 6118,
+  "latency_s": 23.3
 }

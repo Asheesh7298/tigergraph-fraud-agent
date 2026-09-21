@@ -13,13 +13,13 @@
     "exposure_usd": 0.0,
     "evidence": [
       {
-        "claim": "The cardholder confirmed the transaction.",
+        "claim": "Cardholder confirmed the transaction",
         "source": "customer",
         "ref": "evidence_request:1",
         "entity_ids": []
       },
       {
-        "claim": "The cardholder has 9 prior transactions of this same amount ($100.09) and product (R) in their baseline.",
+        "claim": "Three online transactions of ~$100 each occurred within an hour, with risk scores 0.05, 0.10, 0.57",
         "source": "graph",
         "ref": "query:customer_baseline(card_id=C04570-K1)",
         "entity_ids": [
@@ -27,12 +27,24 @@
         ]
       },
       {
-        "claim": "The flagged transaction has a risk score of 0.57.",
+        "claim": "Median transaction amount for this card is $199.97, and there are nine prior transactions of the same amount and product",
+        "source": "document",
+        "ref": "document:policy-r5",
+        "entity_ids": []
+      },
+      {
+        "claim": "No prior fraud cases linked to this card; shared device profile has both confirmed fraud and cleared cases",
         "source": "graph",
         "ref": "query:customer_baseline(card_id=C04570-K1)",
         "entity_ids": [
           "3450629"
         ]
+      },
+      {
+        "claim": "Policy R5 (card testing) does not apply because there is no larger purchase and the cardholder confirmed the charge",
+        "source": "document",
+        "ref": "document:policy-r5",
+        "entity_ids": []
       }
     ],
     "similar_prior_cases": [
@@ -43,9 +55,9 @@
       "CC-5481",
       "CC-5480"
     ],
-    "summary": "The flagged transaction of $100.09 was confirmed by the cardholder, satisfying Policy R3 for a legitimate transaction. This activity is highly consistent with the cardholder's established baseline, which contains 9 prior identical transactions of the same amount and product. The entire three-transaction episode occurred on the same device profile, further supporting legitimacy. We recommend closing this case as no fraud.",
+    "summary": "The cardholder confirmed the $100.09 online purchase, and the card\u2019s history shows multiple identical transactions, indicating a normal pattern. Risk scores are low and the activity fits the card\u2019s baseline spend. Policy R3 directs a close\u2011no\u2011fraud outcome, so the transaction should be treated as legitimate.",
     "written_to_graph": true,
-    "graph_case_id": ""
+    "graph_case_id": "CASE-2016-017"
   },
   "evidence_requests": [
     {
@@ -79,7 +91,7 @@
         "reason": "R3: cardholder confirms they made the transaction"
       }
     ],
-    "what_changed": "The cardholder confirmed the activity when asked, moving fraud probability from 0.10 to 0.30 and settling the case as legitimate."
+    "what_changed": "The cardholder confirmed the activity when asked, moving fraud probability from 0.20 to 0.30 and settling the case as legitimate."
   },
   "sar": {
     "file": false,
@@ -90,7 +102,7 @@
     "activity_dates": []
   },
   "stop_reason": "The cardholder's response (confirmed) settles the question; further steps would not change the recommended actions.",
-  "tool_calls": 6,
-  "tokens": 8757,
-  "latency_s": 25.0
+  "tool_calls": 7,
+  "tokens": 0,
+  "latency_s": 3.6
 }

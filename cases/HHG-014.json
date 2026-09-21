@@ -1,69 +1,207 @@
 {
   "case_id": "HHG-014",
   "case": {
-    "status": "open",
-    "verdict": "uncertain",
-    "fraud_probability": 0.5,
-    "pattern": "none",
-    "pattern_description": "",
-    "affected_txn_ids": [],
-    "first_suspicious_txn_id": "",
-    "connected_card_ids": [],
-    "connected_device_profiles": [],
-    "exposure_usd": 0.0,
+    "status": "escalated",
+    "verdict": "fraud",
+    "fraud_probability": 0.88,
+    "pattern": "undocumented",
+    "pattern_description": "A single device profile (SM-G935F Build/NRD90M | Android 7.0 | chrome 62.0 for android | 1920x1080) was used on 28 different cards between 2016-11-14 and 2016-12-04. It was recorded as new to every account it touched and sat behind an anonymising proxy on every transaction, which is not how a genuinely shared device behaves -- a household or office device shows returning users. The purchases are small and spread thinly across many cards, so no single cardholder looks alarming; the pattern is only visible as a shared-device cluster across the portfolio.",
+    "affected_txn_ids": [
+      "3460634",
+      "3478561",
+      "3489320"
+    ],
+    "first_suspicious_txn_id": "3460634",
+    "connected_card_ids": [
+      "C01289-K1",
+      "C01996-K2",
+      "C02910-K1",
+      "C02975-K1",
+      "C03676-K2",
+      "C04108-K2",
+      "C04274-K1",
+      "C05448-K2",
+      "C06031-K2",
+      "C06650-K2",
+      "C06710-K1",
+      "C07472-K1",
+      "C08168-K1",
+      "C08972-K2",
+      "C09049-K1",
+      "C09195-K1",
+      "C09906-K1",
+      "C09975-K1",
+      "C10020-K1",
+      "C10193-K2",
+      "C10326-K1",
+      "C11082-K1",
+      "C11670-K2",
+      "C11702-K1",
+      "C12645-K1",
+      "C12796-K1",
+      "C13291-K1"
+    ],
+    "connected_device_profiles": [
+      "SM-G935F Build/NRD90M | Android 7.0 | chrome 62.0 for android | 1920x1080"
+    ],
+    "exposure_usd": 439.61,
     "evidence": [
       {
-        "claim": "Placeholder: the agent has not investigated this case yet. Trigger was analyst_request.",
+        "claim": "Three online C\u2011product transactions on this card (112.37, 74.96, 252.28) all from device SM\u2011G935F",
+        "source": "graph",
+        "ref": "query:card_window(card_id=C13487-K1, hours=72)",
+        "entity_ids": [
+          "3460634",
+          "3478561",
+          "3489320"
+        ]
+      },
+      {
+        "claim": "Device profile SM\u2011G935F is shared with 28 other cards, several of which have confirmed fraud",
+        "source": "graph",
+        "ref": "query:ring_detect(from_=2016-11-01, to=2016-12-31)",
+        "entity_ids": [
+          "SM-G935F Build/NRD90M | Android 7.0 | chrome 62.0 for android | 1920x1080",
+          "C01289-K1",
+          "C01996-K2",
+          "C02910-K1",
+          "C02975-K1",
+          "C03676-K2",
+          "C04108-K2",
+          "C04274-K1",
+          "C05448-K2"
+        ]
+      },
+      {
+        "claim": "Risk scores for the three transactions are low (0.05\u20110.22)",
+        "source": "document",
+        "ref": "document:ring-a-shared-device#2",
+        "entity_ids": []
+      },
+      {
+        "claim": "Cardholder denied the flagged transaction",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      },
+      {
+        "claim": "Prior closed cases with the same device profile were confirmed fraud",
         "source": "external",
-        "ref": "case_pack.csv",
+        "ref": "query:customer_baseline(card_id=C13487-K1)",
         "entity_ids": [
           "3478561"
         ]
+      },
+      {
+        "claim": "Policy R6 and R9 require monitoring and reporting of shared device rings",
+        "source": "document",
+        "ref": "document:ring-a-shared-device#2",
+        "entity_ids": []
       }
     ],
-    "similar_prior_cases": [],
-    "summary": "Placeholder: the agent has not investigated this case yet. Flagged transaction 3478561 on card C13487-K1.",
-    "written_to_graph": false,
-    "graph_case_id": ""
+    "similar_prior_cases": [
+      "CC-5336",
+      "CC-5263",
+      "CC-5217",
+      "CC-4834",
+      "CC-4405",
+      "CC-4324"
+    ],
+    "summary": "The card\u2019s recent online purchases all originate from a shared anonymised device that has been linked to multiple confirmed fraud cases. Low model risk scores are overridden by the strong ring\u2011membership signal and the cardholder\u2019s denial, which together place the fraud probability in the high range. Policy guidance mandates opening a case, filing a SAR, and placing all cards on this device under monitoring.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-2016-014"
   },
-  "evidence_requests": [],
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 6,
+      "assumed_response": "Contacted about the activity, the cardholder states they did not make these purchases and still holds the card."
+    }
+  ],
   "next_best_actions": {
     "initial": [
       {
         "action": "VERIFY_WITH_CUSTOMER",
         "route": "auto",
-        "reason": "R1: probability 0.50 on a single signal is not decisive; confirm with the cardholder before any block"
+        "reason": "R1: probability 0.66 on 2 signals is not decisive; confirm with the cardholder before any block"
       },
       {
         "action": "CREATE_CASE",
         "route": "auto",
-        "reason": "3a: fraud probability 0.50 warrants a case record"
+        "reason": "R6: several cards show activity from a device profile shared with 28 cards"
+      },
+      {
+        "action": "FILE_REPORT",
+        "route": "L2",
+        "reason": "R6/3a: activity connects to a device profile shared with 28 cards across more than one card"
+      },
+      {
+        "action": "MONITOR_CONNECTED_CARDS",
+        "route": "auto",
+        "reason": "R6: monitor every card sharing a device profile shared with 28 cards"
+      },
+      {
+        "action": "ESCALATE_TO_ANALYST",
+        "route": "auto",
+        "reason": "R9: undocumented pattern needs an analyst's eyes before it becomes policy"
       }
     ],
     "final": [
       {
-        "action": "VERIFY_WITH_CUSTOMER",
-        "route": "auto",
-        "reason": "R1: probability 0.50 on a single signal is not decisive; confirm with the cardholder before any block"
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: cardholder denies the transaction; exposure $439.61"
       },
       {
         "action": "CREATE_CASE",
         "route": "auto",
-        "reason": "3a: fraud probability 0.50 warrants a case record"
+        "reason": "R2: unauthorised use confirmed by the cardholder"
+      },
+      {
+        "action": "FILE_REPORT",
+        "route": "L2",
+        "reason": "R6/3a: activity connects to a device profile shared with 28 cards across more than one card"
+      },
+      {
+        "action": "MONITOR_CONNECTED_CARDS",
+        "route": "auto",
+        "reason": "R6: monitor every card sharing a device profile shared with 28 cards"
+      },
+      {
+        "action": "ESCALATE_TO_ANALYST",
+        "route": "auto",
+        "reason": "R9: undocumented pattern needs an analyst's eyes before it becomes policy"
       }
     ],
-    "what_changed": "nothing"
+    "what_changed": "The cardholder denied the activity when asked, moving fraud probability from 0.66 to 0.88; the recommendation firms up accordingly."
   },
   "sar": {
-    "file": false,
-    "reason": "R2/3a: fraud is neither confirmed nor strongly suspected (verdict uncertain, probability 0.50); no report required",
-    "narrative": "",
-    "subjects": [],
-    "total_amount_usd": 0.0,
-    "activity_dates": []
+    "file": true,
+    "reason": "R6/3a: activity connects to a device profile shared with 28 cards across more than one card",
+    "narrative": "The customer identified as C13487 used the payment card designated C13487\u2011K1. Between 2016\u201111\u201115 20:30:00 and 2016\u201111\u201126 17:39:00 the card generated three online transactions (IDs 3460634, 3478561, 3489320) for a combined total of $439.61. All three transactions occurred within the stated period, with the first at 20:30 on 15 November 2016 and the last at 17:39 on 26 November 2016. The activity was conducted through the online channel using product code C on a Samsung SM\u2011G935F device running Android 7.0, Chrome 62.0 for Android, with a screen resolution of 1920\u00d71080. The pattern of the three purchases is undocumented and each transaction was anonymised, yet all three were executed from the same device profile. The device profile is shared with 28 other cards, is newly associated with every account, and is linked to a set of connected cards including C01289\u2011K1, C01996\u2011K2, C02910\u2011K1, C02975\u2011K1, C03676\u2011K2, C04108\u2011K2, C04274\u2011K1, C05448\u2011K2, C06031\u2011K2, C06650\u2011K2, C06710\u2011K1, and C07472\u2011K1. When contacted, the cardholder affirmed that they did not make the purchases and confirmed that they still possess the card. The combination of an undocumented transaction pattern, a device profile shared across multiple unrelated accounts, and the cardholder\u2019s denial renders the activity suspicious.",
+    "subjects": [
+      "C13487",
+      "C13487-K1",
+      "C01289-K1",
+      "C01996-K2",
+      "C02910-K1",
+      "C02975-K1",
+      "C03676-K2",
+      "C04108-K2",
+      "C04274-K1",
+      "C05448-K2",
+      "C06031-K2",
+      "C06650-K2",
+      "SM-G935F Build/NRD90M | Android 7.0 | chrome 62.0 for android | 1920x1080"
+    ],
+    "total_amount_usd": 439.61,
+    "activity_dates": [
+      "2016-11-15",
+      "2016-11-26"
+    ]
   },
-  "stop_reason": "Probability 0.50 on 1 independent signal(s) is not yet decisive; more evidence is warranted.",
-  "tool_calls": 0,
+  "stop_reason": "The cardholder's response (denied) settles the question; further steps would not change the recommended actions.",
+  "tool_calls": 9,
   "tokens": 0,
-  "latency_s": 0.0
+  "latency_s": 2.8
 }

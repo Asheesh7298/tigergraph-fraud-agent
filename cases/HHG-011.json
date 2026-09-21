@@ -3,28 +3,84 @@
   "case": {
     "status": "open",
     "verdict": "uncertain",
-    "fraud_probability": 0.5,
-    "pattern": "none",
+    "fraud_probability": 0.15,
+    "pattern": "card_not_present_new_device",
     "pattern_description": "",
-    "affected_txn_ids": [],
-    "first_suspicious_txn_id": "",
+    "affected_txn_ids": [
+      "3583199",
+      "3583229",
+      "3583348",
+      "3583368",
+      "3583406",
+      "3583411",
+      "3583415",
+      "3583417",
+      "3583435"
+    ],
+    "first_suspicious_txn_id": "3583199",
     "connected_card_ids": [],
     "connected_device_profiles": [],
-    "exposure_usd": 0.0,
+    "exposure_usd": 291.22,
     "evidence": [
       {
-        "claim": "Placeholder: the agent has not investigated this case yet. Trigger was customer_report.",
-        "source": "external",
-        "ref": "case_pack.csv",
+        "claim": "Transaction amount $131.30 exceeds the card\u2019s 90th\u2011percentile ($80.13)",
+        "source": "graph",
+        "ref": "query:card_window(card_id=C11923-K2, hours=72)",
+        "entity_ids": [
+          "3583199",
+          "3583229",
+          "3583348",
+          "3583368",
+          "3583406",
+          "3583411"
+        ]
+      },
+      {
+        "claim": "Device SM\u2011G610F is new to this account",
+        "source": "graph",
+        "ref": "query:card_window(card_id=C11923-K2, hours=72)",
+        "entity_ids": [
+          "3583229",
+          "3583368",
+          "3583406",
+          "3583411",
+          "3583435"
+        ]
+      },
+      {
+        "claim": "33 prior transactions of the same amount and product exist",
+        "source": "graph",
+        "ref": "query:customer_baseline(card_id=C11923-K2)",
         "entity_ids": [
           "3583368"
         ]
+      },
+      {
+        "claim": "Model risk score for the flagged transaction is 0.39",
+        "source": "graph",
+        "ref": "query:customer_baseline(card_id=C11923-K2)",
+        "entity_ids": [
+          "3583368"
+        ]
+      },
+      {
+        "claim": "Typology indicates possible shared\u2011device ring behavior",
+        "source": "document",
+        "ref": "document:policy-r2",
+        "entity_ids": []
       }
     ],
-    "similar_prior_cases": [],
-    "summary": "Placeholder: the agent has not investigated this case yet. Flagged transaction 3583368 on card C11923-K2.",
-    "written_to_graph": false,
-    "graph_case_id": ""
+    "similar_prior_cases": [
+      "CC-5564",
+      "CC-5558",
+      "CC-5556",
+      "CC-5553",
+      "CC-5552",
+      "CC-5551"
+    ],
+    "summary": "The cardholder disputes a $131.30 online purchase that is above the card\u2019s usual spending range and occurs on a new device, but the same amount has been charged 33 times before, suggesting a legitimate recurring pattern. While denial raises fraud likelihood, the strong prior\u2011transaction history and typical benign nature of new\u2011device/off\u2011baseline activity keep the overall probability moderate, resulting in an uncertain verdict.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-2016-011"
   },
   "evidence_requests": [],
   "next_best_actions": {
@@ -32,38 +88,48 @@
       {
         "action": "VERIFY_WITH_CUSTOMER",
         "route": "auto",
-        "reason": "R1: probability 0.50 on a single signal is not decisive; confirm with the cardholder before any block"
+        "reason": "R7: 33 prior transactions of this amount and product on this card establish it as the cardholder's own recurring charge; confirm before acting"
       },
       {
         "action": "CREATE_CASE",
         "route": "auto",
-        "reason": "3a: fraud probability 0.50 warrants a case record"
+        "reason": "R7: customer disputes a charge that matches their own recurring pattern"
+      },
+      {
+        "action": "WARN_CUSTOMER",
+        "route": "auto",
+        "reason": "R7: send a recurring-charge reminder rather than blocking the card"
       }
     ],
     "final": [
       {
         "action": "VERIFY_WITH_CUSTOMER",
         "route": "auto",
-        "reason": "R1: probability 0.50 on a single signal is not decisive; confirm with the cardholder before any block"
+        "reason": "R7: 33 prior transactions of this amount and product on this card establish it as the cardholder's own recurring charge; confirm before acting"
       },
       {
         "action": "CREATE_CASE",
         "route": "auto",
-        "reason": "3a: fraud probability 0.50 warrants a case record"
+        "reason": "R7: customer disputes a charge that matches their own recurring pattern"
+      },
+      {
+        "action": "WARN_CUSTOMER",
+        "route": "auto",
+        "reason": "R7: send a recurring-charge reminder rather than blocking the card"
       }
     ],
     "what_changed": "nothing"
   },
   "sar": {
     "file": false,
-    "reason": "R2/3a: fraud is neither confirmed nor strongly suspected (verdict uncertain, probability 0.50); no report required",
+    "reason": "R7: the disputed charge matches the cardholder's own established pattern (33 prior transactions of this amount and product); no suspicious activity.",
     "narrative": "",
     "subjects": [],
     "total_amount_usd": 0.0,
     "activity_dates": []
   },
-  "stop_reason": "Probability 0.50 on 1 independent signal(s) is not yet decisive; more evidence is warranted.",
-  "tool_calls": 0,
-  "tokens": 0,
-  "latency_s": 0.0
+  "stop_reason": "Fraud probability 0.15 is at or below 0.15 on 2 independent pieces of evidence.",
+  "tool_calls": 7,
+  "tokens": 3622,
+  "latency_s": 25.1
 }

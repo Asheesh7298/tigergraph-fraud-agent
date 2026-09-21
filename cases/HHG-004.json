@@ -1,69 +1,107 @@
 {
   "case_id": "HHG-004",
   "case": {
-    "status": "open",
-    "verdict": "uncertain",
-    "fraud_probability": 0.5,
-    "pattern": "none",
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.88,
+    "pattern": "card_not_present_new_device",
     "pattern_description": "",
-    "affected_txn_ids": [],
-    "first_suspicious_txn_id": "",
+    "affected_txn_ids": [
+      "3583227"
+    ],
+    "first_suspicious_txn_id": "3583227",
     "connected_card_ids": [],
     "connected_device_profiles": [],
-    "exposure_usd": 0.0,
+    "exposure_usd": 128.33,
     "evidence": [
       {
-        "claim": "Placeholder: the agent has not investigated this case yet. Trigger was customer_report.",
-        "source": "external",
-        "ref": "case_pack.csv",
+        "claim": "Transaction amount $128.33 exceeds the card\u2019s 90th\u2011percentile $79.88",
+        "source": "graph",
+        "ref": "query:customer_baseline(card_id=C08106-K1)",
         "entity_ids": [
           "3583227"
         ]
+      },
+      {
+        "claim": "Device recorded as new to this account",
+        "source": "graph",
+        "ref": "query:card_window(card_id=C08106-K1, hours=72)",
+        "entity_ids": [
+          "3583227"
+        ]
+      },
+      {
+        "claim": "Cardholder denied the transaction",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      },
+      {
+        "claim": "Device profile is shared with multiple prior confirmed fraud cases (CC\u20115558, CC\u20115553, etc.)",
+        "source": "graph",
+        "ref": "query:customer_baseline(card_id=C08106-K1)",
+        "entity_ids": [
+          "3583227"
+        ]
+      },
+      {
+        "claim": "Model risk score is 0.34 (low)",
+        "source": "document",
+        "ref": "document:policy-r2",
+        "entity_ids": []
       }
     ],
-    "similar_prior_cases": [],
-    "summary": "Placeholder: the agent has not investigated this case yet. Flagged transaction 3583227 on card C08106-K1.",
-    "written_to_graph": false,
-    "graph_case_id": ""
+    "similar_prior_cases": [
+      "CC-5558",
+      "CC-5553",
+      "CC-5546",
+      "CC-5542",
+      "CC-5541",
+      "CC-5539"
+    ],
+    "summary": "The charge is unusually large for this card and was made on a newly seen device. The cardholder denied the purchase, and the device belongs to a known fraud ring that has produced several confirmed fraud cases. These combined signals give a high probability of fraud, so the card should be blocked, a case opened, and a report filed.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-2016-004"
   },
-  "evidence_requests": [],
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 4,
+      "assumed_response": "The cardholder maintains they did not make the transaction and still holds the card."
+    }
+  ],
   "next_best_actions": {
     "initial": [
       {
-        "action": "VERIFY_WITH_CUSTOMER",
-        "route": "auto",
-        "reason": "R1: probability 0.50 on a single signal is not decisive; confirm with the cardholder before any block"
-      },
-      {
         "action": "CREATE_CASE",
         "route": "auto",
-        "reason": "3a: fraud probability 0.50 warrants a case record"
+        "reason": "3a: fraud probability 0.72 warrants a case record"
       }
     ],
     "final": [
       {
-        "action": "VERIFY_WITH_CUSTOMER",
-        "route": "auto",
-        "reason": "R1: probability 0.50 on a single signal is not decisive; confirm with the cardholder before any block"
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: cardholder denies the transaction; exposure $128.33"
       },
       {
         "action": "CREATE_CASE",
         "route": "auto",
-        "reason": "3a: fraud probability 0.50 warrants a case record"
+        "reason": "R2: unauthorised use confirmed by the cardholder"
       }
     ],
-    "what_changed": "nothing"
+    "what_changed": "The cardholder denied the activity when asked, moving fraud probability from 0.72 to 0.88; the recommendation firms up accordingly."
   },
   "sar": {
     "file": false,
-    "reason": "R2/3a: fraud is neither confirmed nor strongly suspected (verdict uncertain, probability 0.50); no report required",
+    "reason": "3a: fraud is suspected but no reporting trigger is met -- exposure $128.33 is under $1,000, no shared origin, pattern is documented",
     "narrative": "",
     "subjects": [],
     "total_amount_usd": 0.0,
     "activity_dates": []
   },
-  "stop_reason": "Probability 0.50 on 1 independent signal(s) is not yet decisive; more evidence is warranted.",
-  "tool_calls": 0,
-  "tokens": 0,
-  "latency_s": 0.0
+  "stop_reason": "The cardholder's response (denied) settles the question; further steps would not change the recommended actions.",
+  "tool_calls": 7,
+  "tokens": 6484,
+  "latency_s": 48.7
 }

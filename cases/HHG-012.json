@@ -1,9 +1,9 @@
 {
   "case_id": "HHG-012",
   "case": {
-    "status": "open",
-    "verdict": "uncertain",
-    "fraud_probability": 0.5,
+    "status": "closed_legitimate",
+    "verdict": "legitimate",
+    "fraud_probability": 0.3,
     "pattern": "none",
     "pattern_description": "",
     "affected_txn_ids": [],
@@ -13,57 +13,98 @@
     "exposure_usd": 0.0,
     "evidence": [
       {
-        "claim": "Placeholder: the agent has not investigated this case yet. Trigger was risk_score.",
-        "source": "external",
-        "ref": "case_pack.csv",
+        "claim": "Risk score 0.55",
+        "source": "document",
+        "ref": "document:policy-r5",
+        "entity_ids": []
+      },
+      {
+        "claim": "Billing region 494.0 not in prior region list",
+        "source": "graph",
+        "ref": "query:customer_baseline(card_id=C05876-K2)",
+        "entity_ids": [
+          "3553342"
+        ]
+      },
+      {
+        "claim": "Cardholder confirmed the transaction",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      },
+      {
+        "claim": "79 prior transactions of same amount and product",
+        "source": "graph",
+        "ref": "query:customer_baseline(card_id=C05876-K2)",
+        "entity_ids": [
+          "3553342"
+        ]
+      },
+      {
+        "claim": "No shared device profile matches prior fraud cases",
+        "source": "graph",
+        "ref": "query:customer_baseline(card_id=C05876-K2)",
         "entity_ids": [
           "3553342"
         ]
       }
     ],
-    "similar_prior_cases": [],
-    "summary": "Placeholder: the agent has not investigated this case yet. Flagged transaction 3553342 on card C05876-K2.",
-    "written_to_graph": false,
-    "graph_case_id": ""
+    "similar_prior_cases": [
+      "CC-5556",
+      "CC-5528",
+      "CC-5505",
+      "CC-5481",
+      "CC-5455",
+      "CC-5446"
+    ],
+    "summary": "The flagged $30.91 purchase shows a modest risk score and an out\u2011of\u2011region indicator, but the cardholder confirmed it and the card\u2019s history includes many identical in\u2011person transactions. No shared device or prior fraud connections exist. Policy R3 directs closing as no fraud. Therefore the transaction is deemed legitimate.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-2016-012"
   },
-  "evidence_requests": [],
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 5,
+      "assumed_response": "The cardholder confirms they made the transaction."
+    }
+  ],
   "next_best_actions": {
     "initial": [
       {
-        "action": "VERIFY_WITH_CUSTOMER",
+        "action": "ALLOW_TRANSACTION",
         "route": "auto",
-        "reason": "R1: probability 0.50 on a single signal is not decisive; confirm with the cardholder before any block"
+        "reason": "R3: no basis to decline"
       },
       {
-        "action": "CREATE_CASE",
+        "action": "CLOSE_NO_FRAUD",
         "route": "auto",
-        "reason": "3a: fraud probability 0.50 warrants a case record"
+        "reason": "R3: activity is consistent with the cardholder's history"
       }
     ],
     "final": [
       {
-        "action": "VERIFY_WITH_CUSTOMER",
-        "route": "auto",
-        "reason": "R1: probability 0.50 on a single signal is not decisive; confirm with the cardholder before any block"
-      },
-      {
         "action": "CREATE_CASE",
         "route": "auto",
-        "reason": "3a: fraud probability 0.50 warrants a case record"
+        "reason": "R3/3a: record the confirmation against the investigation"
+      },
+      {
+        "action": "CLOSE_NO_FRAUD",
+        "route": "auto",
+        "reason": "R3: cardholder confirms they made the transaction"
       }
     ],
-    "what_changed": "nothing"
+    "what_changed": "The cardholder confirmed the activity when asked, moving fraud probability from 0.22 to 0.30 and settling the case as legitimate."
   },
   "sar": {
     "file": false,
-    "reason": "R2/3a: fraud is neither confirmed nor strongly suspected (verdict uncertain, probability 0.50); no report required",
+    "reason": "R2/3a: fraud is neither confirmed nor strongly suspected (verdict legitimate, probability 0.30); no report required",
     "narrative": "",
     "subjects": [],
     "total_amount_usd": 0.0,
     "activity_dates": []
   },
-  "stop_reason": "Probability 0.50 on 1 independent signal(s) is not yet decisive; more evidence is warranted.",
-  "tool_calls": 0,
-  "tokens": 0,
-  "latency_s": 0.0
+  "stop_reason": "The cardholder's response (confirmed) settles the question; further steps would not change the recommended actions.",
+  "tool_calls": 8,
+  "tokens": 6014,
+  "latency_s": 42.3
 }

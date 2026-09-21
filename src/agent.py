@@ -145,6 +145,15 @@ class RingIndex:
 
     CACHE = ROOT / "data" / ".ring_index.json"
 
+    #: A real device ring is new to every account it touches AND hides behind
+    #: an anonymising proxy. Ring A scores 1.0 on both; the false positives are
+    #: ordinary shared browsers -- IE11-on-Win7 (138 cards) is 41% new, 13%
+    #: anonymised, and a score threshold alone let it through and mislabelled a
+    #: legitimate recurring-charge case as an undocumented ring. Gating on the
+    #: ratios, not the score, keeps only genuine anonymised-proxy rings.
+    MIN_NEW_RATIO = 0.80
+    MIN_ANON_RATIO = 0.50
+
     def __init__(self, tools: FraudTools, start: str = RING_FROM, end: str = RING_TO,
                  min_cards: int = 3, min_score: float = 3.0, use_cache: bool = True) -> None:
         self.by_card: dict[str, dict[str, Any]] = {}
@@ -153,7 +162,7 @@ class RingIndex:
         # The scan covers every online transaction in the window and the
         # answer does not change between cases, so it is cached to disk.
         # Delete data/.ring_index.json to force a rebuild.
-        key = f"{start}|{end}|{min_cards}|{min_score}"
+        key = f"{start}|{end}|{min_cards}|{min_score}|n{self.MIN_NEW_RATIO}|a{self.MIN_ANON_RATIO}"
         ranked: list[dict[str, Any]] | None = None
         if use_cache and self.CACHE.exists():
             try:
@@ -172,7 +181,14 @@ class RingIndex:
                 )
 
         for row in ranked:
+            # Both a meaningful score and the anonymised-proxy + new-device
+            # signature. The ratio gates are what separate a real ring from a
+            # popular browser shared by many unrelated cardholders.
             if row["ring_score"] < min_score:
+                continue
+            if row.get("new_ratio", 0) < self.MIN_NEW_RATIO:
+                continue
+            if row.get("anon_ratio", 0) < self.MIN_ANON_RATIO:
                 continue
             self.clusters.append(row)
             for card in row["cards"]:
