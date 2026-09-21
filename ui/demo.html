@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Fraud Investigation — Demo Deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" />
+<style>
+  :root {
+    --bg: #0c0d11;
+    --bg2: #14161c;
+    --panel: #181b22;
+    --panel2: #1e222b;
+    --border: #2a2f3a;
+    --text: #edeef1;
+    --muted: #9aa1ad;
+    --dim: #6b7280;
+    --accent: #f0731a;
+    --accent-soft: #f0731a22;
+    --fraud: #e5484d;
+    --legit: #30a46c;
+    --uncertain: #f5a623;
+    --disp: "Bricolage Grotesque", system-ui, sans-serif;
+    --body: "IBM Plex Sans", system-ui, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { height: 100%; }
+  body {
+    background: radial-gradient(120% 90% at 50% -10%, #16181f 0%, var(--bg) 55%);
+    color: var(--text);
+    font-family: var(--body);
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* fixed 16:9 stage, scaled to fit the window — clean for recording */
+  .viewport { position: fixed; inset: 0; display: grid; place-items: center; overflow: hidden; }
+  .scaler { transform-origin: center center; }
+  .stage {
+    width: 1280px; height: 720px; position: relative;
+    background: linear-gradient(160deg, #101218 0%, #0c0d11 60%);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 40px 120px -30px #000;
+  }
+
+  .scene {
+    position: absolute; inset: 0;
+    padding: 64px 72px;
+    display: flex; flex-direction: column;
+    opacity: 0; visibility: hidden;
+    transition: opacity .5s ease;
+  }
+  .scene.active { opacity: 1; visibility: visible; }
+
+  .eyebrow {
+    font-family: var(--mono); font-size: 13px; letter-spacing: .22em;
+    text-transform: uppercase; color: var(--accent); font-weight: 500;
+  }
+  h1 { font-family: var(--disp); font-weight: 800; line-height: 1.02; letter-spacing: -.02em; text-wrap: balance; }
+  h2 { font-family: var(--disp); font-weight: 700; letter-spacing: -.015em; text-wrap: balance; }
+  .lead { color: var(--muted); font-size: 20px; line-height: 1.5; max-width: 62ch; }
+
+  /* entrance animation primitives — driven by .active */
+  .r { opacity: 0; transform: translateY(16px); }
+  .scene.active .r { animation: rise .6s cubic-bezier(.2,.7,.2,1) forwards; }
+  .scene.active .r.d1 { animation-delay: .10s; }
+  .scene.active .r.d2 { animation-delay: .22s; }
+  .scene.active .r.d3 { animation-delay: .36s; }
+  .scene.active .r.d4 { animation-delay: .52s; }
+  .scene.active .r.d5 { animation-delay: .70s; }
+  .scene.active .r.d6 { animation-delay: .90s; }
+  @keyframes rise { to { opacity: 1; transform: none; } }
+
+  /* ---- Scene 1: title ---- */
+  .s-title { justify-content: center; }
+  .s-title .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 26px; }
+  .s-title .glyph { width: 34px; height: 34px; border-radius: 9px;
+    background: linear-gradient(135deg, var(--accent), #ffab5e); position: relative; }
+  .s-title .glyph::after { content: ""; position: absolute; inset: 9px 9px auto auto;
+    width: 8px; height: 8px; border-radius: 50%; background: #0c0d11; top: 8px; right: 8px; }
+  .s-title h1 { font-size: 76px; }
+  .s-title .accent { color: var(--accent); }
+  .s-title .sub { margin-top: 22px; font-size: 21px; color: var(--muted); max-width: 60ch; line-height: 1.45; }
+  .s-title .foot { margin-top: 40px; font-family: var(--mono); font-size: 14px; color: var(--dim); letter-spacing: .04em; }
+
+  /* ---- generic scene head ---- */
+  .head { margin-bottom: 34px; }
+  .head h2 { font-size: 46px; margin-top: 14px; }
+
+  /* ---- Scene 2: the constraint ---- */
+  .stat-huge { font-family: var(--disp); font-weight: 800; font-size: 130px; line-height: 1;
+    letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+  .stat-row { display: flex; gap: 64px; align-items: baseline; flex-wrap: wrap; }
+  .stat-cap { font-family: var(--mono); font-size: 14px; color: var(--muted); letter-spacing: .06em; margin-top: 10px; }
+  .strike { color: var(--fraud); }
+
+  /* ---- Scene 3: architecture pipeline ---- */
+  .pipe { display: flex; align-items: stretch; gap: 0; margin-top: 20px; }
+  .node { flex: 1; background: var(--panel); border: 1px solid var(--border); border-radius: 14px;
+    padding: 22px 20px; position: relative; }
+  .node h3 { font-family: var(--disp); font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+  .node p { color: var(--muted); font-size: 14px; line-height: 1.5; }
+  .node .tag { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 12px; display: block; }
+  .arrow { align-self: center; color: var(--dim); font-size: 26px; padding: 0 14px; flex: none; }
+  .split-note { margin-top: 34px; display: flex; gap: 16px; }
+  .split-col { flex: 1; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; }
+  .split-col .lbl { font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  .split-col ul { list-style: none; margin-top: 10px; display: flex; flex-direction: column; gap: 5px; }
+  .split-col li { font-size: 14px; }
+  .split-col.llm { border-color: #3a2f4a; }
+  .split-col.code { border-color: #2f3a44; }
+  .split-col.code .lbl { color: #6fd0a3; }
+
+  /* ---- Scene 4: ring reveal (centerpiece) ---- */
+  .ring-wrap { display: flex; gap: 44px; margin-top: 12px; flex: 1; }
+  .ring-left { flex: 1.3; display: flex; flex-direction: column; }
+  .ring-right { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 22px; }
+  .metric-toggle { font-family: var(--mono); font-size: 13px; letter-spacing: .06em; color: var(--muted); margin-bottom: 14px; }
+  .metric-toggle b { color: var(--text); }
+  .bars { display: flex; flex-direction: column; gap: 9px; }
+  .bar { display: grid; grid-template-columns: 128px 1fr 54px; align-items: center; gap: 12px; }
+  .bar .name { font-family: var(--mono); font-size: 12px; color: var(--muted); text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bar .track { height: 22px; background: var(--panel2); border-radius: 6px; overflow: hidden; }
+  .bar .fill { height: 100%; width: 0; border-radius: 6px; background: #3a4150; transition: width 1s cubic-bezier(.2,.7,.2,1); }
+  .bar .val { font-family: var(--mono); font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .bar.ring .name { color: var(--accent); font-weight: 600; }
+  .bar.ring .fill { background: linear-gradient(90deg, var(--accent), #ffab5e); }
+  .bar.ring .val { color: var(--accent); font-weight: 600; }
+  .ratio { }
+  .ratio .rlabel { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+  .ratio .rlabel b { color: var(--text); }
+  .ratio .track { height: 12px; background: var(--panel2); border-radius: 6px; overflow: hidden; }
+  .ratio .fill { height: 100%; width: 0; border-radius: 6px; background: linear-gradient(90deg, var(--accent), #ffab5e); transition: width 1.1s cubic-bezier(.2,.7,.2,1); }
+  .ring-punch { font-family: var(--disp); font-size: 22px; font-weight: 700; line-height: 1.25; }
+  .ring-punch .accent { color: var(--accent); }
+
+  /* ---- Scene 5: verdict distribution / results ---- */
+  .tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 10px; }
+  .tile { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 24px; }
+  .tile .n { font-family: var(--disp); font-weight: 800; font-size: 64px; line-height: 1; font-variant-numeric: tabular-nums; }
+  .tile .k { font-family: var(--mono); font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-top: 10px; }
+  .tile.fraud .n { color: var(--fraud); }
+  .tile.legit .n { color: var(--legit); }
+  .tile.unc .n { color: var(--uncertain); }
+  .result-row { display: flex; gap: 16px; margin-top: 18px; }
+  .rchip { flex: 1; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 16px 20px; display: flex; align-items: baseline; gap: 12px; }
+  .rchip .rn { font-family: var(--disp); font-weight: 700; font-size: 30px; }
+  .rchip .rk { font-size: 14px; color: var(--muted); }
+
+  /* ---- Scene 6: close ---- */
+  .s-close { justify-content: center; align-items: flex-start; }
+  .s-close h1 { font-size: 58px; max-width: 20ch; }
+  .s-close .tagline { margin-top: 24px; font-size: 22px; color: var(--muted); max-width: 54ch; line-height: 1.5; }
+  .s-close .repo { margin-top: 40px; font-family: var(--mono); font-size: 15px; color: var(--accent); }
+
+  /* chrome: progress + hint */
+  .chrome { position: fixed; left: 0; right: 0; bottom: 20px; display: flex; justify-content: center; align-items: center; gap: 16px; z-index: 5; }
+  .dots { display: flex; gap: 8px; }
+  .dots button { width: 8px; height: 8px; border-radius: 50%; border: none; background: #3a3f4b; cursor: pointer; padding: 0; transition: all .3s; }
+  .dots button.on { background: var(--accent); width: 22px; border-radius: 4px; }
+  .hint { font-family: var(--mono); font-size: 12px; color: var(--dim); letter-spacing: .04em; }
+  kbd { font-family: var(--mono); background: var(--panel2); border: 1px solid var(--border); border-radius: 4px; padding: 1px 6px; font-size: 11px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .scene, .r, .fill { transition: none !important; animation: none !important; opacity: 1 !important; transform: none !important; }
+    .scene:not(.active) { opacity: 0 !important; }
+    .scene.active .r { opacity: 1; transform: none; }
+  }
+</style>
+</head>
+<body>
+<div class="viewport">
+  <div class="scaler" id="scaler">
+  <div class="stage" id="stage">
+
+    <!-- 1 · TITLE -->
+    <section class="scene s-title active" data-scene="0">
+      <div class="brand r"><span class="glyph"></span>
+        <span style="font-family:var(--mono);font-size:14px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase">TigerGraph · Hacker House Goa</span></div>
+      <h1 class="r d1">Agentic <span class="accent">fraud</span><br>investigation</h1>
+      <p class="sub r d2">An AI agent that investigates card-fraud alerts on a knowledge graph — deciding the verdict, the exposure, and the next best action, when the data has no fraud label at all.</p>
+      <div class="foot r d3">590,742 transactions · IEEE-CIS / Vesta · TigerGraph + GSQL + GraphRAG + MCP</div>
+    </section>
+
+    <!-- 2 · THE CONSTRAINT -->
+    <section class="scene" data-scene="1">
+      <div class="head">
+        <div class="eyebrow r">The constraint</div>
+        <h2 class="r d1">There is no answer key.</h2>
+      </div>
+      <div class="stat-row" style="margin-top:auto;margin-bottom:auto">
+        <div class="r d2">
+          <div class="stat-huge">590,742</div>
+          <div class="stat-cap">card transactions</div>
+        </div>
+        <div class="r d3">
+          <div class="stat-huge strike">0</div>
+          <div class="stat-cap">fraud labels</div>
+        </div>
+        <div class="r d4">
+          <div class="stat-huge">20</div>
+          <div class="stat-cap">cases to decide, from evidence alone</div>
+        </div>
+      </div>
+      <p class="lead r d5" style="margin-top:20px">The only ground truth is 5,565 closed historical cases. Every verdict has to be argued from the graph.</p>
+    </section>
+
+    <!-- 3 · ARCHITECTURE -->
+    <section class="scene" data-scene="2">
+      <div class="head">
+        <div class="eyebrow r">How it's built</div>
+        <h2 class="r d1">The graph investigates. Code decides the rules.</h2>
+      </div>
+      <div class="pipe">
+        <div class="node r d2">
+          <span class="tag">TigerGraph</span>
+          <h3>Knowledge graph</h3>
+          <p>Customers, cards, transactions, devices, regions, prior cases — plus a vector store for the policy.</p>
+        </div>
+        <div class="arrow r d3">→</div>
+        <div class="node r d3">
+          <span class="tag">MCP · GraphRAG</span>
+          <h3>Eight tools</h3>
+          <p>Six GSQL queries, transaction lookup, and semantic policy search — served over MCP.</p>
+        </div>
+        <div class="arrow r d4">→</div>
+        <div class="node r d4">
+          <span class="tag">Agent</span>
+          <h3>State machine</h3>
+          <p>Gather → retrieve → assess → request evidence → re-assess → decide → explain.</p>
+        </div>
+      </div>
+      <div class="split-note">
+        <div class="split-col llm r d5">
+          <span class="lbl">LLM decides</span>
+          <ul><li>verdict on ambiguity</li><li>probability &amp; evidence prose</li><li>the SAR narrative</li></ul>
+        </div>
+        <div class="split-col code r d6">
+          <span class="lbl">Code decides</span>
+          <ul><li>exposure · approval routes</li><li>the report decision</li><li>the action rules R1–R10</li></ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 · RING REVEAL (centerpiece) -->
+    <section class="scene" data-scene="3">
+      <div class="head">
+        <div class="eyebrow r">The finding</div>
+        <h2 class="r d1">Finding a ring the risk model can't see.</h2>
+      </div>
+      <div class="ring-wrap">
+        <div class="ring-left r d2">
+          <div class="metric-toggle" id="ringMode">Ranking by <b>shared cards</b> — the ring hides at rank 71</div>
+          <div class="bars" id="ringBars"></div>
+        </div>
+        <div class="ring-right">
+          <div class="ratio r d3">
+            <div class="rlabel"><span>New to every account</span><b id="newPct">0%</b></div>
+            <div class="track"><div class="fill" id="newFill"></div></div>
+          </div>
+          <div class="ratio r d3">
+            <div class="rlabel"><span>Behind an anonymising proxy</span><b id="anonPct">0%</b></div>
+            <div class="track"><div class="fill" id="anonFill"></div></div>
+          </div>
+          <div class="ring-punch r d4">Rank by <span class="accent">behaviour</span>, not popularity, and the ring jumps to <span class="accent">#1</span> — 28 cards, no device string in the query.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 · RESULTS -->
+    <section class="scene" data-scene="4">
+      <div class="head">
+        <div class="eyebrow r">The twenty cases</div>
+        <h2 class="r d1">From an uncertain signal to a defensible call.</h2>
+      </div>
+      <div class="tiles">
+        <div class="tile fraud r d2"><div class="n" data-count="7">0</div><div class="k">Fraud</div></div>
+        <div class="tile legit r d3"><div class="n" data-count="12">0</div><div class="k">Legitimate</div></div>
+        <div class="tile unc r d4"><div class="n" data-count="1">0</div><div class="k">Uncertain</div></div>
+      </div>
+      <div class="result-row">
+        <div class="rchip r d4"><span class="rn accent">2</span><span class="rk">rings found — device &amp; structuring</span></div>
+        <div class="rchip r d5"><span class="rn">3</span><span class="rk">reports filed, incl. the $1,000.03 boundary</span></div>
+        <div class="rchip r d6"><span class="rn legit">0</span><span class="rk">schema violations · every ID real</span></div>
+      </div>
+    </section>
+
+    <!-- 6 · CLOSE -->
+    <section class="scene s-close" data-scene="5">
+      <div class="eyebrow r">The point</div>
+      <h1 class="r d1">It shows its work — and asks when it's unsure.</h1>
+      <p class="tagline r d2">Every claim cites the graph query behind it. When the signal is weak, it verifies instead of blocking a customer who did nothing wrong.</p>
+      <div class="repo r d3">github.com/Asheesh7298/tigergraph-fraud-agent</div>
+    </section>
+
+  </div>
+  </div>
+</div>
+
+<div class="chrome">
+  <div class="dots" id="dots"></div>
+  <span class="hint">Advance with <kbd>→</kbd> / <kbd>Space</kbd> · back with <kbd>←</kbd></span>
+</div>
+
+<script>
+(() => {
+  const scenes = [...document.querySelectorAll(".scene")];
+  const dotsWrap = document.getElementById("dots");
+  let i = 0;
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  scenes.forEach((_, n) => {
+    const b = document.createElement("button");
+    b.setAttribute("aria-label", "Scene " + (n + 1));
+    b.addEventListener("click", () => go(n));
+    dotsWrap.appendChild(b);
+  });
+  const dots = [...dotsWrap.children];
+
+  // ring bars: name, cardCount, ringScore, isRing
+  const RING = [
+    ["unknown ×4", 367, 0.0, false],
+    ["Windows · chrome 65", 251, 2.7, false],
+    ["iOS 11.3 · safari", 183, 0.9, false],
+    ["Trident · IE11 / Win7", 138, 7.5, false],
+    ["SM-G935F · Android 7", 28, 28.0, true],
+  ];
+  const ringBars = document.getElementById("ringBars");
+  RING.forEach(([name]) => {
+    const row = document.createElement("div");
+    row.className = "bar";
+    row.innerHTML = `<div class="name">${name}</div><div class="track"><div class="fill"></div></div><div class="val"></div>`;
+    ringBars.appendChild(row);
+  });
+
+  function paintRing(mode) {
+    const rows = [...ringBars.children];
+    const key = mode === "cards" ? 1 : 2;
+    const max = Math.max(...RING.map(r => r[key])) || 1;
+    RING.forEach((r, n) => {
+      const row = rows[n];
+      row.classList.toggle("ring", mode === "score" && r[3]);
+      const fill = row.querySelector(".fill");
+      const val = row.querySelector(".val");
+      const pct = (r[key] / max) * 100;
+      fill.style.width = (reduce ? pct : 0) + "%";
+      if (!reduce) requestAnimationFrame(() => requestAnimationFrame(() => { fill.style.width = pct + "%"; }));
+      val.textContent = mode === "cards" ? r[1] : r[2].toFixed(1);
+      if (mode === "score" && r[3]) { val.style.color = ""; }
+    });
+    document.getElementById("ringMode").innerHTML =
+      mode === "cards"
+        ? 'Ranking by <b>shared cards</b> — the ring hides at rank 71'
+        : 'Ranking by <b>cards × new × proxy</b> — the ring is #1';
+  }
+
+  let ringStep = 0;
+  function ringScene(reset) {
+    if (reset) { ringStep = 0; paintRing("cards");
+      setFill("newFill", "newPct", 0); setFill("anonFill", "anonPct", 0); return; }
+  }
+  function setFill(fillId, pctId, pct) {
+    const f = document.getElementById(fillId);
+    f.style.width = (reduce ? pct : 0) + "%";
+    if (!reduce) requestAnimationFrame(() => requestAnimationFrame(() => { f.style.width = pct + "%"; }));
+    document.getElementById(pctId).textContent = Math.round(pct) + "%";
+  }
+  // advance the ring scene's internal states before leaving it
+  function ringAdvance() {
+    // returns true if it consumed the advance (stayed on scene)
+    if (i !== 3) return false;
+    if (ringStep === 0) { ringStep = 1; paintRing("score"); setFill("newFill","newPct",100); setFill("anonFill","anonPct",100); return true; }
+    return false;
+  }
+
+  function countUp(scene) {
+    scene.querySelectorAll("[data-count]").forEach(el => {
+      const target = +el.dataset.count;
+      if (reduce) { el.textContent = target; return; }
+      let v = 0; const t0 = performance.now(), dur = 900;
+      const tick = (t) => {
+        const p = Math.min(1, (t - t0) / dur);
+        el.textContent = Math.round(target * (1 - Math.pow(1 - p, 3)));
+        if (p < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    });
+  }
+
+  function activate(n) {
+    scenes.forEach((s, k) => s.classList.toggle("active", k === n));
+    dots.forEach((d, k) => d.classList.toggle("on", k === n));
+    if (n === 3) ringScene(true);
+    if (n === 4) setTimeout(() => countUp(scenes[4]), 350);
+  }
+  function go(n) { i = Math.max(0, Math.min(scenes.length - 1, n)); activate(i); }
+  function next() { if (ringAdvance()) return; go(i + 1); }
+  function prev() { go(i - 1); }
+
+  addEventListener("keydown", (e) => {
+    if (e.key === "ArrowRight" || e.key === " " || e.key === "PageDown") { e.preventDefault(); next(); }
+    else if (e.key === "ArrowLeft" || e.key === "PageUp") { e.preventDefault(); prev(); }
+    else if (e.key === "Home") go(0);
+    else if (e.key === "End") go(scenes.length - 1);
+  });
+  document.getElementById("stage").addEventListener("click", (e) => {
+    if (e.target.closest("button")) return;
+    next();
+  });
+
+  // scale the 1280x720 stage to fit any window, leaving room for the chrome
+  const scaler = document.getElementById("scaler");
+  function fit() {
+    const s = Math.min(innerWidth / 1280, (innerHeight - 70) / 720);
+    scaler.style.transform = "scale(" + Math.min(s, 1.35) + ")";
+  }
+  addEventListener("resize", fit);
+  fit();
+
+  activate(0);
+})();
+</script>
+</body>
+</html>

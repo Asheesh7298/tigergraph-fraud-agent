@@ -2,7 +2,14 @@
 
 Target 4:00. Screen recording with voiceover. Have the workspace **awake**
 before recording (open it once so it's not mid-wake), and have `cases/`,
-`streamlit run ui/app.py`, and a terminal ready.
+the React UI (`cd web && npm run dev`), and a terminal ready.
+
+**Animated visuals deck:** open `ui/demo.html` in a browser, press F11 for
+fullscreen, and screen-record it — that's your motion-graphics track for the
+title, architecture, the ring reveal, and the results. Advance each scene with
+→ / Space to match your voiceover; the ring scene has a two-step reveal (first
+→ flips it from "by shared cards" to "by behaviour," where the ring jumps to
+#1). Intercut this with the live app/terminal footage in DaVinci.
 
 ---
 
