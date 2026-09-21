@@ -848,7 +848,17 @@ REQUIREMENTS
                 continue
             seen.add(claim.lower())
             sig = by_signal.get(item.get("signal", ""))
-            src = item.get("source", "graph")
+            # The model sometimes labels a source outside the schema's four
+            # allowed values -- most often "policy" (a document) or "baseline"
+            # (a graph fact). Coerce to the closest legal source rather than
+            # let one stray label fail the whole case at construction.
+            raw_src = (item.get("source") or "graph").lower()
+            src = {
+                "graph": "graph", "document": "document",
+                "customer": "customer", "external": "external",
+                "policy": "document", "typology": "document", "rule": "document",
+                "baseline": "graph", "prior_case": "graph", "risk_score": "graph",
+            }.get(raw_src, "graph")
             if src == "customer" and not requests:
                 continue
             if sig:
