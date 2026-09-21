@@ -86,7 +86,8 @@
   .s-title h1 { font-size: 76px; }
   .s-title .accent { color: var(--accent); }
   .s-title .sub { margin-top: 22px; font-size: 21px; color: var(--muted); max-width: 60ch; line-height: 1.45; }
-  .s-title .foot { margin-top: 40px; font-family: var(--mono); font-size: 14px; color: var(--dim); letter-spacing: .04em; }
+  .foot { font-family: var(--mono); font-size: 14px; color: var(--dim); letter-spacing: .04em; }
+  .s-title .foot { margin-top: 40px; }
 
   /* ---- generic scene head ---- */
   .head { margin-bottom: 34px; }
@@ -116,6 +117,43 @@
   .split-col.llm { border-color: #3a2f4a; }
   .split-col.code { border-color: #2f3a44; }
   .split-col.code .lbl { color: #6fd0a3; }
+
+  /* ---- Architecture flowchart (layered) ---- */
+  .flow { display: flex; flex-direction: column; gap: 0; margin-top: 6px; flex: 1; justify-content: center; }
+  .layer { display: flex; gap: 12px; justify-content: center; }
+  .fnode { background: var(--panel); border: 1px solid var(--border); border-radius: 11px; padding: 12px 16px; text-align: center; min-width: 0; }
+  .fnode .ft { font-family: var(--disp); font-weight: 700; font-size: 16px; }
+  .fnode .fs { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: 3px; letter-spacing: .02em; }
+  .fnode.tg { border-color: #4a3620; background: linear-gradient(180deg, #1c1710, var(--panel)); }
+  .fnode.tg .ft { color: var(--accent); }
+  .fnode.wide { flex: 1; }
+  .fnode.llm { border-color: #3a2f4a; }
+  .flow .conn { height: 22px; display: flex; align-items: center; justify-content: center; color: var(--dim); font-size: 15px; }
+  .flow .conn::before { content: "▼"; }
+  .layer-label { font-family: var(--mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--dim); align-self: center; width: 92px; text-align: right; flex: none; }
+  .layer.with-label { align-items: center; }
+  .agent-row { display: flex; gap: 12px; align-items: stretch; }
+  .agent-main { flex: 1; }
+  .agent-main .stages { display: flex; flex-wrap: wrap; gap: 5px 8px; margin-top: 8px; justify-content: center; }
+  .agent-main .stg { font-family: var(--mono); font-size: 10.5px; color: var(--muted); background: var(--panel2); border-radius: 5px; padding: 3px 7px; }
+  .agent-main .stg.key { color: var(--accent); }
+  .llm-side { display: flex; flex-direction: column; justify-content: center; }
+
+  /* ---- Investigation pipeline (horizontal flow) ---- */
+  .pipeflow { display: flex; align-items: stretch; flex-wrap: wrap; gap: 8px; margin-top: 10px; flex: 1; align-content: center; }
+  .pstep { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; flex: 1 1 0; min-width: 130px; }
+  .pstep .pn { font-family: var(--mono); font-size: 11px; color: var(--accent); }
+  .pstep .ph { font-family: var(--disp); font-weight: 700; font-size: 15px; margin: 5px 0 4px; }
+  .pstep .pp { font-size: 12px; color: var(--muted); line-height: 1.4; }
+  .pstep.loop { border-color: #4a3620; }
+
+  /* ---- Stack scene ---- */
+  .stack-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 10px; flex: 1; align-content: center; }
+  .scat { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; }
+  .scat .sl { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  .scat .sv { font-family: var(--disp); font-weight: 700; font-size: 19px; margin-top: 8px; line-height: 1.3; }
+  .scat .sd { font-size: 12.5px; color: var(--muted); margin-top: 6px; line-height: 1.45; }
+  .scat .sv .accent { color: var(--accent); }
 
   /* ---- Scene: agentic approach (2x2 capability grid) ---- */
   .cap-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 8px; flex: 1; align-content: center; }
@@ -196,62 +234,69 @@
       <div class="foot r d3">590,742 transactions · IEEE-CIS / Vesta · TigerGraph + GSQL + GraphRAG + MCP</div>
     </section>
 
-    <!-- 2 · THE CONSTRAINT -->
+    <!-- 2 · INVESTIGATION PIPELINE (how a case flows) -->
     <section class="scene" data-scene="1">
       <div class="head">
-        <div class="eyebrow r">The constraint</div>
-        <h2 class="r d1">There is no answer key.</h2>
+        <div class="eyebrow r">How a case flows</div>
+        <h2 class="r d1">One investigation, nine explicit stages.</h2>
       </div>
-      <div class="stat-row" style="margin-top:auto;margin-bottom:auto">
-        <div class="r d2">
-          <div class="stat-huge">590,742</div>
-          <div class="stat-cap">card transactions</div>
-        </div>
-        <div class="r d3">
-          <div class="stat-huge strike">0</div>
-          <div class="stat-cap">fraud labels</div>
-        </div>
-        <div class="r d4">
-          <div class="stat-huge">20</div>
-          <div class="stat-cap">cases to decide, from evidence alone</div>
-        </div>
+      <div class="pipeflow">
+        <div class="pstep r d2"><div class="pn">01</div><div class="ph">Trigger</div><div class="pp">risk score, customer report, or analyst request</div></div>
+        <div class="pstep r d2"><div class="pn">02</div><div class="ph">Gather</div><div class="pp">flagged txn, episode window, cardholder baseline</div></div>
+        <div class="pstep r d3"><div class="pn">03</div><div class="ph">Retrieve</div><div class="pp">connected prior cases + policy via GraphRAG</div></div>
+        <div class="pstep r d3"><div class="pn">04</div><div class="ph">Assess</div><div class="pp">classifier proposes; LLM weighs the evidence</div></div>
+        <div class="pstep loop r d4"><div class="pn">05</div><div class="ph">Request evidence</div><div class="pp">simulate a customer / step-up reply, then re-assess</div></div>
+        <div class="pstep r d5"><div class="pn">06</div><div class="ph">Decide</div><div class="pp">policy engine R1–R10: routes, actions, SAR</div></div>
+        <div class="pstep r d5"><div class="pn">07</div><div class="ph">Explain</div><div class="pp">evidence cites the graph query behind each claim</div></div>
+        <div class="pstep r d6"><div class="pn">08</div><div class="ph">Persist</div><div class="pp">write the case back to the graph as memory</div></div>
       </div>
-      <p class="lead r d5" style="margin-top:20px">The only ground truth is 5,565 closed historical cases. Every verdict has to be argued from the graph.</p>
+      <p class="lead r d6" style="margin-top:16px">A plain Python state machine — one function per stage, no framework. The recommendation is snapshotted before evidence and again after.</p>
     </section>
 
-    <!-- 3 · ARCHITECTURE -->
+    <!-- 3 · ARCHITECTURE FLOWCHART -->
     <section class="scene" data-scene="2">
       <div class="head">
-        <div class="eyebrow r">How it's built</div>
-        <h2 class="r d1">The graph investigates. Code decides the rules.</h2>
+        <div class="eyebrow r">Architecture</div>
+        <h2 class="r d1">Data to defensible action, layer by layer.</h2>
       </div>
-      <div class="pipe">
-        <div class="node r d2">
-          <span class="tag">TigerGraph</span>
-          <h3>Knowledge graph</h3>
-          <p>Customers, cards, transactions, devices, regions, prior cases — plus a vector store for the policy.</p>
+      <div class="flow">
+        <div class="layer with-label r d2">
+          <span class="layer-label">Data</span>
+          <div class="fnode"><div class="ft">transactions</div><div class="fs">590,742 rows</div></div>
+          <div class="fnode"><div class="ft">identity</div><div class="fs">device signals</div></div>
+          <div class="fnode"><div class="ft">closed cases</div><div class="fs">5,565 labelled</div></div>
+          <div class="fnode"><div class="ft">prep_data.py</div><div class="fs">397→59 cols · card_id</div></div>
         </div>
-        <div class="arrow r d3">→</div>
-        <div class="node r d3">
-          <span class="tag">MCP · GraphRAG</span>
-          <h3>Eight tools</h3>
-          <p>Six GSQL queries, transaction lookup, and semantic policy search — served over MCP.</p>
+        <div class="conn r d2"></div>
+        <div class="layer with-label r d3">
+          <span class="layer-label">TigerGraph</span>
+          <div class="fnode tg wide"><div class="ft">Knowledge graph</div><div class="fs">Customer · Card · Transaction · Device · Region · ClosedCase</div></div>
+          <div class="fnode tg wide"><div class="ft">Vector store</div><div class="fs">policy · typologies · case narratives</div></div>
         </div>
-        <div class="arrow r d4">→</div>
-        <div class="node r d4">
-          <span class="tag">Agent</span>
-          <h3>State machine</h3>
-          <p>Gather → retrieve → assess → request evidence → re-assess → decide → explain.</p>
+        <div class="conn r d3"></div>
+        <div class="layer with-label r d4">
+          <span class="layer-label">Access</span>
+          <div class="fnode wide"><div class="ft">6 GSQL queries + ring_detect</div><div class="fs">card_window · baseline · device_neighbors · region · similar</div></div>
+          <div class="fnode wide"><div class="ft">GraphRAG search</div><div class="fs">cosine over embeddings, in GSQL</div></div>
         </div>
-      </div>
-      <div class="split-note">
-        <div class="split-col llm r d5">
-          <span class="lbl">LLM decides</span>
-          <ul><li>verdict on ambiguity</li><li>probability &amp; evidence prose</li><li>the SAR narrative</li></ul>
+        <div class="conn r d4"></div>
+        <div class="layer with-label r d5">
+          <span class="layer-label">MCP</span>
+          <div class="fnode wide" style="border-color:#2f4a44"><div class="ft" style="color:#6fd0a3">MCP server — 8 tools</div><div class="fs">the agent's graph surface</div></div>
         </div>
-        <div class="split-col code r d6">
-          <span class="lbl">Code decides</span>
-          <ul><li>exposure · approval routes</li><li>the report decision</li><li>the action rules R1–R10</li></ul>
+        <div class="conn r d5"></div>
+        <div class="layer with-label r d6">
+          <span class="layer-label">Agent</span>
+          <div class="fnode wide agent-main"><div class="ft">Python state machine</div>
+            <div class="stages"><span class="stg">gather</span><span class="stg">retrieve</span><span class="stg key">assess</span><span class="stg key">re-assess</span><span class="stg">decide R1–R10</span><span class="stg">explain</span><span class="stg">persist</span></div>
+          </div>
+          <div class="fnode llm llm-side"><div class="ft">Gemini · Groq</div><div class="fs">reason + embed</div></div>
+        </div>
+        <div class="conn r d6"></div>
+        <div class="layer with-label r d6">
+          <span class="layer-label">Output</span>
+          <div class="fnode wide"><div class="ft">cases/HHG-0NN.json</div><div class="fs">+ written back to the graph</div></div>
+          <div class="fnode wide"><div class="ft">React dashboard</div><div class="fs">analyst review</div></div>
         </div>
       </div>
     </section>
@@ -311,21 +356,38 @@
       </div>
     </section>
 
-    <!-- 6 · RESULTS -->
+    <!-- 6 · THE STACK + THE SPLIT -->
     <section class="scene" data-scene="5">
       <div class="head">
-        <div class="eyebrow r">The twenty cases</div>
-        <h2 class="r d1">From an uncertain signal to a defensible call.</h2>
+        <div class="eyebrow r">The stack</div>
+        <h2 class="r d1">What's doing the work.</h2>
       </div>
-      <div class="tiles">
-        <div class="tile fraud r d2"><div class="n" data-count="7">0</div><div class="k">Fraud</div></div>
-        <div class="tile legit r d3"><div class="n" data-count="12">0</div><div class="k">Legitimate</div></div>
-        <div class="tile unc r d4"><div class="n" data-count="1">0</div><div class="k">Uncertain</div></div>
+      <div class="stack-grid">
+        <div class="scat r d2">
+          <div class="sl">Graph &amp; retrieval</div>
+          <div class="sv"><span class="accent">TigerGraph</span> Savanna</div>
+          <div class="sd">GSQL queries + graph algorithms · native vector store for GraphRAG · served over TigerGraph MCP</div>
+        </div>
+        <div class="scat r d3">
+          <div class="sl">Agent &amp; models</div>
+          <div class="sv">Python state machine</div>
+          <div class="sd">Groq gpt-oss-120b for reasoning · Gemini embeddings · Pydantic invariants that can't be violated</div>
+        </div>
+        <div class="scat r d4">
+          <div class="sl">Interface &amp; rigor</div>
+          <div class="sv">React + Vite dashboard</div>
+          <div class="sd">read-only case viewer · 73 tests from ground truth · a holdout harness that scored the agent</div>
+        </div>
       </div>
-      <div class="result-row">
-        <div class="rchip r d4"><span class="rn accent">2</span><span class="rk">rings found — device &amp; structuring</span></div>
-        <div class="rchip r d5"><span class="rn">3</span><span class="rk">reports filed, incl. the $1,000.03 boundary</span></div>
-        <div class="rchip r d6"><span class="rn legit">0</span><span class="rk">schema violations · every ID real</span></div>
+      <div class="split-note">
+        <div class="split-col llm r d5">
+          <span class="lbl">LLM decides</span>
+          <ul><li>verdict on ambiguity · probability</li><li>evidence prose · the SAR narrative</li></ul>
+        </div>
+        <div class="split-col code r d6">
+          <span class="lbl">Code decides</span>
+          <ul><li>exposure · every approval route</li><li>the report decision · actions R1–R10</li></ul>
+        </div>
       </div>
     </section>
 
@@ -334,7 +396,8 @@
       <div class="eyebrow r">The point</div>
       <h1 class="r d1">It shows its work — and asks when it's unsure.</h1>
       <p class="tagline r d2">Every claim cites the graph query behind it. When the signal is weak, it verifies instead of blocking a customer who did nothing wrong.</p>
-      <div class="repo r d3">github.com/Asheesh7298/tigergraph-fraud-agent</div>
+      <div class="foot r d3" style="margin-top:26px">20 cases · both rings found algorithmically · policy engine exact · 0 schema violations · every ID real</div>
+      <div class="repo r d4">github.com/Asheesh7298/tigergraph-fraud-agent</div>
     </section>
 
   </div>
@@ -435,7 +498,6 @@
     scenes.forEach((s, k) => s.classList.toggle("active", k === n));
     dots.forEach((d, k) => d.classList.toggle("on", k === n));
     if (n === 4) ringScene(true);
-    if (n === 5) setTimeout(() => countUp(scenes[5]), 350);
   }
   function go(n) { i = Math.max(0, Math.min(scenes.length - 1, n)); activate(i); }
   function next() { if (ringAdvance()) return; go(i + 1); }
