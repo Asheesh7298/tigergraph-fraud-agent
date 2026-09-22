@@ -47,7 +47,15 @@
     "exposure_usd": 439.61,
     "evidence": [
       {
-        "claim": "Three online C\u2011product transactions on this card (112.37, 74.96, 252.28) all from device SM\u2011G935F",
+        "claim": "Transaction 3478561 was an online purchase of $74.96 with risk score 0.05",
+        "source": "graph",
+        "ref": "query:customer_baseline(card_id=C13487-K1)",
+        "entity_ids": [
+          "3478561"
+        ]
+      },
+      {
+        "claim": "Three transactions on this card (IDs 3460634, 3478561, 3489320) used the same device profile SM-G935F",
         "source": "graph",
         "ref": "query:card_window(card_id=C13487-K1, hours=72)",
         "entity_ids": [
@@ -57,7 +65,7 @@
         ]
       },
       {
-        "claim": "Device profile SM\u2011G935F is shared with 28 other cards, several of which have confirmed fraud",
+        "claim": "The device profile SM-G935F is shared with 28 other cards, many of which have confirmed fraud cases",
         "source": "graph",
         "ref": "query:ring_detect(from_=2016-11-01, to=2016-12-31)",
         "entity_ids": [
@@ -73,27 +81,21 @@
         ]
       },
       {
-        "claim": "Risk scores for the three transactions are low (0.05\u20110.22)",
+        "claim": "Card's baseline shows 71 prior transactions, mostly in\u2011person, with only 2 online, median $55.92, indicating online activity is anomalous",
         "source": "document",
         "ref": "document:ring-a-shared-device#2",
         "entity_ids": []
       },
       {
-        "claim": "Cardholder denied the flagged transaction",
-        "source": "customer",
-        "ref": "evidence_request:1",
-        "entity_ids": []
-      },
-      {
-        "claim": "Prior closed cases with the same device profile were confirmed fraud",
-        "source": "external",
+        "claim": "Prior closed cases CC-5336, CC-5263, CC-5217, etc., using the same device profile were confirmed fraud",
+        "source": "graph",
         "ref": "query:customer_baseline(card_id=C13487-K1)",
         "entity_ids": [
           "3478561"
         ]
       },
       {
-        "claim": "Policy R6 and R9 require monitoring and reporting of shared device rings",
+        "claim": "Policy R6 (shared origin) and R9 (undocumented pattern) require monitoring and reporting of shared device rings",
         "source": "document",
         "ref": "document:ring-a-shared-device#2",
         "entity_ids": []
@@ -107,7 +109,7 @@
       "CC-4405",
       "CC-4324"
     ],
-    "summary": "The card\u2019s recent online purchases all originate from a shared anonymised device that has been linked to multiple confirmed fraud cases. Low model risk scores are overridden by the strong ring\u2011membership signal and the cardholder\u2019s denial, which together place the fraud probability in the high range. Policy guidance mandates opening a case, filing a SAR, and placing all cards on this device under monitoring.",
+    "summary": "The card\u2019s recent online purchases all originate from a shared anonymised device that has been linked to multiple confirmed fraud cases. Low risk scores alone would not trigger a flag, but the shared\u2011device ring and the cardholder\u2019s denial push the fraud probability into the high range. Policy mandates opening a case, filing a SAR, and placing all cards on this device under monitoring.",
     "written_to_graph": true,
     "graph_case_id": "CASE-2016-014"
   },
@@ -178,7 +180,7 @@
   "sar": {
     "file": true,
     "reason": "R6/3a: activity connects to a device profile shared with 28 cards across more than one card",
-    "narrative": "The customer identified as C13487 used the payment card designated C13487\u2011K1. Between 2016\u201111\u201115 20:30:00 and 2016\u201111\u201126 17:39:00 the card generated three online transactions (IDs 3460634, 3478561, 3489320) for a combined total of $439.61. All three transactions occurred within the stated period, with the first at 20:30 on 15 November 2016 and the last at 17:39 on 26 November 2016. The activity was conducted through the online channel using product code C on a Samsung SM\u2011G935F device running Android 7.0, Chrome 62.0 for Android, with a screen resolution of 1920\u00d71080. The pattern of the three purchases is undocumented and each transaction was anonymised, yet all three were executed from the same device profile. The device profile is shared with 28 other cards, is newly associated with every account, and is linked to a set of connected cards including C01289\u2011K1, C01996\u2011K2, C02910\u2011K1, C02975\u2011K1, C03676\u2011K2, C04108\u2011K2, C04274\u2011K1, C05448\u2011K2, C06031\u2011K2, C06650\u2011K2, C06710\u2011K1, and C07472\u2011K1. When contacted, the cardholder affirmed that they did not make the purchases and confirmed that they still possess the card. The combination of an undocumented transaction pattern, a device profile shared across multiple unrelated accounts, and the cardholder\u2019s denial renders the activity suspicious.",
+    "narrative": "The subject of the report is customer C13487 using payment card C13487\u2011K1. Three online purchases identified by transaction numbers 3460634, 3478561 and 3489320 totalled $439.61. The transactions occurred between 2016\u201111\u201115 20:30:00 and 2016\u201111\u201126 17:39:00. All activity was conducted via the online channel, product code C, from a Samsung SM\u2011G935F device running Android 7.0 with Chrome 62.0 for Android at a resolution of 1920\u00d71080. The purchases were executed using an undocumented transaction pattern and each transaction was anonymised, with the same device profile appearing on all three events. The device profile is shared with twenty\u2011eight other cards, including C01289\u2011K1, C01996\u2011K2, C02910\u2011K1, C02975\u2011K1, C03676\u2011K2, C04108\u2011K2, C04274\u2011K1, C05448\u2011K2, C06031\u2011K2, C06650\u2011K2, C06710\u2011K1, and C07472\u2011K1, establishing a link to multiple accounts. When contacted, the cardholder affirmed that they did not make the purchases and that they continue to possess the card. The combination of an undocumented transaction pattern, a device profile newly associated with each affected account, and similarity to prior cases CC\u20115336, CC\u20115263, CC\u20115217, CC\u20114834 and CC\u20114405 renders the activity suspicious.",
     "subjects": [
       "C13487",
       "C13487-K1",
@@ -202,6 +204,6 @@
   },
   "stop_reason": "The cardholder's response (denied) settles the question; further steps would not change the recommended actions.",
   "tool_calls": 9,
-  "tokens": 0,
-  "latency_s": 2.9
+  "tokens": 8385,
+  "latency_s": 63.4
 }

@@ -18,13 +18,13 @@
     "exposure_usd": 1906.07,
     "evidence": [
       {
-        "claim": "Cardholder denied the $482.12 purchase",
+        "claim": "Cardholder denied the $482.12 transaction",
         "source": "customer",
         "ref": "evidence_request:1",
         "entity_ids": []
       },
       {
-        "claim": "Four online transactions each between $456 and $488 occurred within 30 minutes",
+        "claim": "Four online transactions of $456\u2013$488 occurred within 30 minutes, matching undocumented pattern B",
         "source": "graph",
         "ref": "query:card_window(card_id=C07297-K1, hours=72)",
         "entity_ids": [
@@ -35,8 +35,8 @@
         ]
       },
       {
-        "claim": "Each transaction amount far exceeds the card\u2019s median $62.93 and 90th percentile $226.08",
-        "source": "document",
+        "claim": "Each transaction amount far exceeds the card's baseline median $62.93 and 90th percentile $226.08",
+        "source": "graph",
         "ref": "query:card_window(card_id=C07297-K1, hours=72)",
         "entity_ids": [
           "3476602",
@@ -46,7 +46,7 @@
         ]
       },
       {
-        "claim": "Similar threshold\u2011structuring pattern B has been confirmed fraud in multiple prior cases (CC\u20114124, CC\u20114086, CC\u20113907, etc.)",
+        "claim": "Risk scores for the four transactions are low (0.12\u20130.26)",
         "source": "graph",
         "ref": "query:customer_baseline(card_id=C07297-K1)",
         "entity_ids": [
@@ -54,13 +54,21 @@
         ]
       },
       {
-        "claim": "Risk scores for the four transactions are low (0.12\u20110.26)",
+        "claim": "Shared device profile has prior confirmed fraud cases (CC-5111, CC-4124, CC-3907, etc.)",
+        "source": "graph",
+        "ref": "query:customer_baseline(card_id=C07297-K1)",
+        "entity_ids": [
+          "3476682"
+        ]
+      },
+      {
+        "claim": "Policy defines undocumented pattern B with exact criteria matching observed activity",
         "source": "document",
         "ref": "document:ring-b-threshold-structuring#1",
         "entity_ids": []
       },
       {
-        "claim": "Device profile appears in prior fraud cases with a shared device ring",
+        "claim": "No prior transactions of the same amount and product on this card",
         "source": "graph",
         "ref": "query:customer_baseline(card_id=C07297-K1)",
         "entity_ids": [
@@ -76,7 +84,7 @@
       "CC-4086",
       "CC-4004"
     ],
-    "summary": "The denied charge is part of a classic $450\u2011$500 threshold\u2011structuring burst that matches typology B and exceeds the card\u2019s normal spending profile. Historical cases with the same pattern and device ring were all fraud. Low risk scores are outweighed by the denial and structuring, leading to a high fraud probability.",
+    "summary": "The denied charge is part of a rapid burst of four online purchases each just under $500, a classic threshold\u2011structuring pattern. These amounts are well above the card\u2019s normal spending profile and the device used has been linked to several confirmed fraud cases. Policy and historical data show this exact pattern is consistently fraudulent. Combined with the cardholder\u2019s denial, the evidence points strongly to fraud.",
     "written_to_graph": true,
     "graph_case_id": "CASE-2016-006"
   },
@@ -132,7 +140,7 @@
   "sar": {
     "file": true,
     "reason": "3a: exposure $1,906.07 exceeds the $1,000 reporting threshold",
-    "narrative": "The subject of this report is customer C07297, whose payment instrument is the credit card identified as C07297\u2011K1. Four online transactions were processed on the card, identified by the transaction numbers 3476602, 3476633, 3476665, and 3476682, with a combined monetary value of $1,906.07. All four transactions occurred within a thirty\u2011minute window on 2016\u201111\u201121, beginning at 20:00:00 and concluding at 20:30:00. Each transaction was executed via the online channel using product code C on a desktop computer reporting the user\u2011agent string \u201cTrident/7.0 | Windows 7 | ie 11.0 for desktop | 1920x1080.\u201d The activity consisted of four separate legs, each ranging between $450 and $499, a pattern that is undocumented for this account. The structure of multiple high\u2011value legs in a short time frame mirrors patterns observed in prior suspicious cases identified as CC\u20115254, CC\u20115111, CC\u20114199, CC\u20114124, and CC\u20114086. The cardholder has asserted that they did not authorize any of the transactions and that they continue to possess the physical card. Each leg of approximately $450\u2011$499 exceeds the card\u2019s historical average transaction amount of $62.93, representing a significant deviation from normal usage. No additional connected device or IP address could be identified to explain the source of the activity.",
+    "narrative": "The subject of this report is customer C07297, whose payment card is identified as C07297\u2011K1. Four online transactions bearing identifiers 3476602, 3476633, 3476665 and 3476682 were processed for a combined total of $1,906.07. All four transactions occurred within a thirty\u2011minute window on 2016\u201111\u201121, beginning at 20:00:00 and concluding at 20:30:00. The activity was conducted via the online channel using product code C, with two distinct device signatures: a desktop browser identified as Trident/7.0 on Windows\u202f7 with Internet Explorer\u202f11.0 at a resolution of 1920\u00d71080, and a mobile iOS device running iOS\u202f11.2.1 on Mobile Safari\u202f11.0 at 2208\u00d71242. The pattern consists of four separate legs, each ranging between $450 and $499, which is undocumented in the cardholder\u2019s historical usage. Similar high\u2011value, rapid\u2011fire online purchases have been documented in prior cases CC\u20115254, CC\u20115111, CC\u20114199, CC\u20114124 and CC\u20114086, suggesting a possible common fraud methodology. The cardholder has asserted that they did not authorize any of the transactions and continues to possess the physical card. Each leg of $450\u2011$499 far exceeds the card\u2019s typical transaction average of $62.93, indicating an anomalous deviation from normal spending behavior. No previously identified device or account was linked to these transactions, and no connected party has been established.",
     "subjects": [
       "C07297",
       "C07297-K1"
@@ -145,6 +153,6 @@
   },
   "stop_reason": "The cardholder's response (denied) settles the question; further steps would not change the recommended actions.",
   "tool_calls": 7,
-  "tokens": 8370,
-  "latency_s": 12.7
+  "tokens": 8850,
+  "latency_s": 19.2
 }

@@ -3,7 +3,7 @@
   "case": {
     "status": "closed_fraud",
     "verdict": "fraud",
-    "fraud_probability": 0.82,
+    "fraud_probability": 0.81,
     "pattern": "card_not_present_new_device",
     "pattern_description": "",
     "affected_txn_ids": [
@@ -15,13 +15,13 @@
     "exposure_usd": 1000.03,
     "evidence": [
       {
-        "claim": "risk score 0.90",
+        "claim": "Model risk score 0.90",
         "source": "document",
         "ref": "document:ring-a-shared-device#2",
         "entity_ids": []
       },
       {
-        "claim": "device recorded as new to account",
+        "claim": "Device is new to the account",
         "source": "graph",
         "ref": "query:card_window(card_id=C10434-K1, hours=72)",
         "entity_ids": [
@@ -29,7 +29,7 @@
         ]
       },
       {
-        "claim": "transaction amount $1,000.03 exceeds prior max $670.04",
+        "claim": "Transaction amount $1,000.03 exceeds prior max $670.04",
         "source": "graph",
         "ref": "query:card_window(card_id=C10434-K1, hours=72)",
         "entity_ids": [
@@ -37,18 +37,24 @@
         ]
       },
       {
-        "claim": "cardholder denied the transaction",
+        "claim": "Cardholder denied the transaction",
         "source": "customer",
         "ref": "evidence_request:1",
         "entity_ids": []
       },
       {
-        "claim": "several prior closed cases with same pattern confirmed fraud",
+        "claim": "Several prior cases with same pattern were confirmed fraud",
         "source": "graph",
         "ref": "query:customer_baseline(card_id=C10434-K1)",
         "entity_ids": [
           "3506725"
         ]
+      },
+      {
+        "claim": "Policy R9 allows treating as undocumented but does not preclude fraud labeling",
+        "source": "document",
+        "ref": "document:ring-a-shared-device#2",
+        "entity_ids": []
       }
     ],
     "similar_prior_cases": [
@@ -59,7 +65,7 @@
       "CC-5464",
       "CC-5434"
     ],
-    "summary": "The $1,000.03 online purchase was made on a new device, exceeds the card\u2019s historical maximum, and received a high model risk score of 0.90. The cardholder denied the charge, and similar recent cases with the same pattern were confirmed fraud. Combined anomalies and corroborating history give a high probability of fraud, so the transaction should be treated as fraudulent.",
+    "summary": "The $1,000.03 online purchase was made on a new device, far above the card\u2019s historical maximum, and received a high risk score of 0.90. The cardholder denied the charge, and similar past cases with the same pattern were confirmed fraud. Combined anomalies and denial place the fraud probability around 81%, leading to a fraud verdict.",
     "written_to_graph": true,
     "graph_case_id": "CASE-2016-010"
   },
@@ -75,17 +81,17 @@
       {
         "action": "VERIFY_WITH_CUSTOMER",
         "route": "auto",
-        "reason": "R1: probability 0.62 on 2 signals is not decisive; confirm with the cardholder before any block"
+        "reason": "R1: probability 0.68 on 2 signals is not decisive; confirm with the cardholder before any block"
       },
       {
         "action": "CREATE_CASE",
         "route": "auto",
-        "reason": "3a: fraud probability 0.62 warrants a case record"
+        "reason": "3a: fraud probability 0.68 warrants a case record"
       },
       {
-        "action": "ESCALATE_TO_ANALYST",
-        "route": "auto",
-        "reason": "R8: verdict is uncertain and exposure $1,000.03 exceeds $500"
+        "action": "FILE_REPORT",
+        "route": "L2",
+        "reason": "3a: exposure $1,000.03 exceeds the $1,000 reporting threshold"
       }
     ],
     "final": [
@@ -105,12 +111,12 @@
         "reason": "3a: exposure $1,000.03 exceeds the $1,000 reporting threshold"
       }
     ],
-    "what_changed": "The cardholder denied the activity when asked, moving fraud probability from 0.62 to 0.82; the recommendation firms up accordingly."
+    "what_changed": "The cardholder denied the activity when asked, moving fraud probability from 0.68 to 0.81; the recommendation firms up accordingly."
   },
   "sar": {
     "file": true,
     "reason": "3a: exposure $1,000.03 exceeds the $1,000 reporting threshold",
-    "narrative": "The customer identified as C10434 used the payment card designated C10434\u2011K1. A single transaction of $1,000.03 was processed. The transaction occurred on 2016\u201112\u201102 at 15:18:27. The purchase was made online using product code R. The activity originated from a new device identified as a Windows 10 system running Edge 16.0 with a 1366x768 display. The transaction was classified as a card\u2011not\u2011present purchase on a new device, a pattern previously observed in cases CC\u20115556, CC\u20115541, CC\u20115539, CC\u20115481, and CC\u20115464. No other connected accounts or devices were identified in association with this activity. When contacted, the cardholder affirmed that they did not make the purchase and that they still possess the card. The transaction is suspicious because the $1,000.03 amount exceeds the card\u2019s previous highest transaction of $670.04 and was executed from an unrecognized device.",
+    "narrative": "The customer identified as C10434 used the payment card designated C10434\u2011K1. A single transaction identified as 3506725 was processed for a total of $1,000.03. The transaction occurred on 2016\u201112\u201102 at 15:18:27. The purchase was made through the online channel using product code R on a Windows\u202f10 device running Microsoft Edge\u202f16.0 with a 1366\u00d7768 display. The activity was classified under the pattern card_not_present_new_device, indicating a card\u2011not\u2011present purchase from a device not previously associated with the account. The case is linked to prior suspicious activity reports CC\u20115556, CC\u20115541, CC\u20115539, CC\u20115481, and CC\u20115464, which also involved card\u2011not\u2011present transactions from new devices. The cardholder was contacted about the activity and stated that they did not make the purchases, although they still possess the card. The activity is considered suspicious because the device was recorded as new to the account and the $1,000.03 amount exceeds the card\u2019s previous highest transaction of $670.04, with no connected party identified.",
     "subjects": [
       "C10434",
       "C10434-K1"
@@ -123,6 +129,6 @@
   },
   "stop_reason": "The cardholder's response (denied) settles the question; further steps would not change the recommended actions.",
   "tool_calls": 7,
-  "tokens": 0,
-  "latency_s": 2.2
+  "tokens": 7673,
+  "latency_s": 59.1
 }

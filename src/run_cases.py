@@ -66,6 +66,22 @@ def main() -> int:
         tools = McpTools()
     llm = Gemini(cache=not args.fresh)
 
+    # Warm up the graph before the real work: a Savanna workspace waking from
+    # auto-suspend refuses the first call or two, and the first heavy op (the
+    # ring scan) shouldn't be what absorbs that. Retry a cheap read until the
+    # graph answers, so case 1 never fails on a cold workspace -- important for
+    # a live demo.
+    for attempt in range(6):
+        try:
+            tools.get_transaction(rows[0]["flagged_txn_id"])
+            break
+        except Exception as exc:  # noqa: BLE001
+            if attempt == 5:
+                print(f"  graph not responding after warm-up retries: {str(exc)[:120]}")
+                break
+            print(f"  waiting for the graph to wake (attempt {attempt + 1}/6) ...", flush=True)
+            time.sleep(15)
+
     print("building the ring index (one portfolio-wide scan) ...", flush=True)
     t0 = time.time()
     rings = RingIndex(tools)

@@ -593,6 +593,18 @@ RULES FOR YOUR ANSWER
         subjects = [s.trigger.customer_id, s.trigger.card_id]
         if s.assessment.ring_profile:
             subjects.append(s.assessment.ring_profile)
+        # The distinct device profiles actually seen across the episode, so a
+        # burst that alternated devices (Ring B) is described accurately rather
+        # than as one machine.
+        ep_devices = []
+        for t in s.episode:
+            d = t.get("device_profile") or ""
+            if d and d not in ep_devices:
+                ep_devices.append(d)
+        device_str = (
+            s.assessment.ring_profile
+            or (" ; ".join(ep_devices) if ep_devices else (s.flagged.get("device_profile") or "not recorded"))
+        )
         prompt = f"""Write the narrative section of a suspicious activity report.
 
 It is read by a financial regulator and must stand on its own: someone with no
@@ -606,7 +618,7 @@ FACTS -- use only these, invent nothing
   total         ${exposure:,.2f}
   channel       {s.flagged.get('channel')}, product code {s.flagged.get('product_cd')}
   pattern       {s.assessment.pattern}
-  device        {s.assessment.ring_profile or (s.flagged.get('device_profile') or 'not recorded')}
+  device(s)     {device_str}
   connected     {', '.join(s.assessment.connected_cards[:12]) or 'none identified'}
   findings      {' '.join(sg.detail for sg in s.assessment.signals)}
   cardholder    {a.get('_response_text', 'not contacted')}
