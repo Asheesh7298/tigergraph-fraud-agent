@@ -130,6 +130,6 @@
   },
   "stop_reason": "Fraud probability 0.15 is at or below 0.15 on 2 independent pieces of evidence.",
   "tool_calls": 7,
-  "tokens": 3622,
-  "latency_s": 25.1
+  "tokens": 0,
+  "latency_s": 3.3
 }

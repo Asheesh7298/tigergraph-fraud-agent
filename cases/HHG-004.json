@@ -102,6 +102,6 @@
   },
   "stop_reason": "The cardholder's response (denied) settles the question; further steps would not change the recommended actions.",
   "tool_calls": 7,
-  "tokens": 6484,
-  "latency_s": 48.7
+  "tokens": 0,
+  "latency_s": 2.4
 }

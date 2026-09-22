@@ -103,6 +103,6 @@
   },
   "stop_reason": "The cardholder's response (confirmed) settles the question; further steps would not change the recommended actions.",
   "tool_calls": 7,
-  "tokens": 6696,
-  "latency_s": 50.0
+  "tokens": 0,
+  "latency_s": 2.2
 }

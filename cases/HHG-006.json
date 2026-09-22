@@ -5,7 +5,7 @@
     "verdict": "fraud",
     "fraud_probability": 0.88,
     "pattern": "undocumented",
-    "pattern_description": "A single device profile (Trident/7.0 | Windows 7 | ie 11.0 for desktop | 1920x1080) was used on 138 different cards between 2016-11-01 and 2016-12-31. It was recorded as new to every account it touched and sat behind an anonymising proxy on every transaction, which is not how a genuinely shared device behaves -- a household or office device shows returning users. The purchases are small and spread thinly across many cards, so no single cardholder looks alarming; the pattern is only visible as a shared-device cluster across the portfolio.",
+    "pattern_description": "Four online purchases of $478.95, $456.96, $488.04 and $482.12 were made on this card within 30 minutes, totalling $1,906.07. Every leg sits just below $500, which reads as deliberate structuring under a per-transaction authorisation ceiling rather than as shopping: the card is drained in one sitting while no single charge is large enough to require extra approval. It matches none of the five documented patterns and leaves no shared-device trail.",
     "affected_txn_ids": [
       "3476602",
       "3476633",
@@ -13,174 +13,18 @@
       "3476682"
     ],
     "first_suspicious_txn_id": "3476602",
-    "connected_card_ids": [
-      "C00288-K1",
-      "C00329-K2",
-      "C00452-K2",
-      "C00502-K1",
-      "C00555-K1",
-      "C00626-K1",
-      "C00679-K1",
-      "C00750-K2",
-      "C00854-K2",
-      "C00892-K1",
-      "C00941-K1",
-      "C01104-K2",
-      "C01109-K2",
-      "C01116-K2",
-      "C01144-K1",
-      "C01155-K2",
-      "C01165-K1",
-      "C01196-K1",
-      "C01255-K1",
-      "C01721-K2",
-      "C01864-K1",
-      "C01982-K2",
-      "C02079-K1",
-      "C02114-K1",
-      "C02231-K1",
-      "C02279-K1",
-      "C02285-K2",
-      "C02354-K2",
-      "C02360-K1",
-      "C02716-K2",
-      "C02830-K1",
-      "C02859-K1",
-      "C03040-K2",
-      "C03043-K1",
-      "C03047-K2",
-      "C03066-K1",
-      "C03125-K2",
-      "C03215-K1",
-      "C03218-K2",
-      "C03247-K1",
-      "C03278-K2",
-      "C03474-K1",
-      "C03538-K1",
-      "C03983-K1",
-      "C03999-K1",
-      "C04108-K2",
-      "C04118-K2",
-      "C04571-K2",
-      "C04592-K1",
-      "C04759-K1",
-      "C04778-K1",
-      "C04965-K2",
-      "C05052-K1",
-      "C05146-K1",
-      "C05244-K1",
-      "C05245-K2",
-      "C05509-K1",
-      "C05560-K2",
-      "C05690-K1",
-      "C05704-K2",
-      "C05809-K1",
-      "C05848-K1",
-      "C05868-K1",
-      "C05891-K1",
-      "C06001-K1",
-      "C06005-K1",
-      "C06026-K2",
-      "C06092-K1",
-      "C06201-K1",
-      "C06224-K2",
-      "C06958-K1",
-      "C06976-K1",
-      "C07102-K1",
-      "C07119-K1",
-      "C07171-K2",
-      "C07196-K2",
-      "C07212-K2",
-      "C07437-K1",
-      "C07612-K1",
-      "C07614-K2",
-      "C07648-K2",
-      "C07867-K2",
-      "C08305-K1",
-      "C08450-K2",
-      "C08496-K1",
-      "C08791-K1",
-      "C08796-K2",
-      "C08833-K1",
-      "C08945-K2",
-      "C08989-K2",
-      "C09241-K2",
-      "C09249-K1",
-      "C09274-K1",
-      "C09301-K2",
-      "C09363-K2",
-      "C09420-K2",
-      "C09442-K1",
-      "C09443-K1",
-      "C09468-K2",
-      "C09681-K1",
-      "C09757-K1",
-      "C09789-K1",
-      "C09800-K2",
-      "C09826-K1",
-      "C09956-K1",
-      "C10012-K1",
-      "C10149-K1",
-      "C10295-K1",
-      "C10349-K1",
-      "C10448-K1",
-      "C10601-K1",
-      "C10755-K1",
-      "C10842-K1",
-      "C11000-K2",
-      "C11193-K1",
-      "C11294-K2",
-      "C11309-K1",
-      "C11381-K2",
-      "C11385-K1",
-      "C11513-K1",
-      "C11539-K2",
-      "C11792-K1",
-      "C11865-K1",
-      "C12150-K1",
-      "C12166-K2",
-      "C12532-K1",
-      "C12592-K1",
-      "C12658-K1",
-      "C12690-K2",
-      "C12755-K1",
-      "C12762-K1",
-      "C12842-K1",
-      "C12942-K2",
-      "C12983-K1",
-      "C13067-K1",
-      "C13086-K2",
-      "C13264-K2"
-    ],
-    "connected_device_profiles": [
-      "Trident/7.0 | Windows 7 | ie 11.0 for desktop | 1920x1080"
-    ],
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
     "exposure_usd": 1906.07,
     "evidence": [
       {
-        "claim": "Cardholder denied the $482.12 transaction.",
+        "claim": "Cardholder denied the $482.12 purchase",
         "source": "customer",
         "ref": "evidence_request:1",
         "entity_ids": []
       },
       {
-        "claim": "Transaction used a device profile shared with 138 cards, known in fraud ring.",
-        "source": "graph",
-        "ref": "query:ring_detect(from_=2016-11-01, to=2016-12-31)",
-        "entity_ids": [
-          "Trident/7.0 | Windows 7 | ie 11.0 for desktop | 1920x1080",
-          "C00288-K1",
-          "C00329-K2",
-          "C00452-K2",
-          "C00502-K1",
-          "C00555-K1",
-          "C00626-K1",
-          "C00679-K1",
-          "C00750-K2"
-        ]
-      },
-      {
-        "claim": "Four transactions occurred within 30 minutes on same device profile, indicating repeat use.",
+        "claim": "Four online transactions each between $456 and $488 occurred within 30 minutes",
         "source": "graph",
         "ref": "query:card_window(card_id=C07297-K1, hours=72)",
         "entity_ids": [
@@ -191,13 +35,32 @@
         ]
       },
       {
-        "claim": "Transaction amounts (~$480) are far above the card's baseline median $62.93 and 90th percentile $226.08.",
+        "claim": "Each transaction amount far exceeds the card\u2019s median $62.93 and 90th percentile $226.08",
         "source": "document",
-        "ref": "document:ring-a-shared-device#3",
+        "ref": "query:card_window(card_id=C07297-K1, hours=72)",
+        "entity_ids": [
+          "3476602",
+          "3476633",
+          "3476665",
+          "3476682"
+        ]
+      },
+      {
+        "claim": "Similar threshold\u2011structuring pattern B has been confirmed fraud in multiple prior cases (CC\u20114124, CC\u20114086, CC\u20113907, etc.)",
+        "source": "graph",
+        "ref": "query:customer_baseline(card_id=C07297-K1)",
+        "entity_ids": [
+          "3476682"
+        ]
+      },
+      {
+        "claim": "Risk scores for the four transactions are low (0.12\u20110.26)",
+        "source": "document",
+        "ref": "document:ring-b-threshold-structuring#1",
         "entity_ids": []
       },
       {
-        "claim": "Prior closed cases with same shared device pattern were confirmed fraud, with exposures > $1,000.",
+        "claim": "Device profile appears in prior fraud cases with a shared device ring",
         "source": "graph",
         "ref": "query:customer_baseline(card_id=C07297-K1)",
         "entity_ids": [
@@ -213,14 +76,14 @@
       "CC-4086",
       "CC-4004"
     ],
-    "summary": "The cardholder denied the high\u2011value online purchase and the activity matches an undocumented shared\u2011device fraud ring that has produced multiple confirmed fraud cases. The burst of four large transactions far exceeds the card\u2019s normal spending pattern. Combined with the denial and ring membership, the evidence strongly points to fraud, warranting a card block and case creation.",
+    "summary": "The denied charge is part of a classic $450\u2011$500 threshold\u2011structuring burst that matches typology B and exceeds the card\u2019s normal spending profile. Historical cases with the same pattern and device ring were all fraud. Low risk scores are outweighed by the denial and structuring, leading to a high fraud probability.",
     "written_to_graph": true,
     "graph_case_id": "CASE-2016-006"
   },
   "evidence_requests": [
     {
       "type": "customer_validation",
-      "asked_after_step": 6,
+      "asked_after_step": 4,
       "assumed_response": "The cardholder maintains they did not make the transaction and still holds the card."
     }
   ],
@@ -229,17 +92,12 @@
       {
         "action": "CREATE_CASE",
         "route": "auto",
-        "reason": "R6: several cards show activity from a device profile shared with 138 cards"
+        "reason": "R9: activity matches none of the documented patterns"
       },
       {
         "action": "FILE_REPORT",
         "route": "L2",
         "reason": "3a: exposure $1,906.07 exceeds the $1,000 reporting threshold"
-      },
-      {
-        "action": "MONITOR_CONNECTED_CARDS",
-        "route": "auto",
-        "reason": "R6: monitor every card sharing a device profile shared with 138 cards"
       },
       {
         "action": "ESCALATE_TO_ANALYST",
@@ -264,11 +122,6 @@
         "reason": "3a: exposure $1,906.07 exceeds the $1,000 reporting threshold"
       },
       {
-        "action": "MONITOR_CONNECTED_CARDS",
-        "route": "auto",
-        "reason": "R6: monitor every card sharing a device profile shared with 138 cards"
-      },
-      {
         "action": "ESCALATE_TO_ANALYST",
         "route": "auto",
         "reason": "R9: undocumented pattern needs an analyst's eyes before it becomes policy"
@@ -279,21 +132,10 @@
   "sar": {
     "file": true,
     "reason": "3a: exposure $1,906.07 exceeds the $1,000 reporting threshold",
-    "narrative": "The subject of this report is customer C07297, who holds payment card C07297\u2011K1. Four online transactions using product code C were processed on that card, totaling $1,906.07. The transactions occurred between 2016\u201111\u201121 20:00:00 and 2016\u201111\u201121 20:30:00. All activity was conducted via the online channel from a desktop browser identified as Trident/7.0 on Windows\u202f7, Internet Explorer\u202f11.0, with a screen resolution of 1920\u202f\u00d7\u202f1080. The pattern of activity is undocumented, and the device profile used for these four transactions is shared with 138 other cards, appearing as a new profile for each linked account and anonymised on every transaction. The same device profile is also associated with a series of other cards, including C00288\u2011K1, C00329\u2011K2, C00452\u2011K2, C00502\u2011K1, C00555\u2011K1, C00626\u2011K1, C00679\u2011K1, C00750\u2011K2, C00854\u2011K2, C00892\u2011K1, C00941\u2011K1, and C01104\u2011K2. The cardholder has asserted that they did not make the transactions and that they continue to possess the physical card. The combination of an undocumented transaction pattern, a device profile that is simultaneously new to each linked account yet shared across 138 cards, and similarity to prior cases CC\u20115254, CC\u20115111, CC\u20114199, CC\u20114124, and CC\u20114086 raises a strong suspicion of fraudulent activity. Accordingly, the activity meets the criteria for a suspicious transaction report.",
+    "narrative": "The subject of this report is customer C07297, whose payment instrument is the credit card identified as C07297\u2011K1. Four online transactions were processed on the card, identified by the transaction numbers 3476602, 3476633, 3476665, and 3476682, with a combined monetary value of $1,906.07. All four transactions occurred within a thirty\u2011minute window on 2016\u201111\u201121, beginning at 20:00:00 and concluding at 20:30:00. Each transaction was executed via the online channel using product code C on a desktop computer reporting the user\u2011agent string \u201cTrident/7.0 | Windows 7 | ie 11.0 for desktop | 1920x1080.\u201d The activity consisted of four separate legs, each ranging between $450 and $499, a pattern that is undocumented for this account. The structure of multiple high\u2011value legs in a short time frame mirrors patterns observed in prior suspicious cases identified as CC\u20115254, CC\u20115111, CC\u20114199, CC\u20114124, and CC\u20114086. The cardholder has asserted that they did not authorize any of the transactions and that they continue to possess the physical card. Each leg of approximately $450\u2011$499 exceeds the card\u2019s historical average transaction amount of $62.93, representing a significant deviation from normal usage. No additional connected device or IP address could be identified to explain the source of the activity.",
     "subjects": [
       "C07297",
-      "C07297-K1",
-      "C00288-K1",
-      "C00329-K2",
-      "C00452-K2",
-      "C00502-K1",
-      "C00555-K1",
-      "C00626-K1",
-      "C00679-K1",
-      "C00750-K2",
-      "C00854-K2",
-      "C00892-K1",
-      "Trident/7.0 | Windows 7 | ie 11.0 for desktop | 1920x1080"
+      "C07297-K1"
     ],
     "total_amount_usd": 1906.07,
     "activity_dates": [
@@ -302,7 +144,7 @@
     ]
   },
   "stop_reason": "The cardholder's response (denied) settles the question; further steps would not change the recommended actions.",
-  "tool_calls": 9,
-  "tokens": 0,
-  "latency_s": 2.7
+  "tool_calls": 7,
+  "tokens": 8370,
+  "latency_s": 12.7
 }
