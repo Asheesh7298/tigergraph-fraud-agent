@@ -1,7 +1,8 @@
-# Social post — @TigerGraphDB
+# Social post — tag @TigerGraphDB AND @247pmstudio
 
-Pick one. Add the blog/demo link and a screenshot (the `ring_detect` smoke-test
-output, or the UI on HHG-014) before posting.
+The form requires tagging **both** handles, and **every team member posts**
+(paste every post link in the form). Pick a template, add the blog/demo link
+and a screenshot (the `ring_detect` smoke-test output, or the UI on HHG-014).
 
 ---
 
@@ -30,7 +31,7 @@ itself.
 
 Also served the whole graph surface over MCP. Wrote up the build — link below.
 
-#TigerGraph #GraphRAG #AIAgents #FraudDetection
+@TigerGraphDB @247pmstudio #TigerGraph #GraphRAG #AIAgents #FraudDetection
 
 ---
 
@@ -62,4 +63,4 @@ arguing *against* blocking. Whole graph surface also served over MCP.
 From an uncertain signal to a defensible action, work shown at every step — and
 when it's unsure it asks instead of blocking a customer who did nothing wrong.
 Write-up + code: [link]
-@TigerGraphDB #GraphRAG #AIAgents
+@TigerGraphDB @247pmstudio #GraphRAG #AIAgents
