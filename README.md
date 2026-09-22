@@ -74,22 +74,30 @@ Cases the agent closes are written back as `AgentCase` vertices, and because
 the pack is processed in chronological order, later investigations retrieve
 earlier ones as memory.
 
-### TigerGraph MCP
+### TigerGraph MCP — used at runtime, not just exposed
 
-The graph surface is also served over the Model Context Protocol. `src/mcp_server.py`
-exposes the eight tools above — the six GSQL queries, transaction lookup, and
-GraphRAG document search — backed by the *same* `FraudTools` functions the
-agent uses in-process, so an MCP client sees exactly the investigation's graph
-capabilities. Vector search takes plain text and embeds it internally, so a
-client never handles raw query vectors.
+The agent reaches the graph **through** MCP. `src/mcp_server.py` serves the
+graph operations as MCP tools (the GSQL queries, transaction and device
+lookups, GraphRAG document and case search, and case persistence); at run time
+`src/mcp_tools.py` launches that server as a stdio subprocess and the agent
+calls it, so the live chain is:
 
-```bash
-python src/mcp_server.py --selftest   # list + exercise the tools
-python src/mcp_server.py               # run as a stdio MCP server
+```
+agent → MCP client → mcp_server.py → GSQL / REST → TigerGraph
 ```
 
-Register it with any MCP client (Claude Desktop, the mcp inspector) using
-`mcp_config.example.json`.
+Every graph read and the case write-back go over MCP — there is no direct graph
+path in the agent (a `--no-mcp` flag exists only for debugging). Vector search
+takes plain text and embeds it server-side, so no query vector crosses the
+boundary.
+
+```bash
+python src/mcp_server.py --selftest   # list + exercise all 13 tools
+python src/run_cases.py --all          # the agent runs through MCP
+```
+
+Register the server with any MCP client (Claude Desktop, the mcp inspector)
+using `mcp_config.example.json`.
 
 ## Layout
 
