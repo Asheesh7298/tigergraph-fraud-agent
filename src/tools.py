@@ -52,6 +52,40 @@ def _merge(results: list[dict]) -> dict[str, Any]:
     return out
 
 
+def agentcase_payload(answer: Any, graph_case_id: str | None = None):
+    """Build (vertex_id, attrs, edges) for an AgentCase from an Answer.
+
+    Standalone so both the direct writer and the MCP persist tool build the
+    same vertex from the same logic.
+    """
+    case = answer.case
+    cid = graph_case_id or f"CASE-2016-{answer.case_id.split('-')[-1]}"
+    attrs = {
+        "hhg_case_id": answer.case_id,
+        "status": case.status,
+        "verdict": case.verdict,
+        "pattern": case.pattern,
+        "pattern_description": case.pattern_description,
+        "fraud_probability": case.fraud_probability,
+        "exposure_usd": case.exposure_usd,
+        "first_suspicious_txn_id": case.first_suspicious_txn_id,
+        "summary": case.summary,
+        "stop_reason": answer.stop_reason,
+        "sar_filed": answer.sar.file,
+        "initial_actions": "|".join(a.action for a in answer.next_best_actions.initial),
+        "final_actions": "|".join(a.action for a in answer.next_best_actions.final),
+        "written_at": fmt(datetime.now()),
+    }
+    edges: dict[str, Any] = {}
+    if case.affected_txn_ids:
+        edges["CASE_INVOLVES"] = {"Transaction": {t: {} for t in case.affected_txn_ids}}
+    if case.similar_prior_cases:
+        edges["SIMILAR_TO"] = {"ClosedCase": {c: {} for c in case.similar_prior_cases}}
+    if case.connected_device_profiles:
+        edges["CASE_DEVICE"] = {"DeviceProfile": {d: {} for d in case.connected_device_profiles}}
+    return cid, attrs, edges
+
+
 @dataclass
 class ToolLog:
     """Records what the agent actually asked the graph, for the case file."""
@@ -265,38 +299,16 @@ class FraudTools:
         This is the case memory the next investigation retrieves -- which is
         why the pack is processed in chronological order.
         """
-        case = answer.case
-        cid = graph_case_id or f"CASE-2016-{answer.case_id.split('-')[-1]}"
-        attrs = {
-            "hhg_case_id": answer.case_id,
-            "status": case.status,
-            "verdict": case.verdict,
-            "pattern": case.pattern,
-            "pattern_description": case.pattern_description,
-            "fraud_probability": case.fraud_probability,
-            "exposure_usd": case.exposure_usd,
-            "first_suspicious_txn_id": case.first_suspicious_txn_id,
-            "summary": case.summary,
-            "stop_reason": answer.stop_reason,
-            "sar_filed": answer.sar.file,
-            "initial_actions": "|".join(a.action for a in answer.next_best_actions.initial),
-            "final_actions": "|".join(a.action for a in answer.next_best_actions.final),
-            "written_at": fmt(datetime.now()),
-        }
-        edges: dict[str, Any] = {}
-        if case.affected_txn_ids:
-            edges["CASE_INVOLVES"] = {"Transaction": {t: {} for t in case.affected_txn_ids}}
-        if case.similar_prior_cases:
-            edges["SIMILAR_TO"] = {"ClosedCase": {c: {} for c in case.similar_prior_cases}}
-        if case.connected_device_profiles:
-            edges["CASE_DEVICE"] = {
-                "DeviceProfile": {d: {} for d in case.connected_device_profiles}
-            }
+        cid, attrs, edges = agentcase_payload(answer, graph_case_id)
+        self.log.add("write_case", {"graph_case_id": cid})
+        self.persist_case(cid, attrs, edges)
+        return cid
 
+    def persist_case(self, cid: str, attrs: dict, edges: dict) -> str:
+        """Raw AgentCase upsert. Kept separate so the MCP path can call it."""
         payload: dict[str, Any] = {"vertices": {"AgentCase": {cid: attrs}}}
         if edges:
             payload["edges"] = {"AgentCase": {cid: edges}}
-        self.log.add("write_case", {"graph_case_id": cid})
         self.tg.rest("POST", f"/graph/{self.tg.graph}", json=payload, timeout=120)
         return cid
 

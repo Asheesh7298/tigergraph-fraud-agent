@@ -42,6 +42,8 @@ def main() -> int:
     ap.add_argument("--pack", type=Path, default=ROOT / "data" / "raw" / "case_pack.csv")
     ap.add_argument("--fresh", action="store_true", help="bypass the LLM cache")
     ap.add_argument("--quiet", action="store_true")
+    ap.add_argument("--no-mcp", action="store_true",
+                    help="call the graph directly instead of through the MCP server (debug)")
     args = ap.parse_args()
 
     pack = load_pack(args.pack)
@@ -53,7 +55,15 @@ def main() -> int:
         ap.print_help()
         return 1
 
-    tools = FraudTools()
+    # By default the agent reaches the graph THROUGH the MCP server (required):
+    # McpTools launches src/mcp_server.py over stdio and calls its tools.
+    if args.no_mcp:
+        tools = FraudTools()
+        print("graph access: DIRECT (--no-mcp)")
+    else:
+        from mcp_tools import McpTools
+        print("graph access: via MCP server (launching stdio subprocess) ...", flush=True)
+        tools = McpTools()
     llm = Gemini(cache=not args.fresh)
 
     print("building the ring index (one portfolio-wide scan) ...", flush=True)
@@ -84,6 +94,9 @@ def main() -> int:
             print(f"    FAILED: {exc}")
             traceback.print_exc(limit=3)
             failed.append((trigger.case_id, str(exc)))
+
+    if hasattr(tools, "close"):
+        tools.close()  # tear down the MCP subprocess
 
     print(f"\n{ok}/{len(rows)} case(s) completed")
     if failed:

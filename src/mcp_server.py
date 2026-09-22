@@ -92,9 +92,9 @@ def region_history(card_id: str, region: str, before_ts: str) -> dict[str, Any]:
 @server.tool(description="Detect device-profile rings in a window WITHOUT a device "
                          "string: ranks profiles by cards x new-to-account x "
                          "anonymised-proxy. Returns the ranked clusters.")
-def ring_detect(start_ts: str, end_ts: str, min_cards: int = 3) -> dict[str, Any]:
-    out = tools().ring_detect(start_ts, end_ts, min_cards=min_cards)
-    return {"ranked": out.get("ranked", [])[:15]}
+def ring_detect(start_ts: str, end_ts: str, min_cards: int = 3, top: int = 60) -> dict[str, Any]:
+    out = tools().ring_detect(start_ts, end_ts, min_cards=min_cards, top=top)
+    return {"ranked": out.get("ranked", [])}
 
 
 @server.tool(description="Prior closed cases connected to a card by shared entity "
@@ -112,6 +112,40 @@ def similar_closed_cases(card_id: str, pattern: str = "",
 def search_documents(query: str, k: int = 5) -> dict[str, Any]:
     vec = llm().embed(query)
     return {"hits": tools().search_documents(vec, k=k)}
+
+
+@server.tool(description="Attributes of one device profile (device, OS, browser, "
+                         "screen, dominant proxy).")
+def get_device_profile(profile_key: str) -> dict[str, Any]:
+    return tools().get_device_profile(profile_key)
+
+
+@server.tool(description="Ordered transactions on a card between two explicit "
+                         "timestamps (wider than card_window, for ring episodes "
+                         "spread over weeks).")
+def card_window_between(card_id: str, start_ts: str, end_ts: str,
+                        limit: int = 800) -> dict[str, Any]:
+    return tools().card_window_between(card_id, start_ts, end_ts, limit=limit)
+
+
+@server.tool(description="GraphRAG over closed-case narratives: prior cases whose "
+                         "story resembles this one, closed before p_before. Pass "
+                         "plain text; embedded internally.")
+def search_closed_cases(query: str, before_ts: str, k: int = 5) -> dict[str, Any]:
+    vec = llm().embed(query)
+    return {"hits": tools().search_closed_cases(vec, before_ts, k=k)}
+
+
+@server.tool(description="Cases this agent has already closed this run, as "
+                         "cross-case memory (written back to the graph).")
+def prior_agent_cases(limit: int = 40) -> dict[str, Any]:
+    return {"cases": tools().prior_agent_cases(limit=limit)}
+
+
+@server.tool(description="Persist an investigated case back to the graph as an "
+                         "AgentCase vertex with its edges. Returns the vertex id.")
+def persist_case(cid: str, attrs: dict[str, Any], edges: dict[str, Any]) -> dict[str, Any]:
+    return {"graph_case_id": tools().persist_case(cid, attrs, edges or {})}
 
 
 def selftest() -> int:

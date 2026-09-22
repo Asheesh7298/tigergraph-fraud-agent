@@ -322,13 +322,14 @@ class Investigator:
             + " ".join(sig.detail for sig in s.assessment.signals)
         )
         try:
-            vec = self.llm.embed(question)
-            s.guidance = self.tools.search_documents(vec, k=6)
+            # Pass text; the MCP search tools embed it server-side, so retrieval
+            # is fully behind MCP and no query vector crosses the boundary.
+            s.guidance = self.tools.search_documents(question, k=6)
             # Narrative-similar precedent, where the history has been embedded.
             # Optional: the graph retrieval above is the stronger signal, and
             # embedding all 5,565 narratives is rate-limited on the free tier.
             try:
-                hits = self.tools.search_closed_cases(vec, before=t.opened_at, k=5)
+                hits = self.tools.search_closed_cases(question, before=t.opened_at, k=5)
                 known = {c["case_id"] for c in s.prior_cases}
                 for h in hits:
                     if h["case_id"] not in known and float(h.get("score", 0)) >= 0.72:
