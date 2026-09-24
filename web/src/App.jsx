@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import casesData from "./data/cases.json";
+import CaseGraph from "./CaseGraph";
 
 const VERDICT = {
   fraud: "#e5484d",
@@ -44,6 +45,7 @@ export default function App() {
     []
   );
   const [selected, setSelected] = useState(cases[0].case_id);
+  const [view, setView] = useState("overview");
   const c = cases.find((x) => x.case_id === selected);
   const k = c.case;
 
@@ -101,6 +103,28 @@ export default function App() {
           <p className="trigger-text">{c.trigger_text}</p>
         </header>
 
+        <div className="tabs">
+          <button className={"tab" + (view === "overview" ? " active" : "")} onClick={() => setView("overview")}>
+            Overview
+          </button>
+          <button className={"tab" + (view === "graph" ? " active" : "")} onClick={() => setView("graph")}>
+            Graph
+          </button>
+        </div>
+
+        {view === "graph" ? (
+          <section className="panel">
+            <h2>Investigation graph</h2>
+            <CaseGraph c={c} />
+            <p className="cg-caption">
+              The case as the knowledge graph holds it — the flagged card, its
+              affected transactions, and (for a ring) the shared device profile
+              fanning out to every connected card. Built from the same fields the
+              agent wrote to the answer file.
+            </p>
+          </section>
+        ) : (
+        <>
         <section className="metrics">
           <Metric label="Pattern" value={k.pattern} />
           <Metric label="Fraud probability" value={k.fraud_probability.toFixed(2)} />
@@ -210,6 +234,8 @@ export default function App() {
             <div className="muted">No report filed. {c.sar.reason}</div>
           )}
         </section>
+        </>
+        )}
 
         <footer className="case-foot">
           <span>stop: {c.stop_reason}</span>

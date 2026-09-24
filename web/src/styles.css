@@ -119,3 +119,18 @@ body {
   .metrics { grid-template-columns: repeat(2, 1fr); }
   .nba, .grid2 { grid-template-columns: 1fr; }
 }
+
+/* --- tabs + per-case investigation graph --- */
+.tabs { display: flex; gap: 6px; margin-bottom: 18px; }
+.tab { background: var(--panel); border: 1px solid var(--border); color: var(--muted); font-family: var(--mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; padding: 7px 16px; border-radius: 9px; cursor: pointer; transition: all .12s; }
+.tab:hover { color: var(--text); border-color: #3a4150; }
+.tab.active { background: var(--accent-soft); border-color: #3a2a18; color: var(--accent-2); }
+.tab:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+.casegraph { background: var(--panel2); border: 1px solid var(--border-soft); border-radius: 11px; padding: 8px 10px 4px; }
+.casegraph svg { display: block; max-height: 460px; }
+.cg-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; padding: 10px 6px 6px; border-top: 1px solid var(--border-soft); margin-top: 4px; }
+.cg-legend span { display: inline-flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 11px; color: var(--muted); }
+.cg-legend i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.cg-note { margin-left: auto; letter-spacing: .04em; }
+.cg-caption { color: var(--muted); font-size: 12.5px; line-height: 1.55; margin: 14px 0 2px; max-width: 82ch; }
