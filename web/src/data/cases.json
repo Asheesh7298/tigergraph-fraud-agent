@@ -1,0 +1,2667 @@
+[
+ {
+  "case_id": "HHG-001",
+  "case": {
+   "status": "closed_legitimate",
+   "verdict": "legitimate",
+   "fraud_probability": 0.3,
+   "pattern": "none",
+   "pattern_description": "",
+   "affected_txn_ids": [],
+   "first_suspicious_txn_id": "",
+   "connected_card_ids": [],
+   "connected_device_profiles": [],
+   "exposure_usd": 0.0,
+   "evidence": [
+    {
+     "claim": "Model risk score 0.61",
+     "source": "document",
+     "ref": "document:policy-r3",
+     "entity_ids": []
+    },
+    {
+     "claim": "Cardholder confirmed the transaction",
+     "source": "customer",
+     "ref": "evidence_request:1",
+     "entity_ids": []
+    },
+    {
+     "claim": "12 prior identical in\u2011person transactions of same amount and product",
+     "source": "graph",
+     "ref": "query:customer_baseline(card_id=C12382-K1)",
+     "entity_ids": [
+      "3514030"
+     ]
+    },
+    {
+     "claim": "Transaction type and region match card\u2019s historical pattern",
+     "source": "graph",
+     "ref": "query:customer_baseline(card_id=C12382-K1)",
+     "entity_ids": [
+      "3514030"
+     ]
+    },
+    {
+     "claim": "No out\u2011of\u2011region or new device indicators",
+     "source": "graph",
+     "ref": "query:customer_baseline(card_id=C12382-K1)",
+     "entity_ids": [
+      "3514030"
+     ]
+    }
+   ],
+   "similar_prior_cases": [
+    "CC-5462",
+    "CC-5448",
+    "CC-5376",
+    "CC-5363",
+    "CC-5344",
+    "CC-5248"
+   ],
+   "summary": "The cardholder confirmed the $77.07 in\u2011person purchase, which aligns with their established spending pattern of 12 identical prior transactions. The model\u2019s 0.61 risk score is modest and, without any additional anomalies, indicates a low fraud probability. Policy R3 directs a close\u2011no\u2011fraud outcome, so the transaction should be deemed legitimate.",
+   "written_to_graph": true,
+   "graph_case_id": "CASE-2016-001"
+  },
+  "evidence_requests": [
+   {
+    "type": "customer_validation",
+    "asked_after_step": 5,
+    "assumed_response": "The cardholder confirms they made the transaction."
+   }
+  ],
+  "next_best_actions": {
+   "initial": [
+    {
+     "action": "ALLOW_TRANSACTION",
+     "route": "auto",
+     "reason": "R3: no basis to decline"
+    },
+    {
+     "action": "CLOSE_NO_FRAUD",
+     "route": "auto",
+     "reason": "R3: activity is consistent with the cardholder's history"
+    }
+   ],
+   "final": [
+    {
+     "action": "CREATE_CASE",
+     "route": "auto",
+     "reason": "R3/3a: record the confirmation against the investigation"
+    },
+    {
+     "action": "CLOSE_NO_FRAUD",
+     "route": "auto",
+     "reason": "R3: cardholder confirms they made the transaction"
+    }
+   ],
+   "what_changed": "The cardholder confirmed the activity when asked, moving fraud probability from 0.12 to 0.30 and settling the case as legitimate."
+  },
+  "sar": {
+   "file": false,
+   "reason": "R2/3a: fraud is neither confirmed nor strongly suspected (verdict legitimate, probability 0.30); no report required",
+   "narrative": "",
+   "subjects": [],
+   "total_amount_usd": 0.0,
+   "activity_dates": []
+  },
+  "stop_reason": "The cardholder's response (confirmed) settles the question; further steps would not change the recommended actions.",
+  "tool_calls": 8,
+  "tokens": 5923,
+  "latency_s": 45.8,
+  "trigger_type": "risk_score",
+  "trigger_text": "Real-time model scored transaction 3514030 ($77.07, in billing region 444.0) at 0.61. Review and decide.",
+  "opened_at": "2016-12-05 01:55:28"
+ },
+ {
+  "case_id": "HHG-002",
+  "case": {
+   "status": "closed_legitimate",
+   "verdict": "legitimate",
+   "fraud_probability": 0.55,
+   "pattern": "none",
+   "pattern_description": "",
+   "affected_txn_ids": [],
+   "first_suspicious_txn_id": "",
+   "connected_card_ids": [],
+   "connected_device_profiles": [],
+   "exposure_usd": 0.0,
+   "evidence": [
+    {
+     "claim": "Transaction amount $292.36 exceeds the card's prior maximum $121.32",
+     "source": "graph",
+     "ref": "query:card_window(card_id=C11891-K1, hours=72)",
+     "entity_ids": [
+      "3478782"
+     ]
+    },
+    {
+     "claim": "Model risk score is 0.79",
+     "source": "graph",
+     "ref": "query:customer_baseline(card_id=C11891-K1)",
+     "entity_ids": [
+      "3478782"
+     ]
+    },
+    {
+     "claim": "Cardholder confirmed the transaction",
+     "source": "customer",
+     "ref": "evidence_request:1",
+     "entity_ids": []
+    },
+    {
+     "claim": "Several prior closed cases with the same pattern were confirmed fraud",
+     "source": "graph",
+     "ref": "query:customer_baseline(card_id=C11891-K1)",
+     "entity_ids": [
+      "3478782"
+     ]
+    },
+    {
+     "claim": "Card baseline median $47.29, 90th percentile $83.64",
+     "source": "graph",
+     "ref": "query:customer_baseline(card_id=C11891-K1)",
+     "entity_ids": [
+      "3478782"
+     ]
+    }
+   ],
+   "similar_prior_cases": [
+    "CC-5558",
+    "CC-5557",
+    "CC-5553",
+    "CC-5551",
+    "CC-5550",
+    "CC-5548"
+   ],
+   "summary": "The transaction is unusually large for this card, generating a high risk score and an off\u2011baseline flag. Nonetheless, the cardholder confirmed the purchase, which under policy is strong evidence of legitimacy. Prior fraud cases with a similar pattern exist, but the confirmation outweighs them, leading to a low fraud probability and a legitimate verdict.",
+   "written_to_graph": true,
+   "graph_case_id": "CASE-2016-002"
+  },
+  "evidence_requests": [
+   {
+    "type": "step_up_auth",
+    "asked_after_step": 4,
+    "assumed_response": "Step-up authentication was requested and completed successfully by the cardholder, indicating the genuine account holder authorised the activity."
+   }
+  ],
+  "next_best_actions": {
+   "initial": [
+    {
+     "action": "VERIFY_WITH_CUSTOMER",
+     "route": "auto",
+     "reason": "R1: probability 0.55 on a single signal is not decisive; confirm with the cardholder before any block"
+    },
+    {
+     "action": "CREATE_CASE",
+     "route": "auto",
+     "reason": "3a: fraud probability 0.55 warrants a case record"
+    }
+   ],
+   "final": [
+    {
+     "action": "CREATE_CASE",
+     "route": "auto",
+     "reason": "R3/3a: record the confirmation against the investigation"
+    },
+    {
+     "action": "CLOSE_NO_FRAUD",
+     "route": "auto",
+     "reason": "R3: cardholder confirms they made the transaction"
+    }
+   ],
+   "what_changed": "The cardholder confirmed the activity when asked, moving fraud probability from 0.55 to 0.55 and settling the case as legitimate."
+  },
+  "sar": {
+   "file": false,
+   "reason": "R2/3a: fraud is neither confirmed nor strongly suspected (verdict legitimate, probability 0.55); no report required",
+   "narrative": "",
+   "subjects": [],
+   "total_amount_usd": 0.0,
+   "activity_dates": []
+  },
+  "stop_reason": "The cardholder's response (confirmed) settles the question; further steps would not change the recommended actions.",
+  "tool_calls": 7,
+  "tokens": 0,
+  "latency_s": 2.5,
+  "trigger_type": "risk_score",
+  "trigger_text": "Real-time model scored transaction 3478782 ($292.36, online) at 0.79. Review and decide.",
+  "opened_at": "2016-11-22 23:27:07"
+ },
+ {
+  "case_id": "HHG-003",
+  "case": {
+   "status": "closed_legitimate",
+   "verdict": "legitimate",
+   "fraud_probability": 0.15,
+   "pattern": "none",
+   "pattern_description": "",
+   "affected_txn_ids": [],
+   "first_suspicious_txn_id": "",
+   "connected_card_ids": [],
+   "connected_device_profiles": [],
+   "exposure_usd": 0.0,
+   "evidence": [
+    {
+     "claim": "Cardholder denies the $49 transaction",
+     "source": "customer",
+     "ref": "evidence_request:1",
+     "entity_ids": []
+    },
+    {
+     "claim": "82 prior identical in\u2011person transactions of $49 for this card",
+     "source": "graph",
+     "ref": "query:customer_baseline(card_id=C08623-K2)",
+     "entity_ids": [
+      "3530164"
+     ]
+    },
+    {
+     "claim": "Risk score for the flagged transaction is 0.40 (low)",
+     "source": "graph",
+     "ref": "query:customer_baseline(card_id=C08623-K2)",
+     "entity_ids": [
+      "3530164"
+     ]
+    },
+    {
+     "claim": "Transaction amount $49 is below median $67.91 and typical for this card",
+     "source": "graph",
+     "ref": "query:customer_baseline(card_id=C08623-K2)",
+     "entity_ids": [
+      "3530164"
+     ]
+    },
+    {
+     "claim": "No prior fraud cases linked to this card or its device profile",
+     "source": "graph",
+     "ref": "query:customer_baseline(card_id=C08623-K2)",
+     "entity_ids": [
+      "3530164"
+     ]
+    },
+    {
+     "claim": "Classifier proposed no pattern (pattern=none)",
+     "source": "document",
+     "ref": "document:policy-r2",
+     "entity_ids": []
+    }
+   ],
+   "similar_prior_cases": [
+    "CC-5529",
+    "CC-5528",
+    "CC-5525",
+    "CC-5517",
+    "CC-5512",
+    "CC-5480"
+   ],
+   "summary": "The denial is outweighed by a strong recurring purchase pattern and low risk score. The $49 amount fits the card\u2019s normal spending profile, and there is no history of fraud on this card. Therefore the transaction is assessed as legitimate.",
+   "written_to_graph": true,
+   "graph_case_id": "CASE-2016-003"
+  },
+  "evidence_requests": [
+   {
+    "type": "customer_validation",
+    "asked_after_step": 5,
+    "assumed_response": "Shown their own history, the cardholder recognises the charge: this exact amount and merchant category has been billed to the card 82 times before. They withdraw the dispute."
+   }
+  ],
+  "next_best_actions": {
+   "initial": [
+    {
+     "action": "VERIFY_WITH_CUSTOMER",
+     "route": "auto",
+     "reason": "R7: 82 prior transactions of this amount and product on this card establish it as the cardholder's own recurring charge; confirm before acting"
+    },
+    {
+     "action": "CREATE_CASE",
+     "route": "auto",
+     "reason": "R7: customer disputes a charge that matches their own recurring pattern"
+    },
+    {
+     "action": "WARN_CUSTOMER",
+     "route": "auto",
+     "reason": "R7: send a recurring-charge reminder rather than blocking the card"
+    }
+   ],
+   "final": [
+    {
+     "action": "VERIFY_WITH_CUSTOMER",
+     "route": "auto",
+     "reason": "R7: 82 prior transactions of this amount and product on this card establish it as the cardholder's own recurring charge; confirm before acting"
+    },
+    {
+     "action": "CREATE_CASE",
+     "route": "auto",
+     "reason": "R7: customer disputes a charge that matches their own recurring pattern"
+    },
+    {
+     "action": "WARN_CUSTOMER",
+     "route": "auto",
+     "reason": "R7: send a recurring-charge reminder rather than blocking the card"
+    }
+   ],
+   "what_changed": "nothing"
+  },
+  "sar": {
+   "file": false,
+   "reason": "R7: the disputed charge matches the cardholder's own established pattern (82 prior transactions of this amount and product); no suspicious activity.",
+   "narrative": "",
+   "subjects": [],
+   "total_amount_usd": 0.0,
+   "activity_dates": []
+  },
+  "stop_reason": "The cardholder's response (confirmed) settles the question; further steps would not change the recommended actions.",
+  "tool_calls": 8,
+  "tokens": 6320,
+  "latency_s": 54.5,
+  "trigger_type": "customer_report",
+  "trigger_text": "Customer C08623 message: 'I never made this $49.00 purchase. Please check my card.' Refers to 3530164.",
+  "opened_at": "2016-12-10 15:01:21"
+ },
+ {
+  "case_id": "HHG-004",
+  "case": {
+   "status": "closed_fraud",
+   "verdict": "fraud",
+   "fraud_probability": 0.88,
+   "pattern": "card_not_present_new_device",
+   "pattern_description": "",
+   "affected_txn_ids": [
+    "3583227"
+   ],
+   "first_suspicious_txn_id": "3583227",
+   "connected_card_ids": [],
+   "connected_device_profiles": [],
+   "exposure_usd": 128.33,
+   "evidence": [
+    {
+     "claim": "Transaction amount $128.33 exceeds the card\u2019s 90th\u2011percentile $79.88",
+     "source": "graph",
+     "ref": "query:customer_baseline(card_id=C08106-K1)",
+     "entity_ids": [
+      "3583227"
+     ]
+    },
+    {
+     "claim": "Device recorded as new to this account",
+     "source": "graph",
+     "ref": "query:card_window(card_id=C08106-K1, hours=72)",
+     "entity_ids": [
+      "3583227"
+     ]
+    },
+    {
+     "claim": "Cardholder denied the transaction",
+     "source": "customer",
+     "ref": "evidence_request:1",
+     "entity_ids": []
+    },
+    {
+     "claim": "Device profile is shared with multiple prior confirmed fraud cases (CC\u20115558, CC\u20115553, etc.)",
+     "source": "graph",
+     "ref": "query:customer_baseline(card_id=C08106-K1)",
+     "entity_ids": [
+      "3583227"
+     ]
+    },
+    {
+     "claim": "Model risk score is 0.34 (low)",
+     "source": "document",
+     "ref": "document:policy-r2",
+     "entity_ids": []
+    }
+   ],
+   "similar_prior_cases": [
+    "CC-5558",
+    "CC-5553",
+    "CC-5546",
+    "CC-5542",
+    "CC-5541",
+    "CC-5539"
+   ],
+   "summary": "The charge is unusually large for this card and was made on a newly seen device. The cardholder denied the purchase, and the device belongs to a known fraud ring that has produced several confirmed fraud cases. These combined signals give a high probability of fraud, so the card should be blocked, a case opened, and a report filed.",
+   "written_to_graph": true,
+   "graph_case_id": "CASE-2016-004"
+  },
+  "evidence_requests": [
+   {
+    "type": "customer_validation",
+    "asked_after_step": 4,
+    "assumed_response": "The cardholder maintains they did not make the transaction and still holds the card."
+   }
+  ],
+  "next_best_actions": {
+   "initial": [
+    {
+     "action": "CREATE_CASE",
+     "route": "auto",
+     "reason": "3a: fraud probability 0.72 warrants a case record"
+    }
+   ],
+   "final": [
+    {
+     "action": "BLOCK_CARD",
+     "route": "L1",
+     "reason": "R2: cardholder denies the transaction; exposure $128.33"
+    },
+    {
+     "action": "CREATE_CASE",
+     "route": "auto",
+     "reason": "R2: unauthorised use confirmed by the cardholder"
+    }
+   ],
+   "what_changed": "The cardholder denied the activity when asked, moving fraud probability from 0.72 to 0.88; the recommendation firms up accordingly."
+  },
+  "sar": {
+   "file": false,
+   "reason": "3a: fraud is suspected but no reporting trigger is met -- exposure $128.33 is under $1,000, no shared origin, pattern is documented",
+   "narrative": "",
+   "subjects": [],
+   "total_amount_usd": 0.0,
+   "activity_dates": []
+  },
+  "stop_reason": "The cardholder's response (denied) settles the question; further steps would not change the recommended actions.",
+  "tool_calls": 7,
+  "tokens": 6484,
+  "latency_s": 48.7,
+  "trigger_type": "customer_report",
+  "trigger_text": "Customer C08106 message: 'I never made this $128.33 purchase. Please check my card.' Refers to 3583227.",
+  "opened_at": "2016-12-29 07:53:54"
+ },
+ {
+  "case_id": "HHG-005",
+  "case": {
+   "status": "closed_legitimate",
+   "verdict": "legitimate",
+   "fraud_probability": 0.55,
+   "pattern": "none",
+   "pattern_description": "",
+   "affected_txn_ids": [],
+   "first_suspicious_txn_id": "",
+   "connected_card_ids": [],
+   "connected_device_profiles": [],
+   "exposure_usd": 0.0,
+   "evidence": [
+    {
+     "claim": "Risk score 0.54 triggered the alert",
+     "source": "graph",
+     "ref": "query:customer_baseline(card_id=C02923-K1)",
+     "entity_ids": [
+      "3523199"
+     ]
+    },
+    {
+     "claim": "Transaction amount $100.07 is within baseline median $117.01 and 90th percentile $269.91",
+     "source": "graph",
+     "ref": "query:customer_baseline(card_id=C02923-K1)",
+     "entity_ids": [
+      "3523199"
+     ]
+    },
+    {
+     "claim": "Cardholder confirmed the transaction as theirs",
+     "source": "customer",
+     "ref": "evidence_request:1",
+     "entity_ids": []
+    },
+    {
+     "claim": "Device recorded as new for this account (new_device)",
+     "source": "graph",
+     "ref": "query:customer_baseline(card_id=C02923-K1)",
+     "entity_ids": [
+      "3523199"
+     ]
+    },
+    {
+     "claim": "One prior transaction of the same amount and product",
+     "source": "graph",
+     "ref": "query:customer_baseline(card_id=C02923-K1)",
+     "entity_ids": [
+      "3523199"
+     ]
+    },
+    {
+     "claim": "No prior fraud cases associated with this card",
+     "source": "graph",
+     "ref": "query:customer_baseline(card_id=C02923-K1)",
+     "entity_ids": [
+      "3523199"
+     ]
+    }
+   ],
+   "similar_prior_cases": [
+    "CC-5550",
+    "CC-5538",
+    "CC-5528",
+    "CC-5527",
+    "CC-5518",
+    "CC-5515"
+   ],
+   "summary": "The alert is low\u2011risk: the amount matches the card\u2019s normal spending, the holder confirmed the purchase, and the only deviation is a new device, which historically clears. Combined with a prior identical transaction, the evidence points to a legitimate charge.",
+   "written_to_graph": true,
+   "graph_case_id": "CASE-2016-005"
+  },
+  "evidence_requests": [
+   {
+    "type": "step_up_auth",
+    "asked_after_step": 4,
+    "assumed_response": "Step-up authentication was requested and completed successfully by the cardholder, indicating the genuine account holder authorised the activity."
+   }
+  ],
+  "next_best_actions": {
+   "initial": [
+    {
+     "action": "CREATE_CASE",
+     "route": "auto",
+     "reason": "3a: fraud probability 0.35 warrants a case record"
+    }
+   ],
+   "final": [
+    {
+     "action": "CREATE_CASE",
+     "route": "auto",
+     "reason": "R3/3a: record the confirmation against the investigation"
+    },
+    {
+     "action": "CLOSE_NO_FRAUD",
+     "route": "auto",
+     "reason": "R3: cardholder confirms they made the transaction"
+    }
+   ],
+   "what_changed": "The cardholder confirmed the activity when asked, moving fraud probability from 0.35 to 0.55 and settling the case as legitimate."
+  },
+  "sar": {
+   "file": false,
+   "reason": "R2/3a: fraud is neither confirmed nor strongly suspected (verdict legitimate, probability 0.55); no report required",
+   "narrative": "",
+   "subjects": [],
+   "total_amount_usd": 0.0,
+   "activity_dates": []
+  },
+  "stop_reason": "The cardholder's response (confirmed) settles the question; further steps would not change the recommended actions.",
+  "tool_calls": 7,
+  "tokens": 6264,
+  "latency_s": 47.5,
+  "trigger_type": "risk_score",
+  "trigger_text": "Real-time model scored transaction 3523199 ($100.07, online) at 0.54. Review and decide.",
+  "opened_at": "2016-12-08 03:38:37"
+ },
+ {
+  "case_id": "HHG-006",
+  "case": {
+   "status": "escalated",
+   "verdict": "fraud",
+   "fraud_probability": 0.88,
+   "pattern": "undocumented",
+   "pattern_description": "A single device profile (Trident/7.0 | Windows 7 | ie 11.0 for desktop | 1920x1080) was used on 138 different cards between 2016-11-01 and 2016-12-31. It was recorded as new to every account it touched and sat behind an anonymising proxy on every transaction, which is not how a genuinely shared device behaves -- a household or office device shows returning users. The purchases are small and spread thinly across many cards, so no single cardholder looks alarming; the pattern is only visible as a shared-device cluster across the portfolio.",
+   "affected_txn_ids": [
+    "3476602",
+    "3476633",
+    "3476665",
+    "3476682"
+   ],
+   "first_suspicious_txn_id": "3476602",
+   "connected_card_ids": [
+    "C00288-K1",
+    "C00329-K2",
+    "C00452-K2",
+    "C00502-K1",
+    "C00555-K1",
+    "C00626-K1",
+    "C00679-K1",
+    "C00750-K2",
+    "C00854-K2",
+    "C00892-K1",
+    "C00941-K1",
+    "C01104-K2",
+    "C01109-K2",
+    "C01116-K2",
+    "C01144-K1",
+    "C01155-K2",
+    "C01165-K1",
+    "C01196-K1",
+    "C01255-K1",
+    "C01721-K2",
+    "C01864-K1",
+    "C01982-K2",
+    "C02079-K1",
+    "C02114-K1",
+    "C02231-K1",
+    "C02279-K1",
+    "C02285-K2",
+    "C02354-K2",
+    "C02360-K1",
+    "C02716-K2",
+    "C02830-K1",
+    "C02859-K1",
+    "C03040-K2",
+    "C03043-K1",
+    "C03047-K2",
+    "C03066-K1",
+    "C03125-K2",
+    "C03215-K1",
+    "C03218-K2",
+    "C03247-K1",
+    "C03278-K2",
+    "C03474-K1",
+    "C03538-K1",
+    "C03983-K1",
+    "C03999-K1",
+    "C04108-K2",
+    "C04118-K2",
+    "C04571-K2",
+    "C04592-K1",
+    "C04759-K1",
+    "C04778-K1",
+    "C04965-K2",
+    "C05052-K1",
+    "C05146-K1",
+    "C05244-K1",
+    "C05245-K2",
+    "C05509-K1",
+    "C05560-K2",
+    "C05690-K1",
+    "C05704-K2",
+    "C05809-K1",
+    "C05848-K1",
+    "C05868-K1",
+    "C05891-K1",
+    "C06001-K1",
+    "C06005-K1",
+    "C06026-K2",
+    "C06092-K1",
+    "C06201-K1",
+    "C06224-K2",
+    "C06958-K1",
+    "C06976-K1",
+    "C07102-K1",
+    "C07119-K1",
+    "C07171-K2",
+    "C07196-K2",
+    "C07212-K2",
+    "C07437-K1",
+    "C07612-K1",
+    "C07614-K2",
+    "C07648-K2",
+    "C07867-K2",
+    "C08305-K1",
+    "C08450-K2",
+    "C08496-K1",
+    "C08791-K1",
+    "C08796-K2",
+    "C08833-K1",
+    "C08945-K2",
+    "C08989-K2",
+    "C09241-K2",
+    "C09249-K1",
+    "C09274-K1",
+    "C09301-K2",
+    "C09363-K2",
+    "C09420-K2",
+    "C09442-K1",
+    "C09443-K1",
+    "C09468-K2",
+    "C09681-K1",
+    "C09757-K1",
+    "C09789-K1",
+    "C09800-K2",
+    "C09826-K1",
+    "C09956-K1",
+    "C10012-K1",
+    "C10149-K1",
+    "C10295-K1",
+    "C10349-K1",
+    "C10448-K1",
+    "C10601-K1",
+    "C10755-K1",
+    "C10842-K1",
+    "C11000-K2",
+    "C11193-K1",
+    "C11294-K2",
+    "C11309-K1",
+    "C11381-K2",
+    "C11385-K1",
+    "C11513-K1",
+    "C11539-K2",
+    "C11792-K1",
+    "C11865-K1",
+    "C12150-K1",
+    "C12166-K2",
+    "C12532-K1",
+    "C12592-K1",
+    "C12658-K1",
+    "C12690-K2",
+    "C12755-K1",
+    "C12762-K1",
+    "C12842-K1",
+    "C12942-K2",
+    "C12983-K1",
+    "C13067-K1",
+    "C13086-K2",
+    "C13264-K2"
+   ],
+   "connected_device_profiles": [
+    "Trident/7.0 | Windows 7 | ie 11.0 for desktop | 1920x1080"
+   ],
+   "exposure_usd": 1906.07,
+   "evidence": [
+    {
+     "claim": "Cardholder denied the $482.12 transaction.",
+     "source": "customer",
+     "ref": "evidence_request:1",
+     "entity_ids": []
+    },
+    {
+     "claim": "Transaction used a device profile shared with 138 cards, known in fraud ring.",
+     "source": "graph",
+     "ref": "query:ring_detect(from_=2016-11-01, to=2016-12-31)",
+     "entity_ids": [
+      "Trident/7.0 | Windows 7 | ie 11.0 for desktop | 1920x1080",
+      "C00288-K1",
+      "C00329-K2",
+      "C00452-K2",
+      "C00502-K1",
+      "C00555-K1",
+      "C00626-K1",
+      "C00679-K1",
+      "C00750-K2"
+     ]
+    },
+    {
+     "claim": "Four transactions occurred within 30 minutes on same device profile, indicating repeat use.",
+     "source": "graph",
+     "ref": "query:card_window(card_id=C07297-K1, hours=72)",
+     "entity_ids": [
+      "3476602",
+      "3476633",
+      "3476665",
+      "3476682"
+     ]
+    },
+    {
+     "claim": "Transaction amounts (~$480) are far above the card's baseline median $62.93 and 90th percentile $226.08.",
+     "source": "document",
+     "ref": "document:ring-a-shared-device#3",
+     "entity_ids": []
+    },
+    {
+     "claim": "Prior closed cases with same shared device pattern were confirmed fraud, with exposures > $1,000.",
+     "source": "graph",
+     "ref": "query:customer_baseline(card_id=C07297-K1)",
+     "entity_ids": [
+      "3476682"
+     ]
+    }
+   ],
+   "similar_prior_cases": [
+    "CC-5254",
+    "CC-5111",
+    "CC-4199",
+    "CC-4124",
+    "CC-4086",
+    "CC-4004"
+   ],
+   "summary": "The cardholder denied the high\u2011value online purchase and the activity matches an undocumented shared\u2011device fraud ring that has produced multiple confirmed fraud cases. The burst of four large transactions far exceeds the card\u2019s normal spending pattern. Combined with the denial and ring membership, the evidence strongly points to fraud, warranting a card block and case creation.",
+   "written_to_graph": true,
+   "graph_case_id": "CASE-2016-006"
+  },
+  "evidence_requests": [
+   {
+    "type": "customer_validation",
+    "asked_after_step": 6,
+    "assumed_response": "The cardholder maintains they did not make the transaction and still holds the card."
+   }
+  ],
+  "next_best_actions": {
+   "initial": [
+    {
+     "action": "CREATE_CASE",
+     "route": "auto",
+     "reason": "R6: several cards show activity from a device profile shared with 138 cards"
+    },
+    {
+     "action": "FILE_REPORT",
+     "route": "L2",
+     "reason": "3a: exposure $1,906.07 exceeds the $1,000 reporting threshold"
+    },
+    {
+     "action": "MONITOR_CONNECTED_CARDS",
+     "route": "auto",
+     "reason": "R6: monitor every card sharing a device profile shared with 138 cards"
+    },
+    {
+     "action": "ESCALATE_TO_ANALYST",
+     "route": "auto",
+     "reason": "R9: undocumented pattern needs an analyst's eyes before it becomes policy"
+    }
+   ],
+   "final": [
+    {
+     "action": "BLOCK_CARD",
+     "route": "L1",
+     "reason": "R2: cardholder denies the transaction; exposure $1,906.07"
+    },
+    {
+     "action": "CREATE_CASE",
+     "route": "auto",
+     "reason": "R2: unauthorised use confirmed by the cardholder"
+    },
+    {
+     "action": "FILE_REPORT",
+     "route": "L2",
+     "reason": "3a: exposure $1,906.07 exceeds the $1,000 reporting threshold"
+    },
+    {
+     "action": "MONITOR_CONNECTED_CARDS",
+     "route": "auto",
+     "reason": "R6: monitor every card sharing a device profile shared with 138 cards"
+    },
+    {
+     "action": "ESCALATE_TO_ANALYST",
+     "route": "auto",
+     "reason": "R9: undocumented pattern needs an analyst's eyes before it becomes policy"
+    }
+   ],
+   "what_changed": "The cardholder denied the activity when asked, moving fraud probability from 0.72 to 0.88; the recommendation firms up accordingly."
+  },
+  "sar": {
+   "file": true,
+   "reason": "3a: exposure $1,906.07 exceeds the $1,000 reporting threshold",
+   "narrative": "The subject of this report is customer C07297, who holds payment card C07297\u2011K1. Four online transactions using product code C were processed on that card, totaling $1,906.07. The transactions occurred between 2016\u201111\u201121 20:00:00 and 2016\u201111\u201121 20:30:00. All activity was conducted via the online channel from a desktop browser identified as Trident/7.0 on Windows\u202f7, Internet Explorer\u202f11.0, with a screen resolution of 1920\u202f\u00d7\u202f1080. The pattern of activity is undocumented, and the device profile used for these four transactions is shared with 138 other cards, appearing as a new profile for each linked account and anonymised on every transaction. The same device profile is also associated with a series of other cards, including C00288\u2011K1, C00329\u2011K2, C00452\u2011K2, C00502\u2011K1, C00555\u2011K1, C00626\u2011K1, C00679\u2011K1, C00750\u2011K2, C00854\u2011K2, C00892\u2011K1, C00941\u2011K1, and C01104\u2011K2. The cardholder has asserted that they did not make the transactions and that they continue to possess the physical card. The combination of an undocumented transaction pattern, a device profile that is simultaneously new to each linked account yet shared across 138 cards, and similarity to prior cases CC\u20115254, CC\u20115111, CC\u20114199, CC\u20114124, and CC\u20114086 raises a strong suspicion of fraudulent activity. Accordingly, the activity meets the criteria for a suspicious transaction report.",
+   "subjects": [
+    "C07297",
+    "C07297-K1",
+    "C00288-K1",
+    "C00329-K2",
+    "C00452-K2",
+    "C00502-K1",
+    "C00555-K1",
+    "C00626-K1",
+    "C00679-K1",
+    "C00750-K2",
+    "C00854-K2",
+    "C00892-K1",
+    "Trident/7.0 | Windows 7 | ie 11.0 for desktop | 1920x1080"
+   ],
+   "total_amount_usd": 1906.07,
+   "activity_dates": [
+    "2016-11-21",
+    "2016-11-21"
+   ]
+  },
+  "stop_reason": "The cardholder's response (denied) settles the question; further steps would not change the recommended actions.",
+  "tool_calls": 9,
+  "tokens": 0,
+  "latency_s": 2.7,
+  "trigger_type": "customer_report",
+  "trigger_text": "Customer C07297 message: 'I never made this $482.12 purchase. Please check my card.' Refers to 3476682.",
+  "opened_at": "2016-11-22 02:30:00"
+ },
+ {
+  "case_id": "HHG-007",
+  "case": {
+   "status": "closed_legitimate",
+   "verdict": "legitimate",
+   "fraud_probability": 0.3,
+   "pattern": "none",
+   "pattern_description": "",
+   "affected_txn_ids": [],
+   "first_suspicious_txn_id": "",
+   "connected_card_ids": [],
+   "connected_device_profiles": [],
+   "exposure_usd": 0.0,
+   "evidence": [
+    {
+     "claim": "Cardholder confirmed the transaction",
+     "source": "customer",
+     "ref": "evidence_request:1",
+     "entity_ids": []
+    },
+    {
+     "claim": "Billing region 264.0 is new but out\u2011of\u2011region alone is usually legitimate",
+     "source": "document",
+     "ref": "document:policy-r3",
+     "entity_ids": []
+    },
+    {
+     "claim": "Six prior transactions of the same amount and product indicate an established pattern",
+     "source": "graph",
+     "ref": "query:customer_baseline(card_id=C09933-K2)",
+     "entity_ids": [
+      "3514948"
+     ]
+    },
+    {
+     "claim": "Risk score 0.87 alone does not imply fraud",
+     "source": "document",
+     "ref": "document:policy-r3",
+     "entity_ids": []
+    },
+    {
+     "claim": "Rule\u2011based classifier found no pattern",
+     "source": "document",
+     "ref": "document:policy-r3",
+     "entity_ids": []
+    }
+   ],
+   "similar_prior_cases": [
+    "CC-5556",
+    "CC-5541",
+    "CC-5539",
+    "CC-5529",
+    "CC-5525",
+    "CC-5521"
+   ],
+   "summary": "The cardholder confirmed the $111.92 in\u2011person purchase, and the card has a history of similar amounts and products. Although the transaction occurred in a new billing region, guidance shows this is typically a false alarm. The risk score is high but, without corroborating anomalies, it does not outweigh the confirming evidence. Consequently, the alert is deemed legitimate.",
+   "written_to_graph": true,
+   "graph_case_id": "CASE-2016-007"
+  },
+  "evidence_requests": [
+   {
+    "type": "customer_validation",
+    "asked_after_step": 5,
+    "assumed_response": "The cardholder confirms they made the transaction."
+   }
+  ],
+  "next_best_actions": {
+   "initial": [
+    {
+     "action": "CREATE_CASE",
+     "route": "auto",
+     "reason": "3a: fraud probability 0.30 warrants a case record"
+    }
+   ],
+   "final": [
+    {
+     "action": "CREATE_CASE",
+     "route": "auto",
+     "reason": "R3/3a: record the confirmation against the investigation"
+    },
+    {
+     "action": "CLOSE_NO_FRAUD",
+     "route": "auto",
+     "reason": "R3: cardholder confirms they made the transaction"
+    }
+   ],
+   "what_changed": "The cardholder confirmed the activity when asked, moving fraud probability from 0.30 to 0.30 and settling the case as legitimate."
+  },
+  "sar": {
+   "file": false,
+   "reason": "R2/3a: fraud is neither confirmed nor strongly suspected (verdict legitimate, probability 0.30); no report required",
+   "narrative": "",
+   "subjects": [],
+   "total_amount_usd": 0.0,
+   "activity_dates": []
+  },
+  "stop_reason": "The cardholder's response (confirmed) settles the question; further steps would not change the recommended actions.",
+  "tool_calls": 8,
+  "tokens": 6089,
+  "latency_s": 44.6,
+  "trigger_type": "risk_score",
+  "trigger_text": "Real-time model scored transaction 3514948 ($111.92, in billing region 264.0) at 0.87. Review and decide.",
+  "opened_at": "2016-12-05 03:46:14"
+ },
+ {
+  "case_id": "HHG-008",
+  "case": {
+   "status": "closed_legitimate",
+   "verdict": "legitimate",
+   "fraud_probability": 0.15,
+   "pattern": "none",
+   "pattern_description": "",
+   "affected_txn_ids": [],
+   "first_suspicious_txn_id": "",
+   "connected_card_ids": [],
+   "connected_device_profiles": [],
+   "exposure_usd": 0.0,
+   "evidence": [
+    {
+     "claim": "Cardholder denied the $55.68 transaction",
+     "source": "customer",
+     "ref": "evidence_request:1",
+     "entity_ids": []
+    },
+    {
+     "claim": "Device recorded as new to this account",
+     "source": "graph",
+     "ref": "query:card_window(card_id=C13171-K2, hours=72)",
+     "entity_ids": [
+      "3557987"
+     ]
+    },
+    {
+     "claim": "19 prior transactions of the same amount and product on this card",
+     "source": "graph",
+     "ref": "query:customer_baseline(card_id=C13171-K2)",
+     "entity_ids": [
+      "3558054"
+     ]
+    },
+    {
+     "claim": "Device profile appears in multiple confirmed fraud cases (CC-5558, CC-5556, etc.)",
+     "source": "graph",
+     "ref": "query:customer_baseline(card_id=C13171-K2)",
+     "entity_ids": [
+      "3558054"
+     ]
+    },
+    {
+     "claim": "Model risk scores for the three legs are low (0.44, 0.09, 0.38)",
+     "source": "document",
+     "ref": "document:policy-r2",
+     "entity_ids": []
+    }
+   ],
+   "similar_prior_cases": [
+    "CC-5558",
+    "CC-5556",
+    "CC-5553",
+    "CC-5552",
+    "CC-5551",
+    "CC-5546"
+   ],
+   "summary": "The cardholder\u2019s denial combined with a new device that is shared across several confirmed fraud cases strongly indicates fraud despite the card\u2019s history of similar purchases. Low model scores are typical for this undocumented shared\u2011device ring and should not be relied upon. Accordingly, the transaction should be treated as fraudulent, the card blocked, a case opened, and a suspicious activity report filed.",
+   "written_to_graph": true,
+   "graph_case_id": "CASE-2016-008"
+  },
+  "evidence_requests": [
+   {
+    "type": "customer_validation",
+    "asked_after_step": 4,
+    "assumed_response": "Shown their own history, the cardholder recognises the charge: this exact amount and merchant category has been billed to the card 19 times before. They withdraw the dispute."
+   }
+  ],
+  "next_best_actions": {
+   "initial": [
+    {
+     "action": "VERIFY_WITH_CUSTOMER",
+     "route": "auto",
+     "reason": "R7: 19 prior transactions of this amount and product on this card establish it as the cardholder's own recurring charge; confirm before acting"
+    },
+    {
+     "action": "CREATE_CASE",
+     "route": "auto",
+     "reason": "R7: customer disputes a charge that matches their own recurring pattern"
+    },
+    {
+     "action": "WARN_CUSTOMER",
+     "route": "auto",
+     "reason": "R7: send a recurring-charge reminder rather than blocking the card"
+    }
+   ],
+   "final": [
+    {
+     "action": "VERIFY_WITH_CUSTOMER",
+     "route": "auto",
+     "reason": "R7: 19 prior transactions of this amount and product on this card establish it as the cardholder's own recurring charge; confirm before acting"
+    },
+    {
+     "action": "CREATE_CASE",
+     "route": "auto",
+     "reason": "R7: customer disputes a charge that matches their own recurring pattern"
+    },
+    {
+     "action": "WARN_CUSTOMER",
+     "route": "auto",
+     "reason": "R7: send a recurring-charge reminder rather than blocking the card"
+    }
+   ],
+   "what_changed": "nothing"
+  },
+  "sar": {
+   "file": false,
+   "reason": "R7: the disputed charge matches the cardholder's own established pattern (19 prior transactions of this amount and product); no suspicious activity.",
+   "narrative": "",
+   "subjects": [],
+   "total_amount_usd": 0.0,
+   "activity_dates": []
+  },
+  "stop_reason": "The cardholder's response (confirmed) settles the question; further steps would not change the recommended actions.",
+  "tool_calls": 7,
+  "tokens": 7175,
+  "latency_s": 53.1,
+  "trigger_type": "customer_report",
+  "trigger_text": "Customer C13171 message: 'I never made this $55.68 purchase. Please check my card.' Refers to 3558054.",
+  "opened_at": "2016-12-20 03:08:56"
+ },
+ {
+  "case_id": "HHG-009",
+  "case": {
+   "status": "closed_legitimate",
+   "verdict": "legitimate",
+   "fraud_probability": 0.75,
+   "pattern": "none",
+   "pattern_description": "",
+   "affected_txn_ids": [],
+   "first_suspicious_txn_id": "",
+   "connected_card_ids": [],
+   "connected_device_profiles": [],
+   "exposure_usd": 0.0,
+   "evidence": [
+    {
+     "claim": "Cardholder denied the $30.02 transaction",
+     "source": "customer",
+     "ref": "evidence_request:1",
+     "entity_ids": []
+    },
+    {
+     "claim": "Four prior transactions of the same amount and product exist",
+     "source": "graph",
+     "ref": "query:customer_baseline(card_id=C08299-K1)",
+     "entity_ids": [
+      "3581141"
+     ]
+    },
+    {
+     "claim": "Risk scores for the episode range from 0.28 to 0.85",
+     "source": "graph",
+     "ref": "query:customer_baseline(card_id=C08299-K1)",
+     "entity_ids": [
+      "3581141"
+     ]
+    },
+    {
+     "claim": "Later transactions used a device unseen on this card",
+     "source": "graph",
+     "ref": "query:customer_baseline(card_id=C08299-K1)",
+     "entity_ids": [
+      "3581141"
+     ]
+    },
+    {
+     "claim": "Multiple prior confirmed fraud cases share the same device profile",
+     "source": "graph",
+     "ref": "query:customer_baseline(card_id=C08299-K1)",
+     "entity_ids": [
+      "3581141"
+     ]
+    },
+    {
+     "claim": "Disputed charge matches recurring pattern; policy advises not to block",
+     "source": "document",
+     "ref": "document:policy-r2",
+     "entity_ids": []
+    }
+   ],
+   "similar_prior_cases": [
+    "CC-5529",
+    "CC-5525",
+    "CC-5517",
+    "CC-5512",
+    "CC-5480",
+    "CC-5470"
+   ],
+   "summary": "The cardholder\u2019s denial is outweighed by a clear recurring purchase pattern of $30.02, with four identical prior transactions. Baseline spending levels are higher, and mixed risk scores plus a new device are typical of legitimate activity. Policy R7 directs that such disputes be handled as legitimate, so the alert should be closed without blocking the card.",
+   "written_to_graph": true,
+   "graph_case_id": "CASE-2016-009"
+  },
+  "evidence_requests": [
+   {
+    "type": "customer_validation",
+    "asked_after_step": 4,
+    "assumed_response": "The cardholder maintains they did not make the transaction and still holds the card."
+   }
+  ],
+  "next_best_actions": {
+   "initial": [
+    {
+     "action": "CREATE_CASE",
+     "route": "auto",
+     "reason": "3a: fraud probability 0.30 warrants a case record"
+    }
+   ],
+   "final": [
+    {
+     "action": "BLOCK_CARD",
+     "route": "L1",
+     "reason": "R2: cardholder denies the transaction; exposure $0.00"
+    },
+    {
+     "action": "CREATE_CASE",
+     "route": "auto",
+     "reason": "R2: unauthorised use confirmed by the cardholder"
+    }
+   ],
+   "what_changed": "The cardholder denied the activity when asked, moving fraud probability from 0.30 to 0.75 and settling the case as legitimate."
+  },
+  "sar": {
+   "file": false,
+   "reason": "R2/3a: fraud is neither confirmed nor strongly suspected (verdict legitimate, probability 0.75); no report required",
+   "narrative": "",
+   "subjects": [],
+   "total_amount_usd": 0.0,
+   "activity_dates": []
+  },
+  "stop_reason": "The cardholder's response (denied) settles the question; further steps would not change the recommended actions.",
+  "tool_calls": 7,
+  "tokens": 5714,
+  "latency_s": 47.1,
+  "trigger_type": "customer_report",
+  "trigger_text": "Customer C08299 message: 'I never made this $30.02 purchase. Please check my card.' Refers to 3581141.",
+  "opened_at": "2016-12-28 17:10:53"
+ },
+ {
+  "case_id": "HHG-010",
+  "case": {
+   "status": "closed_fraud",
+   "verdict": "fraud",
+   "fraud_probability": 0.82,
+   "pattern": "card_not_present_new_device",
+   "pattern_description": "",
+   "affected_txn_ids": [
+    "3506725"
+   ],
+   "first_suspicious_txn_id": "3506725",
+   "connected_card_ids": [],
+   "connected_device_profiles": [],
+   "exposure_usd": 1000.03,
+   "evidence": [
+    {
+     "claim": "risk score 0.90",
+     "source": "document",
+     "ref": "document:ring-a-shared-device#2",
+     "entity_ids": []
+    },
+    {
+     "claim": "device recorded as new to account",
+     "source": "graph",
+     "ref": "query:card_window(card_id=C10434-K1, hours=72)",
+     "entity_ids": [
+      "3506725"
+     ]
+    },
+    {
+     "claim": "transaction amount $1,000.03 exceeds prior max $670.04",
+     "source": "graph",
+     "ref": "query:card_window(card_id=C10434-K1, hours=72)",
+     "entity_ids": [
+      "3506725"
+     ]
+    },
+    {
+     "claim": "cardholder denied the transaction",
+     "source": "customer",
+     "ref": "evidence_request:1",
+     "entity_ids": []
+    },
+    {
+     "claim": "several prior closed cases with same pattern confirmed fraud",
+     "source": "graph",
+     "ref": "query:customer_baseline(card_id=C10434-K1)",
+     "entity_ids": [
+      "3506725"
+     ]
+    }
+   ],
+   "similar_prior_cases": [
+    "CC-5556",
+    "CC-5541",
+    "CC-5539",
+    "CC-5481",
+    "CC-5464",
+    "CC-5434"
+   ],
+   "summary": "The $1,000.03 online purchase was made on a new device, exceeds the card\u2019s historical maximum, and received a high model risk score of 0.90. The cardholder denied the charge, and similar recent cases with the same pattern were confirmed fraud. Combined anomalies and corroborating history give a high probability of fraud, so the transaction should be treated as fraudulent.",
+   "written_to_graph": true,
+   "graph_case_id": "CASE-2016-010"
+  },
+  "evidence_requests": [
+   {
+    "type": "customer_validation",
+    "asked_after_step": 4,
+    "assumed_response": "Contacted about the activity, the cardholder states they did not make these purchases and still holds the card."
+   }
+  ],
+  "next_best_actions": {
+   "initial": [
+    {
+     "action": "VERIFY_WITH_CUSTOMER",
+     "route": "auto",
+     "reason": "R1: probability 0.62 on 2 signals is not decisive; confirm with the cardholder before any block"
+    },
+    {
+     "action": "CREATE_CASE",
+     "route": "auto",
+     "reason": "3a: fraud probability 0.62 warrants a case record"
+    },
+    {
+     "action": "ESCALATE_TO_ANALYST",
+     "route": "auto",
+     "reason": "R8: verdict is uncertain and exposure $1,000.03 exceeds $500"
+    }
+   ],
+   "final": [
+    {
+     "action": "BLOCK_CARD",
+     "route": "L1",
+     "reason": "R2: cardholder denies the transaction; exposure $1,000.03"
+    },
+    {
+     "action": "CREATE_CASE",
+     "route": "auto",
+     "reason": "R2: unauthorised use confirmed by the cardholder"
+    },
+    {
+     "action": "FILE_REPORT",
+     "route": "L2",
+     "reason": "3a: exposure $1,000.03 exceeds the $1,000 reporting threshold"
+    }
+   ],
+   "what_changed": "The cardholder denied the activity when asked, moving fraud probability from 0.62 to 0.82; the recommendation firms up accordingly."
+  },
+  "sar": {
+   "file": true,
+   "reason": "3a: exposure $1,000.03 exceeds the $1,000 reporting threshold",
+   "narrative": "The customer identified as C10434 used the payment card designated C10434\u2011K1. A single transaction of $1,000.03 was processed. The transaction occurred on 2016\u201112\u201102 at 15:18:27. The purchase was made online using product code R. The activity originated from a new device identified as a Windows 10 system running Edge 16.0 with a 1366x768 display. The transaction was classified as a card\u2011not\u2011present purchase on a new device, a pattern previously observed in cases CC\u20115556, CC\u20115541, CC\u20115539, CC\u20115481, and CC\u20115464. No other connected accounts or devices were identified in association with this activity. When contacted, the cardholder affirmed that they did not make the purchase and that they still possess the card. The transaction is suspicious because the $1,000.03 amount exceeds the card\u2019s previous highest transaction of $670.04 and was executed from an unrecognized device.",
+   "subjects": [
+    "C10434",
+    "C10434-K1"
+   ],
+   "total_amount_usd": 1000.03,
+   "activity_dates": [
+    "2016-12-02",
+    "2016-12-02"
+   ]
+  },
+  "stop_reason": "The cardholder's response (denied) settles the question; further steps would not change the recommended actions.",
+  "tool_calls": 7,
+  "tokens": 7542,
+  "latency_s": 51.2,
+  "trigger_type": "risk_score",
+  "trigger_text": "Real-time model scored transaction 3506725 ($1,000.03, online) at 0.90. Review and decide.",
+  "opened_at": "2016-12-02 18:18:27"
+ },
+ {
+  "case_id": "HHG-011",
+  "case": {
+   "status": "open",
+   "verdict": "uncertain",
+   "fraud_probability": 0.15,
+   "pattern": "card_not_present_new_device",
+   "pattern_description": "",
+   "affected_txn_ids": [
+    "3583199",
+    "3583229",
+    "3583348",
+    "3583368",
+    "3583406",
+    "3583411",
+    "3583415",
+    "3583417",
+    "3583435"
+   ],
+   "first_suspicious_txn_id": "3583199",
+   "connected_card_ids": [],
+   "connected_device_profiles": [],
+   "exposure_usd": 291.22,
+   "evidence": [
+    {
+     "claim": "Transaction amount $131.30 exceeds the card\u2019s 90th\u2011percentile ($80.13)",
+     "source": "graph",
+     "ref": "query:card_window(card_id=C11923-K2, hours=72)",
+     "entity_ids": [
+      "3583199",
+      "3583229",
+      "3583348",
+      "3583368",
+      "3583406",
+      "3583411"
+     ]
+    },
+    {
+     "claim": "Device SM\u2011G610F is new to this account",
+     "source": "graph",
+     "ref": "query:card_window(card_id=C11923-K2, hours=72)",
+     "entity_ids": [
+      "3583229",
+      "3583368",
+      "3583406",
+      "3583411",
+      "3583435"
+     ]
+    },
+    {
+     "claim": "33 prior transactions of the same amount and product exist",
+     "source": "graph",
+     "ref": "query:customer_baseline(card_id=C11923-K2)",
+     "entity_ids": [
+      "3583368"
+     ]
+    },
+    {
+     "claim": "Model risk score for the flagged transaction is 0.39",
+     "source": "graph",
+     "ref": "query:customer_baseline(card_id=C11923-K2)",
+     "entity_ids": [
+      "3583368"
+     ]
+    },
+    {
+     "claim": "Typology indicates possible shared\u2011device ring behavior",
+     "source": "document",
+     "ref": "document:policy-r2",
+     "entity_ids": []
+    }
+   ],
+   "similar_prior_cases": [
+    "CC-5564",
+    "CC-5558",
+    "CC-5556",
+    "CC-5553",
+    "CC-5552",
+    "CC-5551"
+   ],
+   "summary": "The cardholder disputes a $131.30 online purchase that is above the card\u2019s usual spending range and occurs on a new device, but the same amount has been charged 33 times before, suggesting a legitimate recurring pattern. While denial raises fraud likelihood, the strong prior\u2011transaction history and typical benign nature of new\u2011device/off\u2011baseline activity keep the overall probability moderate, resulting in an uncertain verdict.",
+   "written_to_graph": true,
+   "graph_case_id": "CASE-2016-011"
+  },
+  "evidence_requests": [],
+  "next_best_actions": {
+   "initial": [
+    {
+     "action": "VERIFY_WITH_CUSTOMER",
+     "route": "auto",
+     "reason": "R7: 33 prior transactions of this amount and product on this card establish it as the cardholder's own recurring charge; confirm before acting"
+    },
+    {
+     "action": "CREATE_CASE",
+     "route": "auto",
+     "reason": "R7: customer disputes a charge that matches their own recurring pattern"
+    },
+    {
+     "action": "WARN_CUSTOMER",
+     "route": "auto",
+     "reason": "R7: send a recurring-charge reminder rather than blocking the card"
+    }
+   ],
+   "final": [
+    {
+     "action": "VERIFY_WITH_CUSTOMER",
+     "route": "auto",
+     "reason": "R7: 33 prior transactions of this amount and product on this card establish it as the cardholder's own recurring charge; confirm before acting"
+    },
+    {
+     "action": "CREATE_CASE",
+     "route": "auto",
+     "reason": "R7: customer disputes a charge that matches their own recurring pattern"
+    },
+    {
+     "action": "WARN_CUSTOMER",
+     "route": "auto",
+     "reason": "R7: send a recurring-charge reminder rather than blocking the card"
+    }
+   ],
+   "what_changed": "nothing"
+  },
+  "sar": {
+   "file": false,
+   "reason": "R7: the disputed charge matches the cardholder's own established pattern (33 prior transactions of this amount and product); no suspicious activity.",
+   "narrative": "",
+   "subjects": [],
+   "total_amount_usd": 0.0,
+   "activity_dates": []
+  },
+  "stop_reason": "Fraud probability 0.15 is at or below 0.15 on 2 independent pieces of evidence.",
+  "tool_calls": 7,
+  "tokens": 3622,
+  "latency_s": 25.1,
+  "trigger_type": "customer_report",
+  "trigger_text": "Customer C11923 message: 'I never made this $131.30 purchase. Please check my card.' Refers to 3583368.",
+  "opened_at": "2016-12-29 06:27:44"
+ },
+ {
+  "case_id": "HHG-012",
+  "case": {
+   "status": "closed_legitimate",
+   "verdict": "legitimate",
+   "fraud_probability": 0.3,
+   "pattern": "none",
+   "pattern_description": "",
+   "affected_txn_ids": [],
+   "first_suspicious_txn_id": "",
+   "connected_card_ids": [],
+   "connected_device_profiles": [],
+   "exposure_usd": 0.0,
+   "evidence": [
+    {
+     "claim": "Risk score 0.55",
+     "source": "document",
+     "ref": "document:policy-r5",
+     "entity_ids": []
+    },
+    {
+     "claim": "Billing region 494.0 not in prior region list",
+     "source": "graph",
+     "ref": "query:customer_baseline(card_id=C05876-K2)",
+     "entity_ids": [
+      "3553342"
+     ]
+    },
+    {
+     "claim": "Cardholder confirmed the transaction",
+     "source": "customer",
+     "ref": "evidence_request:1",
+     "entity_ids": []
+    },
+    {
+     "claim": "79 prior transactions of same amount and product",
+     "source": "graph",
+     "ref": "query:customer_baseline(card_id=C05876-K2)",
+     "entity_ids": [
+      "3553342"
+     ]
+    },
+    {
+     "claim": "No shared device profile matches prior fraud cases",
+     "source": "graph",
+     "ref": "query:customer_baseline(card_id=C05876-K2)",
+     "entity_ids": [
+      "3553342"
+     ]
+    }
+   ],
+   "similar_prior_cases": [
+    "CC-5556",
+    "CC-5528",
+    "CC-5505",
+    "CC-5481",
+    "CC-5455",
+    "CC-5446"
+   ],
+   "summary": "The flagged $30.91 purchase shows a modest risk score and an out\u2011of\u2011region indicator, but the cardholder confirmed it and the card\u2019s history includes many identical in\u2011person transactions. No shared device or prior fraud connections exist. Policy R3 directs closing as no fraud. Therefore the transaction is deemed legitimate.",
+   "written_to_graph": true,
+   "graph_case_id": "CASE-2016-012"
+  },
+  "evidence_requests": [
+   {
+    "type": "customer_validation",
+    "asked_after_step": 5,
+    "assumed_response": "The cardholder confirms they made the transaction."
+   }
+  ],
+  "next_best_actions": {
+   "initial": [
+    {
+     "action": "ALLOW_TRANSACTION",
+     "route": "auto",
+     "reason": "R3: no basis to decline"
+    },
+    {
+     "action": "CLOSE_NO_FRAUD",
+     "route": "auto",
+     "reason": "R3: activity is consistent with the cardholder's history"
+    }
+   ],
+   "final": [
+    {
+     "action": "CREATE_CASE",
+     "route": "auto",
+     "reason": "R3/3a: record the confirmation against the investigation"
+    },
+    {
+     "action": "CLOSE_NO_FRAUD",
+     "route": "auto",
+     "reason": "R3: cardholder confirms they made the transaction"
+    }
+   ],
+   "what_changed": "The cardholder confirmed the activity when asked, moving fraud probability from 0.22 to 0.30 and settling the case as legitimate."
+  },
+  "sar": {
+   "file": false,
+   "reason": "R2/3a: fraud is neither confirmed nor strongly suspected (verdict legitimate, probability 0.30); no report required",
+   "narrative": "",
+   "subjects": [],
+   "total_amount_usd": 0.0,
+   "activity_dates": []
+  },
+  "stop_reason": "The cardholder's response (confirmed) settles the question; further steps would not change the recommended actions.",
+  "tool_calls": 8,
+  "tokens": 6014,
+  "latency_s": 42.3,
+  "trigger_type": "risk_score",
+  "trigger_text": "Real-time model scored transaction 3553342 ($30.91, in billing region 494.0) at 0.55. Review and decide.",
+  "opened_at": "2016-12-18 05:00:31"
+ },
+ {
+  "case_id": "HHG-013",
+  "case": {
+   "status": "closed_legitimate",
+   "verdict": "legitimate",
+   "fraud_probability": 0.55,
+   "pattern": "none",
+   "pattern_description": "",
+   "affected_txn_ids": [],
+   "first_suspicious_txn_id": "",
+   "connected_card_ids": [],
+   "connected_device_profiles": [],
+   "exposure_usd": 0.0,
+   "evidence": [
+    {
+     "claim": "Cardholder confirmed the transaction",
+     "source": "customer",
+     "ref": "evidence_request:1",
+     "entity_ids": []
+    },
+    {
+     "claim": "Transaction amount $35.66 is below median $59.08 and 90th percentile $210.03",
+     "source": "graph",
+     "ref": "query:customer_baseline(card_id=C07671-K2)",
+     "entity_ids": [
+      "3526826"
+     ]
+    },
+    {
+     "claim": "One prior transaction of the same amount and product exists",
+     "source": "graph",
+     "ref": "query:customer_baseline(card_id=C07671-K2)",
+     "entity_ids": [
+      "3526826"
+     ]
+    },
+    {
+     "claim": "Device is new to the account but new-device alone is usually legitimate",
+     "source": "document",
+     "ref": "document:ring-a-shared-device#2",
+     "entity_ids": []
+    },
+    {
+     "claim": "Risk score 0.76 alone does not indicate fraud without other anomalies",
+     "source": "document",
+     "ref": "document:ring-a-shared-device#2",
+     "entity_ids": []
+    }
+   ],
+   "similar_prior_cases": [
+    "CC-5564",
+    "CC-5529",
+    "CC-5528",
+    "CC-5525",
+    "CC-5517",
+    "CC-5512"
+   ],
+   "summary": "The cardholder confirmed the $35.66 online purchase, which aligns with a prior identical transaction and is below the card\u2019s typical spend. Although the device is new, policy indicates new devices are often legitimate when unaccompanied by other anomalies. The risk score alone is insufficient to label this as fraud. Consequently, the transaction is deemed legitimate with a low fraud probability.",
+   "written_to_graph": true,
+   "graph_case_id": "CASE-2016-013"
+  },
+  "evidence_requests": [
+   {
+    "type": "step_up_auth",
+    "asked_after_step": 4,
+    "assumed_response": "Step-up authentication was requested and completed successfully by the cardholder, indicating the genuine account holder authorised the activity."
+   }
+  ],
+  "next_best_actions": {
+   "initial": [
+    {
+     "action": "VERIFY_WITH_CUSTOMER",
+     "route": "auto",
+     "reason": "R1: probability 0.45 on a single signal is not decisive; confirm with the cardholder before any block"
+    },
+    {
+     "action": "CREATE_CASE",
+     "route": "auto",
+     "reason": "3a: fraud probability 0.45 warrants a case record"
+    }
+   ],
+   "final": [
+    {
+     "action": "CREATE_CASE",
+     "route": "auto",
+     "reason": "R3/3a: record the confirmation against the investigation"
+    },
+    {
+     "action": "CLOSE_NO_FRAUD",
+     "route": "auto",
+     "reason": "R3: cardholder confirms they made the transaction"
+    }
+   ],
+   "what_changed": "The cardholder confirmed the activity when asked, moving fraud probability from 0.45 to 0.55 and settling the case as legitimate."
+  },
+  "sar": {
+   "file": false,
+   "reason": "R2/3a: fraud is neither confirmed nor strongly suspected (verdict legitimate, probability 0.55); no report required",
+   "narrative": "",
+   "subjects": [],
+   "total_amount_usd": 0.0,
+   "activity_dates": []
+  },
+  "stop_reason": "The cardholder's response (confirmed) settles the question; further steps would not change the recommended actions.",
+  "tool_calls": 7,
+  "tokens": 6696,
+  "latency_s": 50.0,
+  "trigger_type": "risk_score",
+  "trigger_text": "Real-time model scored transaction 3526826 ($35.66, online) at 0.76. Review and decide.",
+  "opened_at": "2016-12-09 05:39:29"
+ },
+ {
+  "case_id": "HHG-014",
+  "case": {
+   "status": "escalated",
+   "verdict": "fraud",
+   "fraud_probability": 0.88,
+   "pattern": "undocumented",
+   "pattern_description": "A single device profile (SM-G935F Build/NRD90M | Android 7.0 | chrome 62.0 for android | 1920x1080) was used on 28 different cards between 2016-11-14 and 2016-12-04. It was recorded as new to every account it touched and sat behind an anonymising proxy on every transaction, which is not how a genuinely shared device behaves -- a household or office device shows returning users. The purchases are small and spread thinly across many cards, so no single cardholder looks alarming; the pattern is only visible as a shared-device cluster across the portfolio.",
+   "affected_txn_ids": [
+    "3460634",
+    "3478561",
+    "3489320"
+   ],
+   "first_suspicious_txn_id": "3460634",
+   "connected_card_ids": [
+    "C01289-K1",
+    "C01996-K2",
+    "C02910-K1",
+    "C02975-K1",
+    "C03676-K2",
+    "C04108-K2",
+    "C04274-K1",
+    "C05448-K2",
+    "C06031-K2",
+    "C06650-K2",
+    "C06710-K1",
+    "C07472-K1",
+    "C08168-K1",
+    "C08972-K2",
+    "C09049-K1",
+    "C09195-K1",
+    "C09906-K1",
+    "C09975-K1",
+    "C10020-K1",
+    "C10193-K2",
+    "C10326-K1",
+    "C11082-K1",
+    "C11670-K2",
+    "C11702-K1",
+    "C12645-K1",
+    "C12796-K1",
+    "C13291-K1"
+   ],
+   "connected_device_profiles": [
+    "SM-G935F Build/NRD90M | Android 7.0 | chrome 62.0 for android | 1920x1080"
+   ],
+   "exposure_usd": 439.61,
+   "evidence": [
+    {
+     "claim": "Three online C\u2011product transactions on this card (112.37, 74.96, 252.28) all from device SM\u2011G935F",
+     "source": "graph",
+     "ref": "query:card_window(card_id=C13487-K1, hours=72)",
+     "entity_ids": [
+      "3460634",
+      "3478561",
+      "3489320"
+     ]
+    },
+    {
+     "claim": "Device profile SM\u2011G935F is shared with 28 other cards, several of which have confirmed fraud",
+     "source": "graph",
+     "ref": "query:ring_detect(from_=2016-11-01, to=2016-12-31)",
+     "entity_ids": [
+      "SM-G935F Build/NRD90M | Android 7.0 | chrome 62.0 for android | 1920x1080",
+      "C01289-K1",
+      "C01996-K2",
+      "C02910-K1",
+      "C02975-K1",
+      "C03676-K2",
+      "C04108-K2",
+      "C04274-K1",
+      "C05448-K2"
+     ]
+    },
+    {
+     "claim": "Risk scores for the three transactions are low (0.05\u20110.22)",
+     "source": "document",
+     "ref": "document:ring-a-shared-device#2",
+     "entity_ids": []
+    },
+    {
+     "claim": "Cardholder denied the flagged transaction",
+     "source": "customer",
+     "ref": "evidence_request:1",
+     "entity_ids": []
+    },
+    {
+     "claim": "Prior closed cases with the same device profile were confirmed fraud",
+     "source": "external",
+     "ref": "query:customer_baseline(card_id=C13487-K1)",
+     "entity_ids": [
+      "3478561"
+     ]
+    },
+    {
+     "claim": "Policy R6 and R9 require monitoring and reporting of shared device rings",
+     "source": "document",
+     "ref": "document:ring-a-shared-device#2",
+     "entity_ids": []
+    }
+   ],
+   "similar_prior_cases": [
+    "CC-5336",
+    "CC-5263",
+    "CC-5217",
+    "CC-4834",
+    "CC-4405",
+    "CC-4324"
+   ],
+   "summary": "The card\u2019s recent online purchases all originate from a shared anonymised device that has been linked to multiple confirmed fraud cases. Low model risk scores are overridden by the strong ring\u2011membership signal and the cardholder\u2019s denial, which together place the fraud probability in the high range. Policy guidance mandates opening a case, filing a SAR, and placing all cards on this device under monitoring.",
+   "written_to_graph": true,
+   "graph_case_id": "CASE-2016-014"
+  },
+  "evidence_requests": [
+   {
+    "type": "customer_validation",
+    "asked_after_step": 6,
+    "assumed_response": "Contacted about the activity, the cardholder states they did not make these purchases and still holds the card."
+   }
+  ],
+  "next_best_actions": {
+   "initial": [
+    {
+     "action": "VERIFY_WITH_CUSTOMER",
+     "route": "auto",
+     "reason": "R1: probability 0.66 on 2 signals is not decisive; confirm with the cardholder before any block"
+    },
+    {
+     "action": "CREATE_CASE",
+     "route": "auto",
+     "reason": "R6: several cards show activity from a device profile shared with 28 cards"
+    },
+    {
+     "action": "FILE_REPORT",
+     "route": "L2",
+     "reason": "R6/3a: activity connects to a device profile shared with 28 cards across more than one card"
+    },
+    {
+     "action": "MONITOR_CONNECTED_CARDS",
+     "route": "auto",
+     "reason": "R6: monitor every card sharing a device profile shared with 28 cards"
+    },
+    {
+     "action": "ESCALATE_TO_ANALYST",
+     "route": "auto",
+     "reason": "R9: undocumented pattern needs an analyst's eyes before it becomes policy"
+    }
+   ],
+   "final": [
+    {
+     "action": "BLOCK_CARD",
+     "route": "L1",
+     "reason": "R2: cardholder denies the transaction; exposure $439.61"
+    },
+    {
+     "action": "CREATE_CASE",
+     "route": "auto",
+     "reason": "R2: unauthorised use confirmed by the cardholder"
+    },
+    {
+     "action": "FILE_REPORT",
+     "route": "L2",
+     "reason": "R6/3a: activity connects to a device profile shared with 28 cards across more than one card"
+    },
+    {
+     "action": "MONITOR_CONNECTED_CARDS",
+     "route": "auto",
+     "reason": "R6: monitor every card sharing a device profile shared with 28 cards"
+    },
+    {
+     "action": "ESCALATE_TO_ANALYST",
+     "route": "auto",
+     "reason": "R9: undocumented pattern needs an analyst's eyes before it becomes policy"
+    }
+   ],
+   "what_changed": "The cardholder denied the activity when asked, moving fraud probability from 0.66 to 0.88; the recommendation firms up accordingly."
+  },
+  "sar": {
+   "file": true,
+   "reason": "R6/3a: activity connects to a device profile shared with 28 cards across more than one card",
+   "narrative": "The customer identified as C13487 used the payment card designated C13487\u2011K1. Between 2016\u201111\u201115 20:30:00 and 2016\u201111\u201126 17:39:00 the card generated three online transactions (IDs 3460634, 3478561, 3489320) for a combined total of $439.61. All three transactions occurred within the stated period, with the first at 20:30 on 15 November 2016 and the last at 17:39 on 26 November 2016. The activity was conducted through the online channel using product code C on a Samsung SM\u2011G935F device running Android 7.0, Chrome 62.0 for Android, with a screen resolution of 1920\u00d71080. The pattern of the three purchases is undocumented and each transaction was anonymised, yet all three were executed from the same device profile. The device profile is shared with 28 other cards, is newly associated with every account, and is linked to a set of connected cards including C01289\u2011K1, C01996\u2011K2, C02910\u2011K1, C02975\u2011K1, C03676\u2011K2, C04108\u2011K2, C04274\u2011K1, C05448\u2011K2, C06031\u2011K2, C06650\u2011K2, C06710\u2011K1, and C07472\u2011K1. When contacted, the cardholder affirmed that they did not make the purchases and confirmed that they still possess the card. The combination of an undocumented transaction pattern, a device profile shared across multiple unrelated accounts, and the cardholder\u2019s denial renders the activity suspicious.",
+   "subjects": [
+    "C13487",
+    "C13487-K1",
+    "C01289-K1",
+    "C01996-K2",
+    "C02910-K1",
+    "C02975-K1",
+    "C03676-K2",
+    "C04108-K2",
+    "C04274-K1",
+    "C05448-K2",
+    "C06031-K2",
+    "C06650-K2",
+    "SM-G935F Build/NRD90M | Android 7.0 | chrome 62.0 for android | 1920x1080"
+   ],
+   "total_amount_usd": 439.61,
+   "activity_dates": [
+    "2016-11-15",
+    "2016-11-26"
+   ]
+  },
+  "stop_reason": "The cardholder's response (denied) settles the question; further steps would not change the recommended actions.",
+  "tool_calls": 9,
+  "tokens": 0,
+  "latency_s": 2.8,
+  "trigger_type": "analyst_request",
+  "trigger_text": "Analyst request: several cards this month show purchases from the same unusual device profile. Review transaction 3478561 on card C13487-K1 and look for related activity.",
+  "opened_at": "2016-11-22 20:11:00"
+ },
+ {
+  "case_id": "HHG-015",
+  "case": {
+   "status": "closed_fraud",
+   "verdict": "fraud",
+   "fraud_probability": 0.88,
+   "pattern": "card_not_present_new_device",
+   "pattern_description": "",
+   "affected_txn_ids": [
+    "3464869"
+   ],
+   "first_suspicious_txn_id": "3464869",
+   "connected_card_ids": [],
+   "connected_device_profiles": [],
+   "exposure_usd": 599.94,
+   "evidence": [
+    {
+     "claim": "Risk score 0.77 flagged the transaction",
+     "source": "document",
+     "ref": "document:ring-a-shared-device#2",
+     "entity_ids": []
+    },
+    {
+     "claim": "Device is new to the account",
+     "source": "graph",
+     "ref": "query:card_window(card_id=C03042-K1, hours=72)",
+     "entity_ids": [
+      "3464869"
+     ]
+    },
+    {
+     "claim": "Transaction amount $599.94 exceeds prior max $550.03",
+     "source": "graph",
+     "ref": "query:card_window(card_id=C03042-K1, hours=72)",
+     "entity_ids": [
+      "3464869"
+     ]
+    },
+    {
+     "claim": "Cardholder denied the transaction",
+     "source": "customer",
+     "ref": "evidence_request:1",
+     "entity_ids": []
+    },
+    {
+     "claim": "Prior closed cases with same device profile were confirmed fraud",
+     "source": "graph",
+     "ref": "query:customer_baseline(card_id=C03042-K1)",
+     "entity_ids": [
+      "3464869"
+     ]
+    },
+    {
+     "claim": "Policy R6 requires monitoring of shared device profiles",
+     "source": "document",
+     "ref": "document:ring-a-shared-device#2",
+     "entity_ids": []
+    }
+   ],
+   "similar_prior_cases": [
+    "CC-5556",
+    "CC-5541",
+    "CC-5539",
+    "CC-5529",
+    "CC-5525",
+    "CC-5517"
+   ],
+   "summary": "The transaction shows multiple red flags: a new device, an amount higher than any previous spend, a high model score, and a cardholder denial. Similar past cases on the same device profile were confirmed fraud, and policy guidance treats this as a shared\u2011origin ring. Given these independent anomalies, the fraud probability is high and the case should be treated as fraud.",
+   "written_to_graph": true,
+   "graph_case_id": "CASE-2016-015"
+  },
+  "evidence_requests": [
+   {
+    "type": "customer_validation",
+    "asked_after_step": 4,
+    "assumed_response": "Contacted about the activity, the cardholder states they did not make these purchases and still holds the card."
+   }
+  ],
+  "next_best_actions": {
+   "initial": [
+    {
+     "action": "VERIFY_WITH_CUSTOMER",
+     "route": "auto",
+     "reason": "R1: probability 0.65 on 2 signals is not decisive; confirm with the cardholder before any block"
+    },
+    {
+     "action": "CREATE_CASE",
+     "route": "auto",
+     "reason": "3a: fraud probability 0.65 warrants a case record"
+    }
+   ],
+   "final": [
+    {
+     "action": "BLOCK_CARD",
+     "route": "L1",
+     "reason": "R2: cardholder denies the transaction; exposure $599.94"
+    },
+    {
+     "action": "CREATE_CASE",
+     "route": "auto",
+     "reason": "R2: unauthorised use confirmed by the cardholder"
+    }
+   ],
+   "what_changed": "The cardholder denied the activity when asked, moving fraud probability from 0.65 to 0.88; the recommendation firms up accordingly."
+  },
+  "sar": {
+   "file": false,
+   "reason": "3a: fraud is suspected but no reporting trigger is met -- exposure $599.94 is under $1,000, no shared origin, pattern is documented",
+   "narrative": "",
+   "subjects": [],
+   "total_amount_usd": 0.0,
+   "activity_dates": []
+  },
+  "stop_reason": "The cardholder's response (denied) settles the question; further steps would not change the recommended actions.",
+  "tool_calls": 7,
+  "tokens": 0,
+  "latency_s": 2.6,
+  "trigger_type": "risk_score",
+  "trigger_text": "Real-time model scored transaction 3464869 ($599.94, online) at 0.77. Review and decide.",
+  "opened_at": "2016-11-17 19:03:36"
+ },
+ {
+  "case_id": "HHG-016",
+  "case": {
+   "status": "closed_fraud",
+   "verdict": "fraud",
+   "fraud_probability": 0.88,
+   "pattern": "card_not_present_new_device",
+   "pattern_description": "",
+   "affected_txn_ids": [
+    "3534820"
+   ],
+   "first_suspicious_txn_id": "3534820",
+   "connected_card_ids": [],
+   "connected_device_profiles": [],
+   "exposure_usd": 59.67,
+   "evidence": [
+    {
+     "claim": "Cardholder denied the $59.67 transaction",
+     "source": "customer",
+     "ref": "evidence_request:1",
+     "entity_ids": []
+    },
+    {
+     "claim": "Amount $59.67 is within the card\u2019s median ($37.75) and 90th percentile ($78.74)",
+     "source": "document",
+     "ref": "document:policy-r2",
+     "entity_ids": []
+    },
+    {
+     "claim": "Two prior transactions of the same amount and product exist",
+     "source": "document",
+     "ref": "document:policy-r2",
+     "entity_ids": []
+    },
+    {
+     "claim": "Device recorded as new for this account",
+     "source": "graph",
+     "ref": "query:card_window(card_id=C09988-K1, hours=72)",
+     "entity_ids": [
+      "3534820"
+     ]
+    },
+    {
+     "claim": "Shared device profile links this card to multiple confirmed fraud cases (CC\u20115558, CC\u20115546, etc.)",
+     "source": "graph",
+     "ref": "query:customer_baseline(card_id=C09988-K1)",
+     "entity_ids": [
+      "3534820"
+     ]
+    },
+    {
+     "claim": "Model risk score is 0.37",
+     "source": "document",
+     "ref": "document:policy-r2",
+     "entity_ids": []
+    }
+   ],
+   "similar_prior_cases": [
+    "CC-5558",
+    "CC-5546",
+    "CC-5542",
+    "CC-5541",
+    "CC-5539",
+    "CC-5535"
+   ],
+   "summary": "The cardholder\u2019s denial combined with a new, shared device that has been involved in several confirmed fraud cases raises the fraud probability to about 88\u202f%. Although the purchase amount fits the card\u2019s normal spending pattern, the ring\u2011membership anomaly outweighs baseline consistency. The low model score does not mitigate the strong denial and device signals, leading to a fraud verdict.",
+   "written_to_graph": true,
+   "graph_case_id": "CASE-2016-016"
+  },
+  "evidence_requests": [
+   {
+    "type": "customer_validation",
+    "asked_after_step": 4,
+    "assumed_response": "The cardholder maintains they did not make the transaction and still holds the card."
+   }
+  ],
+  "next_best_actions": {
+   "initial": [
+    {
+     "action": "VERIFY_WITH_CUSTOMER",
+     "route": "auto",
+     "reason": "R1: probability 0.55 on a single signal is not decisive; confirm with the cardholder before any block"
+    },
+    {
+     "action": "CREATE_CASE",
+     "route": "auto",
+     "reason": "3a: fraud probability 0.55 warrants a case record"
+    }
+   ],
+   "final": [
+    {
+     "action": "BLOCK_CARD",
+     "route": "L1",
+     "reason": "R2: cardholder denies the transaction; exposure $59.67"
+    },
+    {
+     "action": "CREATE_CASE",
+     "route": "auto",
+     "reason": "R2: unauthorised use confirmed by the cardholder"
+    }
+   ],
+   "what_changed": "The cardholder denied the activity when asked, moving fraud probability from 0.55 to 0.88; the recommendation firms up accordingly."
+  },
+  "sar": {
+   "file": false,
+   "reason": "3a: fraud is suspected but no reporting trigger is met -- exposure $59.67 is under $1,000, no shared origin, pattern is documented",
+   "narrative": "",
+   "subjects": [],
+   "total_amount_usd": 0.0,
+   "activity_dates": []
+  },
+  "stop_reason": "The cardholder's response (denied) settles the question; further steps would not change the recommended actions.",
+  "tool_calls": 7,
+  "tokens": 6409,
+  "latency_s": 40.5,
+  "trigger_type": "customer_report",
+  "trigger_text": "Customer C09988 message: 'I never made this $59.67 purchase. Please check my card.' Refers to 3534820.",
+  "opened_at": "2016-12-12 01:39:08"
+ },
+ {
+  "case_id": "HHG-017",
+  "case": {
+   "status": "closed_legitimate",
+   "verdict": "legitimate",
+   "fraud_probability": 0.3,
+   "pattern": "none",
+   "pattern_description": "",
+   "affected_txn_ids": [],
+   "first_suspicious_txn_id": "",
+   "connected_card_ids": [],
+   "connected_device_profiles": [],
+   "exposure_usd": 0.0,
+   "evidence": [
+    {
+     "claim": "Cardholder confirmed the transaction",
+     "source": "customer",
+     "ref": "evidence_request:1",
+     "entity_ids": []
+    },
+    {
+     "claim": "Three online transactions of ~$100 each occurred within an hour, with risk scores 0.05, 0.10, 0.57",
+     "source": "graph",
+     "ref": "query:customer_baseline(card_id=C04570-K1)",
+     "entity_ids": [
+      "3450629"
+     ]
+    },
+    {
+     "claim": "Median transaction amount for this card is $199.97, and there are nine prior transactions of the same amount and product",
+     "source": "document",
+     "ref": "document:policy-r5",
+     "entity_ids": []
+    },
+    {
+     "claim": "No prior fraud cases linked to this card; shared device profile has both confirmed fraud and cleared cases",
+     "source": "graph",
+     "ref": "query:customer_baseline(card_id=C04570-K1)",
+     "entity_ids": [
+      "3450629"
+     ]
+    },
+    {
+     "claim": "Policy R5 (card testing) does not apply because there is no larger purchase and the cardholder confirmed the charge",
+     "source": "document",
+     "ref": "document:policy-r5",
+     "entity_ids": []
+    }
+   ],
+   "similar_prior_cases": [
+    "CC-5529",
+    "CC-5525",
+    "CC-5517",
+    "CC-5512",
+    "CC-5481",
+    "CC-5480"
+   ],
+   "summary": "The cardholder confirmed the $100.09 online purchase, and the card\u2019s history shows multiple identical transactions, indicating a normal pattern. Risk scores are low and the activity fits the card\u2019s baseline spend. Policy R3 directs a close\u2011no\u2011fraud outcome, so the transaction should be treated as legitimate.",
+   "written_to_graph": true,
+   "graph_case_id": "CASE-2016-017"
+  },
+  "evidence_requests": [
+   {
+    "type": "customer_validation",
+    "asked_after_step": 4,
+    "assumed_response": "The cardholder confirms they made the transaction."
+   }
+  ],
+  "next_best_actions": {
+   "initial": [
+    {
+     "action": "ALLOW_TRANSACTION",
+     "route": "auto",
+     "reason": "R3: no basis to decline"
+    },
+    {
+     "action": "CLOSE_NO_FRAUD",
+     "route": "auto",
+     "reason": "R3: activity is consistent with the cardholder's history"
+    }
+   ],
+   "final": [
+    {
+     "action": "CREATE_CASE",
+     "route": "auto",
+     "reason": "R3/3a: record the confirmation against the investigation"
+    },
+    {
+     "action": "CLOSE_NO_FRAUD",
+     "route": "auto",
+     "reason": "R3: cardholder confirms they made the transaction"
+    }
+   ],
+   "what_changed": "The cardholder confirmed the activity when asked, moving fraud probability from 0.20 to 0.30 and settling the case as legitimate."
+  },
+  "sar": {
+   "file": false,
+   "reason": "R2/3a: fraud is neither confirmed nor strongly suspected (verdict legitimate, probability 0.30); no report required",
+   "narrative": "",
+   "subjects": [],
+   "total_amount_usd": 0.0,
+   "activity_dates": []
+  },
+  "stop_reason": "The cardholder's response (confirmed) settles the question; further steps would not change the recommended actions.",
+  "tool_calls": 7,
+  "tokens": 0,
+  "latency_s": 3.6,
+  "trigger_type": "risk_score",
+  "trigger_text": "Real-time model scored transaction 3450629 ($100.09, online) at 0.57. Review and decide.",
+  "opened_at": "2016-11-12 00:46:24"
+ },
+ {
+  "case_id": "HHG-018",
+  "case": {
+   "status": "closed_legitimate",
+   "verdict": "legitimate",
+   "fraud_probability": 0.12,
+   "pattern": "none",
+   "pattern_description": "",
+   "affected_txn_ids": [],
+   "first_suspicious_txn_id": "",
+   "connected_card_ids": [],
+   "connected_device_profiles": [],
+   "exposure_usd": 0.0,
+   "evidence": [
+    {
+     "claim": "Cardholder denied the $39.08 transaction",
+     "source": "customer",
+     "ref": "evidence_request:1",
+     "entity_ids": []
+    },
+    {
+     "claim": "170 prior transactions of the same amount and product indicate a recurring pattern",
+     "source": "graph",
+     "ref": "query:customer_baseline(card_id=C02354-K2)",
+     "entity_ids": [
+      "3491361"
+     ]
+    },
+    {
+     "claim": "Risk score for the flagged transaction is 0.48, within moderate range",
+     "source": "graph",
+     "ref": "query:customer_baseline(card_id=C02354-K2)",
+     "entity_ids": [
+      "3491361"
+     ]
+    },
+    {
+     "claim": "Classifier reported no pattern (none)",
+     "source": "document",
+     "ref": "document:policy-r2",
+     "entity_ids": []
+    },
+    {
+     "claim": "Prior closed cases on shared device profiles show fraud history on other cards",
+     "source": "graph",
+     "ref": "query:customer_baseline(card_id=C02354-K2)",
+     "entity_ids": [
+      "3491361"
+     ]
+    },
+    {
+     "claim": "All seven transactions in the burst have low to moderate risk scores and are in\u2011person",
+     "source": "graph",
+     "ref": "query:customer_baseline(card_id=C02354-K2)",
+     "entity_ids": [
+      "3491361"
+     ]
+    }
+   ],
+   "similar_prior_cases": [
+    "CC-5558",
+    "CC-5556",
+    "CC-5553",
+    "CC-5550",
+    "CC-5546",
+    "CC-5542"
+   ],
+   "summary": "The cardholder\u2019s denial is outweighed by a strong recurring purchase pattern of the same amount, low to moderate risk scores, and no anomalous device or region signals. Calibration suggests a low fraud probability for such cases. Consequently, the transaction is deemed legitimate and no block is recommended.",
+   "written_to_graph": true,
+   "graph_case_id": "CASE-2016-018"
+  },
+  "evidence_requests": [
+   {
+    "type": "customer_validation",
+    "asked_after_step": 5,
+    "assumed_response": "Shown their own history, the cardholder recognises the charge: this exact amount and merchant category has been billed to the card 170 times before. They withdraw the dispute."
+   }
+  ],
+  "next_best_actions": {
+   "initial": [
+    {
+     "action": "VERIFY_WITH_CUSTOMER",
+     "route": "auto",
+     "reason": "R7: 170 prior transactions of this amount and product on this card establish it as the cardholder's own recurring charge; confirm before acting"
+    },
+    {
+     "action": "CREATE_CASE",
+     "route": "auto",
+     "reason": "R7: customer disputes a charge that matches their own recurring pattern"
+    },
+    {
+     "action": "WARN_CUSTOMER",
+     "route": "auto",
+     "reason": "R7: send a recurring-charge reminder rather than blocking the card"
+    }
+   ],
+   "final": [
+    {
+     "action": "VERIFY_WITH_CUSTOMER",
+     "route": "auto",
+     "reason": "R7: 170 prior transactions of this amount and product on this card establish it as the cardholder's own recurring charge; confirm before acting"
+    },
+    {
+     "action": "CREATE_CASE",
+     "route": "auto",
+     "reason": "R7: customer disputes a charge that matches their own recurring pattern"
+    },
+    {
+     "action": "WARN_CUSTOMER",
+     "route": "auto",
+     "reason": "R7: send a recurring-charge reminder rather than blocking the card"
+    }
+   ],
+   "what_changed": "nothing"
+  },
+  "sar": {
+   "file": false,
+   "reason": "R7: the disputed charge matches the cardholder's own established pattern (170 prior transactions of this amount and product); no suspicious activity.",
+   "narrative": "",
+   "subjects": [],
+   "total_amount_usd": 0.0,
+   "activity_dates": []
+  },
+  "stop_reason": "The cardholder's response (confirmed) settles the question; further steps would not change the recommended actions.",
+  "tool_calls": 8,
+  "tokens": 6444,
+  "latency_s": 11.0,
+  "trigger_type": "customer_report",
+  "trigger_text": "Customer C02354 message: 'I never made this $39.08 purchase. Please check my card.' Refers to 3491361.",
+  "opened_at": "2016-11-27 14:41:26"
+ },
+ {
+  "case_id": "HHG-019",
+  "case": {
+   "status": "closed_legitimate",
+   "verdict": "legitimate",
+   "fraud_probability": 0.55,
+   "pattern": "none",
+   "pattern_description": "",
+   "affected_txn_ids": [],
+   "first_suspicious_txn_id": "",
+   "connected_card_ids": [],
+   "connected_device_profiles": [],
+   "exposure_usd": 0.0,
+   "evidence": [
+    {
+     "claim": "Model risk score 0.90",
+     "source": "graph",
+     "ref": "query:customer_baseline(card_id=C07987-K2)",
+     "entity_ids": [
+      "3503878"
+     ]
+    },
+    {
+     "claim": "Transaction used a new device for this account",
+     "source": "graph",
+     "ref": "query:customer_baseline(card_id=C07987-K2)",
+     "entity_ids": [
+      "3503878"
+     ]
+    },
+    {
+     "claim": "Cardholder confirmed the transaction",
+     "source": "customer",
+     "ref": "evidence_request:1",
+     "entity_ids": []
+    },
+    {
+     "claim": "Four prior transactions of same amount and product",
+     "source": "graph",
+     "ref": "query:customer_baseline(card_id=C07987-K2)",
+     "entity_ids": [
+      "3503878"
+     ]
+    },
+    {
+     "claim": "Median transaction amount $116.92, similar to $99.92",
+     "source": "graph",
+     "ref": "query:customer_baseline(card_id=C07987-K2)",
+     "entity_ids": [
+      "3503878"
+     ]
+    },
+    {
+     "claim": "Prior closed cases with same pattern were fraud",
+     "source": "graph",
+     "ref": "query:customer_baseline(card_id=C07987-K2)",
+     "entity_ids": [
+      "3503878"
+     ]
+    }
+   ],
+   "similar_prior_cases": [
+    "CC-5538",
+    "CC-5529",
+    "CC-5528",
+    "CC-5527",
+    "CC-5525",
+    "CC-5518"
+   ],
+   "summary": "The alert shows a high risk score and a new device, but the cardholder confirmed the $99.92 online purchase. The card\u2019s history includes four identical prior transactions and a median spend close to the flagged amount, indicating normal behavior. Although similar past cases were fraud, the confirmation and consistent spending pattern outweigh those signals, making the transaction legitimate.",
+   "written_to_graph": true,
+   "graph_case_id": "CASE-2016-019"
+  },
+  "evidence_requests": [
+   {
+    "type": "step_up_auth",
+    "asked_after_step": 4,
+    "assumed_response": "Step-up authentication was requested and completed successfully by the cardholder, indicating the genuine account holder authorised the activity."
+   }
+  ],
+  "next_best_actions": {
+   "initial": [
+    {
+     "action": "CREATE_CASE",
+     "route": "auto",
+     "reason": "3a: fraud probability 0.42 warrants a case record"
+    }
+   ],
+   "final": [
+    {
+     "action": "CREATE_CASE",
+     "route": "auto",
+     "reason": "R3/3a: record the confirmation against the investigation"
+    },
+    {
+     "action": "CLOSE_NO_FRAUD",
+     "route": "auto",
+     "reason": "R3: cardholder confirms they made the transaction"
+    }
+   ],
+   "what_changed": "The cardholder confirmed the activity when asked, moving fraud probability from 0.42 to 0.55 and settling the case as legitimate."
+  },
+  "sar": {
+   "file": false,
+   "reason": "R2/3a: fraud is neither confirmed nor strongly suspected (verdict legitimate, probability 0.55); no report required",
+   "narrative": "",
+   "subjects": [],
+   "total_amount_usd": 0.0,
+   "activity_dates": []
+  },
+  "stop_reason": "The cardholder's response (confirmed) settles the question; further steps would not change the recommended actions.",
+  "tool_calls": 7,
+  "tokens": 6118,
+  "latency_s": 23.3,
+  "trigger_type": "risk_score",
+  "trigger_text": "Real-time model scored transaction 3503878 ($99.92, online) at 0.90. Review and decide.",
+  "opened_at": "2016-12-01 22:28:53"
+ },
+ {
+  "case_id": "HHG-020",
+  "case": {
+   "status": "closed_fraud",
+   "verdict": "fraud",
+   "fraud_probability": 0.88,
+   "pattern": "card_not_present_new_device",
+   "pattern_description": "",
+   "affected_txn_ids": [
+    "3509359"
+   ],
+   "first_suspicious_txn_id": "3509359",
+   "connected_card_ids": [],
+   "connected_device_profiles": [],
+   "exposure_usd": 125.08,
+   "evidence": [
+    {
+     "claim": "Risk score 0.52",
+     "source": "document",
+     "ref": "document:ring-a-shared-device#2",
+     "entity_ids": []
+    },
+    {
+     "claim": "Transaction used a new device not seen before on this account",
+     "source": "graph",
+     "ref": "query:card_window(card_id=C12265-K2, hours=72)",
+     "entity_ids": [
+      "3509359"
+     ]
+    },
+    {
+     "claim": "Product code R never used on this card before",
+     "source": "graph",
+     "ref": "query:card_window(card_id=C12265-K2, hours=72)",
+     "entity_ids": [
+      "3509359"
+     ]
+    },
+    {
+     "claim": "Similar prior cases with the same pattern were confirmed fraud",
+     "source": "graph",
+     "ref": "query:customer_baseline(card_id=C12265-K2)",
+     "entity_ids": [
+      "3509359"
+     ]
+    },
+    {
+     "claim": "Cardholder denied the transaction",
+     "source": "customer",
+     "ref": "evidence_request:1",
+     "entity_ids": []
+    },
+    {
+     "claim": "Transaction matches undocumented shared device ring typology",
+     "source": "document",
+     "ref": "document:ring-a-shared-device#2",
+     "entity_ids": []
+    }
+   ],
+   "similar_prior_cases": [
+    "CC-5538",
+    "CC-5528",
+    "CC-5527",
+    "CC-5518",
+    "CC-5515",
+    "CC-5508"
+   ],
+   "summary": "The cardholder denied a $125.08 online purchase made from a new device and a product code never seen on this account. Similar past cases with the same \"card_not_present_new_device\" pattern were all confirmed fraud, and the activity aligns with a known shared\u2011device ring typology. Combined evidence places the fraud probability around 88%, leading to a fraud verdict and recommendation to block the card and open a case.",
+   "written_to_graph": true,
+   "graph_case_id": "CASE-2016-020"
+  },
+  "evidence_requests": [
+   {
+    "type": "customer_validation",
+    "asked_after_step": 4,
+    "assumed_response": "Contacted about the activity, the cardholder states they did not make these purchases and still holds the card."
+   }
+  ],
+  "next_best_actions": {
+   "initial": [
+    {
+     "action": "VERIFY_WITH_CUSTOMER",
+     "route": "auto",
+     "reason": "R1: probability 0.62 on 2 signals is not decisive; confirm with the cardholder before any block"
+    },
+    {
+     "action": "CREATE_CASE",
+     "route": "auto",
+     "reason": "3a: fraud probability 0.62 warrants a case record"
+    }
+   ],
+   "final": [
+    {
+     "action": "BLOCK_CARD",
+     "route": "L1",
+     "reason": "R2: cardholder denies the transaction; exposure $125.08"
+    },
+    {
+     "action": "CREATE_CASE",
+     "route": "auto",
+     "reason": "R2: unauthorised use confirmed by the cardholder"
+    }
+   ],
+   "what_changed": "The cardholder denied the activity when asked, moving fraud probability from 0.62 to 0.88; the recommendation firms up accordingly."
+  },
+  "sar": {
+   "file": false,
+   "reason": "3a: fraud is suspected but no reporting trigger is met -- exposure $125.08 is under $1,000, no shared origin, pattern is documented",
+   "narrative": "",
+   "subjects": [],
+   "total_amount_usd": 0.0,
+   "activity_dates": []
+  },
+  "stop_reason": "The cardholder's response (denied) settles the question; further steps would not change the recommended actions.",
+  "tool_calls": 7,
+  "tokens": 6032,
+  "latency_s": 42.6,
+  "trigger_type": "risk_score",
+  "trigger_text": "Real-time model scored transaction 3509359 ($125.08, online) at 0.52. Review and decide.",
+  "opened_at": "2016-12-03 12:04:26"
+ }
+]

@@ -1,8 +1,9 @@
 # Dataset and everything derived from it. The raw CSVs are 708MB and belong
 # to TigerGraph; the narrowed files, card map, id registry, embeddings cache
 # and ring index are all regenerable from them. cases/ is NOT under data/ and
-# is committed — those are the deliverable.
-data/
+# is committed — those are the deliverable. Anchored to the repo root so it
+# does not also swallow web/src/data/ (the frontend's bundled case data).
+/data/
 
 # Python
 __pycache__/
@@ -20,3 +21,11 @@ run_all.log
 # React frontend
 web/node_modules/
 web/dist/
+
+# Local-only working docs — kept on disk, not published. CLAUDE.md is the
+# strategy playbook; the rest are deliverable drafts published elsewhere.
+CLAUDE.md
+BLOG.md
+SOCIAL.md
+DEMO.md
+VIDEO_PLAN.md
