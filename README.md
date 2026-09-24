@@ -1,8 +1,8 @@
 # Agentic Fraud Investigation on TigerGraph
 
-**Live dashboard:** https://asheesh7298.github.io/tigergraph-fraud-ui/ — the
-analyst view over all 20 answer files (the compiled `web/` app; case data
-bundled, no backend). Redeploy with `web/deploy.sh` after a `npm run build`.
+**Live dashboard:** the analyst view over all 20 answer files — the `web/` app
+(Vite + React; case data bundled, no backend), deployed on Vercel. Run it
+locally with `cd web && npm install && npm run dev`.
 
 An AI agent that investigates card-fraud alerts on a TigerGraph knowledge
 graph, decides what kind of fraud each is (if any), how far it reaches, and
